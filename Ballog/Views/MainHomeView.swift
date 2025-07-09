@@ -9,7 +9,8 @@ import SwiftUI
 
 struct MainHomeView: View {
     var body: some View {
-        VStack(spacing: 0) {
+        NavigationStack {
+            VStack(spacing: 0) {
             // 상단 바
             HStack {
                 Text("볼터치")
@@ -62,10 +63,9 @@ struct MainHomeView: View {
             }
             .padding(.top, 16)
 
-            Spacer()
-            
-            // 탭바
-            TabBarView()
+                Spacer()
+            }
+            .navigationTitle("홈")
         }
     }
 }
