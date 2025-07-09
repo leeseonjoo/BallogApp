@@ -5,7 +5,7 @@
 //  Created by 이선주 on 7/8/25.
 //
 
-import Foundation
+import SwiftUI
 import SwiftData
 
 @Model
