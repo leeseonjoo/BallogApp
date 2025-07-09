@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+private enum Layout {
+    static let spacing = DesignConstants.spacing
+    static let padding = DesignConstants.horizontalPadding
+}
+
 // MARK: - TeamMember 모델 정의
 struct TeamMember: Identifiable {
     var id = UUID()
@@ -28,7 +33,7 @@ struct TeamManagementView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: Layout.spacing) {
                     
                     // 1. 팀명 + 로고
                     HStack {
@@ -40,7 +45,7 @@ struct TeamManagementView: View {
                             .fontWeight(.bold)
                         Spacer()
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, Layout.padding)
                     
                     // 2. 팀원 한마디
                     HStack {
@@ -51,7 +56,7 @@ struct TeamManagementView: View {
                             .foregroundColor(.secondary)
                         Spacer()
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, Layout.padding)
                     
                     Divider()
                     
@@ -71,7 +76,7 @@ struct TeamManagementView: View {
                                 }
                             }
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, Layout.padding)
                     }
                     
                     // 4. 훈련 일정
@@ -91,7 +96,7 @@ struct TeamManagementView: View {
                             }
                         }
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, Layout.padding)
                     
                     // 5. 훈련 일지 요약
                     VStack(alignment: .leading, spacing: 12) {
@@ -113,7 +118,7 @@ struct TeamManagementView: View {
                         .font(.caption)
                         .foregroundColor(.blue)
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, Layout.padding)
                     
                     // 6. 작성 버튼
                     Button(action: {
@@ -125,7 +130,7 @@ struct TeamManagementView: View {
                             .background(Color.yellow.opacity(0.2))
                             .cornerRadius(10)
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, Layout.padding)
                     
                     Spacer()
                 }
@@ -145,7 +150,7 @@ struct TeamMemberCardView: View {
     let memberName: String
     
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: Layout.spacing) {
             Text("⚽️ \(memberName)의 캐릭터 카드")
                 .font(.title2)
                 .padding()
