@@ -10,13 +10,6 @@ struct MainHomeView: View {
         return formatter.string(from: Date())
     }
 
-    private var todayString: String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy M월 d일 EEEE"
-        return formatter.string(from: Date())
-    }
-
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
@@ -106,6 +99,4 @@ struct MainHomeView: View {
 
 #Preview {
     MainHomeView()
-}
-
 }
