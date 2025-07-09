@@ -13,8 +13,9 @@ struct PixelTreeView: View {
     var body: some View {
         VStack(spacing: 12) {
             PixelView(pixelColors: model.pixelGrid)
+
             HStack {
-                ForEach(SkillProgressModel.Skill.allCases) { skill in
+                ForEach(SkillProgressModel.Skill.allCases, id: \.self) { skill in
                     Button(action: { model.complete(skill: skill) }) {
                         Text(label(for: skill))
                             .font(.caption)

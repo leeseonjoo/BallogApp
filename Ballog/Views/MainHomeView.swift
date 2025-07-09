@@ -1,18 +1,13 @@
-//
-//  MainHomeView.swift
-//  Ballog
-//
-//  Created by 이선주 on 7/9/25.
-//
-
 import SwiftUI
 
 struct MainHomeView: View {
     @StateObject private var progressModel = SkillProgressModel()
+    @State private var selectedDate: String? = nil
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
+            VStack(spacing: 16) {
+
                 // 상단 바
                 HStack {
                     Text("볼터치")
@@ -40,11 +35,11 @@ struct MainHomeView: View {
                         .font(.subheadline)
                         .multilineTextAlignment(.center)
                 }
-                .padding()
+                .padding(.horizontal)
 
                 // 요일 패스 상태 박스
                 HStack(spacing: 16) {
-                    ForEach(["월", "화", "수", "목", "금"], id: \ .self) { day in
+                    ForEach(["월", "화", "수", "목", "금"], id: \.self) { day in
                         VStack {
                             Text(day)
                                 .font(.subheadline)
@@ -55,10 +50,10 @@ struct MainHomeView: View {
                         }
                     }
                 }
-                .padding(.vertical)
-                
-                let days = ["월", "화", "수", "목"]
+                .padding(.horizontal)
+
                 // 일지 리스트
+                let days = ["월", "화", "수", "목"]
                 VStack(alignment: .leading, spacing: 8) {
                     Text("일지 리스트")
                         .font(.headline)
@@ -80,35 +75,21 @@ struct MainHomeView: View {
                         }
                     }
                 }
+                .padding(.horizontal)
 
-                Spacer()
-            }
-            .padding()
-            .background(Color.yellow.opacity(0.2))
-            .cornerRadius(12)
-            .padding(.horizontal)
-
-            // 픽셀 트리 진행 뷰
-            PixelTreeView(model: progressModel)
-                .padding(.top, 16)
+                // 픽셀 트리 뷰
+                PixelTreeView(model: progressModel)
+                    .padding()
 
                 Spacer()
 
-                // 하단 탭바
-                HStack(spacing: 30) {
-                    ForEach(["피드", "개인", "HOME", "팀", "마이페이지"], id: \ .self) { tab in
-                        VStack(spacing: 4) {
-                            Image(systemName: "pawprint")
-                            Text(tab)
-                                .font(.caption)
-                        }
                     }
                 }
                 .padding()
                 .background(Color.gray.opacity(0.1))
             }
         }
-    }
 
-
-#Preview { MainHomeView() }
+#Preview {
+    MainHomeView()
+}
