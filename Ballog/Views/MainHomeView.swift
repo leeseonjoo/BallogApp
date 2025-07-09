@@ -3,6 +3,12 @@ import SwiftUI
 struct MainHomeView: View {
     @StateObject private var progressModel = SkillProgressModel()
     @State private var selectedDate: String? = nil
+    private var todayString: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "yyyy M월 d일 EEEE"
+        return formatter.string(from: Date())
+    }
 
     var body: some View {
         NavigationStack {
@@ -37,24 +43,33 @@ struct MainHomeView: View {
                 }
                 .padding(.horizontal)
 
-                // 요일 패스 상태 박스
-                HStack(spacing: 16) {
-                    ForEach(["월", "화", "수", "목", "금"], id: \.self) { day in
-                        VStack {
-                            Text(day)
-                                .font(.subheadline)
+                // 요일 상태 박스
+                ZStack(alignment: .top) {
+                    HStack(spacing: 16) {
+                        ForEach(["월", "화", "수", "목", "금"], id: \.self) { day in
                             RoundedRectangle(cornerRadius: 8)
                                 .stroke(Color.gray, lineWidth: 1)
                                 .frame(width: 50, height: 50)
-                                .overlay(Text("패스").font(.caption))
+                                .overlay(Text(day).font(.subheadline))
                         }
                     }
+                    .padding(.vertical, 12)
+                }
+                .padding(.top, 8)
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray))
+                .overlay(alignment: .top) {
+                    Text(todayString)
+                        .font(.caption2)
+                        .padding(.horizontal, 6)
+                        .foregroundColor(.black)
+                        .background(Color.pageBackground)
+                        .offset(y: -6)
                 }
                 .padding(.horizontal)
 
                 // 일지 리스트
                 let days = ["월", "화", "수", "목"]
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text("일지 리스트")
                         .font(.headline)
 
@@ -71,10 +86,12 @@ struct MainHomeView: View {
                                         .foregroundColor(.blue)
                                 }
                             }
-                            .padding(.vertical, 4)
+                            .padding(.vertical, 2)
                         }
                     }
                 }
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray))
                 .padding(.horizontal)
 
                 // 픽셀 트리 뷰
@@ -82,14 +99,15 @@ struct MainHomeView: View {
                     .padding()
 
                 Spacer()
-
-                    }
-                }
-                .padding()
-                .background(Color.gray.opacity(0.1))
             }
+            .padding()
+            .background(Color.pageBackground)
+            .ignoresSafeArea()
         }
+    }
 
 #Preview {
     MainHomeView()
+}
+
 }

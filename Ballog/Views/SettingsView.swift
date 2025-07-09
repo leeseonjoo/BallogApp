@@ -21,7 +21,10 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("설정")
+            .scrollContentBackground(.hidden)
         }
+        .background(Color.pageBackground)
+        .ignoresSafeArea()
     }
 }
 
