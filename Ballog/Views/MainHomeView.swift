@@ -98,14 +98,14 @@ struct MainHomeView: View {
                     .padding()
 
                 Spacer()
-
-                    }
-                }
-                .padding()
-                .background(Color.pageBackground)
             }
+            .padding()
+            .background(Color.pageBackground)
         }
+    }
 
 #Preview {
     MainHomeView()
+}
+
 }
