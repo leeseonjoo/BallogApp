@@ -13,7 +13,7 @@ struct MainHomeView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
-
+                
                 // 상단 바
                 HStack {
                     Text("볼터치")
@@ -43,8 +43,6 @@ struct MainHomeView: View {
                 }
                 .padding(.horizontal)
 
-                // 요일 상태 박스
-                ZStack(alignment: .top) {
                     HStack(spacing: 16) {
                         ForEach(["월", "화", "수", "목", "금"], id: \.self) { day in
                             RoundedRectangle(cornerRadius: 8)
@@ -54,16 +52,6 @@ struct MainHomeView: View {
                         }
                     }
                     .padding(.vertical, 12)
-                }
-                .padding(.top, 8)
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray))
-                .overlay(alignment: .top) {
-                    Text(todayString)
-                        .font(.caption2)
-                        .padding(.horizontal, 6)
-                        .foregroundColor(.black)
-                        .background(Color.pageBackground)
-                        .offset(y: -6)
                 }
                 .padding(.horizontal)
 
