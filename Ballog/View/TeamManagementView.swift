@@ -7,23 +7,14 @@
 
 import SwiftUI
 
-// MARK: - TeamMember 모델 정의
-struct TeamMember: Identifiable {
-    var id = UUID()
-    var name: String
-}
+// Uses TeamMember model from Model/TeamMember.swift
+
 
 // MARK: - 메인 팀 관리 뷰
 struct TeamManagementView: View {
     // 선택된 팀원 정보 (팝업용)
     @State private var selectedMember: TeamMember? = nil
-
-    // 팀원 리스트
-    let teamMembers = [
-        TeamMember(name: "민수"),
-        TeamMember(name: "태호"),
-        TeamMember(name: "지현")
-    ]
+    @StateObject private var viewModel = TeamManagementViewModel()
     
     var body: some View {
         NavigationView {
@@ -58,7 +49,7 @@ struct TeamManagementView: View {
                     // 3. 팀원 캐릭터
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 24) {
-                            ForEach(teamMembers) { member in
+                            ForEach(viewModel.teamMembers) { member in
                                 VStack {
                                     Image(systemName: "person.fill")
                                         .resizable()
