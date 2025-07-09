@@ -37,24 +37,20 @@ struct MainHomeView: View {
                 }
                 .padding(.horizontal)
 
-                // 요일 패스 상태 박스
+                // 요일 상태 박스
                 HStack(spacing: 16) {
                     ForEach(["월", "화", "수", "목", "금"], id: \.self) { day in
-                        VStack {
-                            Text(day)
-                                .font(.subheadline)
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.gray, lineWidth: 1)
-                                .frame(width: 50, height: 50)
-                                .overlay(Text("패스").font(.caption))
-                        }
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray, lineWidth: 1)
+                            .frame(width: 50, height: 50)
+                            .overlay(Text(day).font(.subheadline))
                     }
                 }
                 .padding(.horizontal)
 
                 // 일지 리스트
                 let days = ["월", "화", "수", "목"]
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text("일지 리스트")
                         .font(.headline)
 
@@ -71,10 +67,12 @@ struct MainHomeView: View {
                                         .foregroundColor(.blue)
                                 }
                             }
-                            .padding(.vertical, 4)
+                            .padding(.vertical, 2)
                         }
                     }
                 }
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray))
                 .padding(.horizontal)
 
                 // 픽셀 트리 뷰
