@@ -136,6 +136,7 @@ struct TeamManagementView: View {
             }
         }
         .background(Color.pageBackground)
+        .ignoresSafeArea()
     }
 }
 

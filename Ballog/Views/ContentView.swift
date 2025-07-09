@@ -40,6 +40,7 @@ struct ContentView: View {
                 }
         }
         .background(Color.pageBackground)
+        .ignoresSafeArea()
     }
 }
 

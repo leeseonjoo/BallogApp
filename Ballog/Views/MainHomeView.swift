@@ -101,6 +101,7 @@ struct MainHomeView: View {
             }
             .padding()
             .background(Color.pageBackground)
+            .ignoresSafeArea()
         }
     }
 
