@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+private enum Layout {
+    static let padding = DesignConstants.horizontalPadding
+}
+
 struct FeedView: View {
     let posts = [
         "오늘 개인 훈련을 마쳤어요!",
@@ -19,6 +23,8 @@ struct FeedView: View {
             List(posts, id: \.self) { post in
                 Text(post)
             }
+            .listStyle(.plain)
+            .padding(.horizontal, Layout.padding)
             .navigationTitle("피드")
             .scrollContentBackground(.hidden)
         }
