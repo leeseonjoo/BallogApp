@@ -23,7 +23,7 @@ final class SkillProgressModel: ObservableObject {
         let positions: [(Int, Int)]
     }
 
-    private let gridSize = 10
+    private let gridSize = 8
 
     @Published var pixelGrid: [[Color]]
     private var completedSkills: Set<Skill> = []

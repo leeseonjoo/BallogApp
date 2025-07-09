@@ -11,10 +11,10 @@ struct PixelTreeView: View {
     @ObservedObject var model: SkillProgressModel
 
     var body: some View {
-        VStack(spacing: 12) {
+        HStack(alignment: .top, spacing: 12) {
             PixelView(pixelColors: model.pixelGrid)
 
-            HStack {
+            VStack(alignment: .leading, spacing: 8) {
                 ForEach(SkillProgressModel.Skill.allCases, id: \.self) { skill in
                     Button(action: { model.complete(skill: skill) }) {
                         Text(label(for: skill))
