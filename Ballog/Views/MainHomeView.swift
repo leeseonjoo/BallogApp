@@ -98,4 +98,3 @@ struct MainHomeView: View {
     MainHomeView()
 }
 
-}
