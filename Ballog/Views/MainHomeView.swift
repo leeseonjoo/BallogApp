@@ -10,10 +10,17 @@ struct MainHomeView: View {
         return formatter.string(from: Date())
     }
 
+    private var todayString: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "yyyy M월 d일 EEEE"
+        return formatter.string(from: Date())
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
-
+                
                 // 상단 바
                 HStack {
                     Text("볼터치")
@@ -43,8 +50,7 @@ struct MainHomeView: View {
                 }
                 .padding(.horizontal)
 
-                // 요일 상태 박스
-                ZStack(alignment: .top) {
+
                     HStack(spacing: 16) {
                         ForEach(["월", "화", "수", "목", "금"], id: \.self) { day in
                             RoundedRectangle(cornerRadius: 8)
@@ -54,15 +60,7 @@ struct MainHomeView: View {
                         }
                     }
                     .padding(.vertical, 12)
-                }
-                .padding(.top, 8)
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray))
-                .overlay(alignment: .top) {
-                    Text(todayString)
-                        .font(.caption2)
-                        .padding(.horizontal, 6)
-                        .background(Color.white)
-                        .offset(y: -6)
+
                 }
                 .padding(.horizontal)
 
@@ -98,6 +96,7 @@ struct MainHomeView: View {
                     .padding()
 
                 Spacer()
+
             }
             .padding()
             .background(Color.pageBackground)
