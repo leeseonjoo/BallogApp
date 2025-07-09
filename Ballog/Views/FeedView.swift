@@ -20,7 +20,11 @@ struct FeedView: View {
                 Text(post)
             }
             .navigationTitle("피드")
+            .scrollContentBackground(.hidden)
+            .background(Color.pageBackground)
         }
+        .background(Color.pageBackground)
+        .ignoresSafeArea()
     }
 }
 

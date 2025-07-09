@@ -89,6 +89,8 @@ struct PersonalTrainingView: View {
             }
             .navigationTitle("개인 훈련")
         }
+        .background(Color.pageBackground)
+        .ignoresSafeArea()
     }
 }
 

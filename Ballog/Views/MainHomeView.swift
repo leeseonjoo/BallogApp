@@ -3,6 +3,12 @@ import SwiftUI
 struct MainHomeView: View {
     @StateObject private var progressModel = SkillProgressModel()
     @State private var selectedDate: String? = nil
+    private var todayString: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "yyyy M월 d일 EEEE"
+        return formatter.string(from: Date())
+    }
 
     private var todayString: String {
         let formatter = DateFormatter()
@@ -44,8 +50,7 @@ struct MainHomeView: View {
                 }
                 .padding(.horizontal)
 
-                // 요일 상태 박스 + 날짜 표시
-                VStack {
+
                     HStack(spacing: 16) {
                         ForEach(["월", "화", "수", "목", "금"], id: \.self) { day in
                             RoundedRectangle(cornerRadius: 8)
@@ -55,13 +60,7 @@ struct MainHomeView: View {
                         }
                     }
                     .padding(.vertical, 12)
-                    .overlay(alignment: .top) {
-                        Text(todayString)
-                            .font(.caption2)
-                            .padding(.horizontal, 6)
-                            .background(Color.white)
-                            .offset(y: -10)
-                    }
+
                 }
                 .padding(.horizontal)
 
@@ -98,13 +97,15 @@ struct MainHomeView: View {
 
                 Spacer()
 
-                 .padding()
-                .background(Color.gray.opacity(0.1))
             }
+            .padding()
+            .background(Color.pageBackground)
+            .ignoresSafeArea()
         }
     }
-}
 
 #Preview {
     MainHomeView()
+}
+
 }
