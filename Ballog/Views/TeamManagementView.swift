@@ -135,6 +135,8 @@ struct TeamManagementView: View {
                 TeamMemberCardView(memberName: member.name)
             }
         }
+        .background(Color.pageBackground)
+        .ignoresSafeArea()
     }
 }
 
