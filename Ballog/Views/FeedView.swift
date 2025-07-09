@@ -21,7 +21,6 @@ struct FeedView: View {
             }
             .navigationTitle("피드")
             .scrollContentBackground(.hidden)
-            .background(Color.pageBackground)
         }
         .background(Color.pageBackground)
         .ignoresSafeArea()
