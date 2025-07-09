@@ -7,10 +7,15 @@
 
 import SwiftUI
 
+private enum Layout {
+    static let spacing = DesignConstants.spacing
+    static let padding = DesignConstants.horizontalPadding
+}
+
 struct PersonalTrainingView: View {
     var body: some View {
         NavigationStack {
-            VStack(spacing: 16) {
+            VStack(spacing: Layout.spacing) {
                 // 상단 달력 헤더
                 HStack {
                     Text("2025년 7월")
@@ -24,7 +29,7 @@ struct PersonalTrainingView: View {
                             .foregroundColor(.blue)
                     }
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, Layout.padding)
 
             // 훈련일지 작성 버튼
                 Button(action: {
@@ -36,7 +41,7 @@ struct PersonalTrainingView: View {
                         .background(Color.yellow.opacity(0.2))
                         .cornerRadius(10)
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, Layout.padding)
 
             // 최근 훈련일지 요약 리스트
                 VStack(alignment: .leading, spacing: 8) {
@@ -60,7 +65,7 @@ struct PersonalTrainingView: View {
                     .foregroundColor(.blue)
                     .padding(.top, 4)
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, Layout.padding)
 
             // 훈련 통계 요약
                 VStack(alignment: .leading, spacing: 8) {
@@ -83,7 +88,7 @@ struct PersonalTrainingView: View {
                     .font(.caption)
                     .foregroundColor(.blue)
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, Layout.padding)
 
                 Spacer()
             }

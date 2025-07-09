@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+private enum Layout {
+    static let padding = DesignConstants.horizontalPadding
+}
+
 struct SettingsView: View {
     var body: some View {
         NavigationStack {
@@ -20,6 +24,8 @@ struct SettingsView: View {
                     Text("버전 1.0")
                 }
             }
+            .listStyle(.insetGrouped)
+            .padding(.horizontal, Layout.padding)
             .navigationTitle("설정")
             .scrollContentBackground(.hidden)
         }

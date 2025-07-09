@@ -1,5 +1,10 @@
 import SwiftUI
 
+private enum Layout {
+    static let spacing = DesignConstants.spacing
+    static let padding = DesignConstants.horizontalPadding
+}
+
 struct MainHomeView: View {
     @StateObject private var progressModel = SkillProgressModel()
     @State private var selectedDate: String? = nil
@@ -12,7 +17,7 @@ struct MainHomeView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 16) {
+            VStack(spacing: Layout.spacing) {
                 
                 // 상단 바
                 HStack {
@@ -78,17 +83,17 @@ struct MainHomeView: View {
                         }
                     }
                 }
-                .padding()
+                .padding(Layout.padding)
                 .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray))
                 .padding(.horizontal)
 
                 // 픽셀 트리 뷰
                 PixelTreeView(model: progressModel)
-                    .padding()
+                    .padding(Layout.padding)
 
                 Spacer()
             }
-            .padding()
+            .padding(Layout.padding)
             .background(Color.pageBackground)
             .ignoresSafeArea()
         }
