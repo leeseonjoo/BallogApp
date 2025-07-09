@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+<<<<<<< Updated upstream
 struct SettingsView: View {
     var body: some View {
         NavigationStack {
@@ -29,3 +30,5 @@ struct SettingsView: View {
     SettingsView()
 }
 
+=======
+>>>>>>> Stashed changes
