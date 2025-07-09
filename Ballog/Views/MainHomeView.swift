@@ -62,7 +62,7 @@ struct MainHomeView: View {
                         .font(.caption2)
                         .padding(.horizontal, 6)
                         .background(Color.white)
-                        .offset(y: -10)
+                        .offset(y: -6)
                 }
                 .padding(.horizontal)
 
