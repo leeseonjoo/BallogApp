@@ -9,7 +9,6 @@ import SwiftUI
 
 struct MainHomeView: View {
     @StateObject private var progressModel = SkillProgressModel()
->>>>>>> 34a4c2078e0989557a5e318cd62bee1d1c625760
 
     var body: some View {
         NavigationStack {
@@ -92,7 +91,6 @@ struct MainHomeView: View {
             // 픽셀 트리 진행 뷰
             PixelTreeView(model: progressModel)
                 .padding(.top, 16)
->>>>>>> 34a4c2078e0989557a5e318cd62bee1d1c625760
 
                 Spacer()
 
@@ -112,7 +110,5 @@ struct MainHomeView: View {
         }
     }
 
-
-}
 
 #Preview { MainHomeView() }
