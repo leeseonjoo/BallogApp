@@ -6,4 +6,25 @@
 //
 
 import SwiftUI
-ㄴ
+
+struct SettingsView: View {
+    var body: some View {
+        NavigationStack {
+            List {
+                Section(header: Text("계정")) {
+                    Text("프로필")
+                    Text("로그아웃")
+                }
+
+                Section(header: Text("정보")) {
+                    Text("버전 1.0")
+                }
+            }
+            .navigationTitle("설정")
+        }
+    }
+}
+
+#Preview {
+    SettingsView()
+}

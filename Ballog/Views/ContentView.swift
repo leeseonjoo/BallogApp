@@ -9,6 +9,12 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         TabView {
+            MainHomeView()
+                .tabItem {
+                    Image(systemName: "house.fill")
+                    Text("홈")
+                }
+
             PersonalTrainingView()
                 .tabItem {
                     Image(systemName: "figure.walk")
@@ -21,13 +27,17 @@ struct ContentView: View {
                     Text("팀")
                 }
 
-            MainHomeView()
+            FeedView()
                 .tabItem {
-                    Image(systemName: "house.fill")
-                    Text("홈")
+                    Image(systemName: "square.stack")
+                    Text("피드")
                 }
 
-
+            SettingsView()
+                .tabItem {
+                    Image(systemName: "gearshape")
+                    Text("설정")
+                }
         }
     }
 }
