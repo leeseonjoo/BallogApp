@@ -11,13 +11,14 @@ struct PixelView: View {
     let pixelColors: [[Color]]
     
     var body: some View {
-        VStack(spacing: 2) {
+        VStack(spacing: 1) {
             ForEach(0..<pixelColors.count, id: \.self) { row in
-                HStack(spacing: 2) {
+                HStack(spacing: 1) {
                     ForEach(0..<pixelColors[row].count, id: \.self) { column in
                         Rectangle()
-                            .fill(pixelColors[row][column])
+                            .fill(pixelColors[row][column] == Color.clear ? Color.white : pixelColors[row][column])
                             .frame(width: 16, height: 16)
+                            .overlay(Rectangle().stroke(Color.black, lineWidth: 0.5))
                     }
                 }
             }
