@@ -43,7 +43,6 @@ struct MainHomeView: View {
                 }
                 .padding(.horizontal)
 
-
                     HStack(spacing: 16) {
                         ForEach(["월", "화", "수", "목", "금"], id: \.self) { day in
                             RoundedRectangle(cornerRadius: 8)
@@ -53,7 +52,6 @@ struct MainHomeView: View {
                         }
                     }
                     .padding(.vertical, 12)
-
                 }
                 .padding(.horizontal)
 
@@ -89,7 +87,6 @@ struct MainHomeView: View {
                     .padding()
 
                 Spacer()
-
             }
             .padding()
             .background(Color.pageBackground)
@@ -99,4 +96,6 @@ struct MainHomeView: View {
 
 #Preview {
     MainHomeView()
+}
+
 }
