@@ -23,7 +23,7 @@ struct TabBarView: View {
             Spacer()
         }
         .padding(.vertical, 12)
-        .background(Color(UIColor.systemGray6))
+        .background(Color.pageBackground)
     }
 }
 

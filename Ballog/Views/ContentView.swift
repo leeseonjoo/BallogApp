@@ -39,6 +39,7 @@ struct ContentView: View {
                     Text("설정")
                 }
         }
+        .background(Color.pageBackground)
     }
 }
 

@@ -21,6 +21,7 @@ struct FeedView: View {
             }
             .navigationTitle("피드")
         }
+        .background(Color.pageBackground)
     }
 }
 

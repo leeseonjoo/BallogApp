@@ -22,6 +22,7 @@ struct SettingsView: View {
             }
             .navigationTitle("설정")
         }
+        .background(Color.pageBackground)
     }
 }
 
