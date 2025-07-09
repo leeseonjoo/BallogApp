@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct MainHomeView: View {
+    @StateObject private var pixelTreeViewModel = PixelTreeViewModel()
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -46,22 +48,9 @@ struct MainHomeView: View {
             .cornerRadius(12)
             .padding(.horizontal)
 
-            // 캐릭터 + 공풀장
-            ZStack {
-                Color.blue.opacity(0.1)
-                    .frame(height: 300)
-
-                VStack {
-                    Image(systemName: "teddybear.fill") // 곰돌이 아이콘 대체용
-                        .resizable()
-                        .frame(width: 120, height: 120)
-
-                    Text("내 캐릭터")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                }
-            }
-            .padding(.top, 16)
+            // 픽셀 트리 진행 뷰
+            PixelTreeView(viewModel: pixelTreeViewModel)
+                .padding(.top, 16)
 
                 Spacer()
             }
