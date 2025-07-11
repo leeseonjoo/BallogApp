@@ -5,7 +5,7 @@ private enum Layout {
     static let padding = DesignConstants.horizontalPadding
 }
 
-private struct DiaryEntry: Identifiable {
+struct DiaryEntry: Identifiable {
     let id = UUID()
     let color: Color
     let time: String
@@ -13,7 +13,7 @@ private struct DiaryEntry: Identifiable {
     let place: String
 }
 
-private struct DiaryDay {
+struct DiaryDay {
     let date: String
     let entries: [DiaryEntry]
 }
@@ -98,7 +98,6 @@ struct MainHomeView: View {
         }
     }
 
-}
 
 struct DiaryDayView: View {
     let day: DiaryDay
