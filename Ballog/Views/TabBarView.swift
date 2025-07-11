@@ -40,6 +40,5 @@ struct TabBarItem: View {
             Text(label)
                 .font(.caption)
         }
-        .foregroundColor(.black)
     }
 }
