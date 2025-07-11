@@ -14,26 +14,29 @@ struct TeamListView: View {
                 .font(.headline)
                 .padding(.top)
 
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.gray)
-                .frame(height: 80)
-                .overlay(
-                    HStack(spacing: 12) {
-                        Image(systemName: "soccerball")
-                            .resizable()
-                            .frame(width: 40, height: 40)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("해그래 FS")
-                                .fontWeight(.bold)
-                            Text("풋살팀")
-                            Text("플레이어 (플레이어-코치)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+            NavigationLink(destination: TeamManagementView()) {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.gray)
+                    .frame(height: 80)
+                    .overlay(
+                        HStack(spacing: 12) {
+                            Image(systemName: "soccerball")
+                                .resizable()
+                                .frame(width: 40, height: 40)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("해그래 FS")
+                                    .fontWeight(.bold)
+                                Text("풋살팀")
+                                Text("플레이어 (플레이어-코치)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
                         }
-                        Spacer()
-                    }
-                    .padding()
-                )
+                        .padding()
+                    )
+            }
+            .buttonStyle(.plain)
 
             Spacer()
         }
