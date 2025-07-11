@@ -25,9 +25,9 @@ struct TeamManagementView: View {
 
     // 팀원 리스트
     let teamMembers = [
-        TeamMember(name: "민수"),
-        TeamMember(name: "태호"),
-        TeamMember(name: "지현")
+        TeamMember(name: "혜진"),
+        TeamMember(name: "규원"),
+        TeamMember(name: "진주")
     ]
     
     var body: some View {
