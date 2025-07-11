@@ -7,5 +7,5 @@ extension Color {
         let blue = Double(hex & 0xFF) / 255.0
         self.init(.sRGB, red: red, green: green, blue: blue, opacity: alpha)
     }
-    static let pageBackground = Color.white
+    static let pageBackground = Color(.systemBackground)
 }
