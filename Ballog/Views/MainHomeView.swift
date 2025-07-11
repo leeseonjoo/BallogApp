@@ -21,6 +21,7 @@ struct DiaryDay {
 struct MainHomeView: View {
     @StateObject private var progressModel = SkillProgressModel()
     @State private var selectedDate: String? = nil
+    @AppStorage("profileMessage") private var profileMessage: String = "하나가 되어 정상을 향해가는 순간\n힘들어도 극복하면서 자신있게!! 나아가자!!"
     private var todayString: String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
@@ -33,7 +34,7 @@ struct MainHomeView: View {
             VStack(spacing: Layout.spacing) {
                 
                 // 상단 바
-                HStack {
+                HStack(spacing: 16) {
                     Text("볼터치")
                         .font(.title2)
                         .fontWeight(.bold)
@@ -41,35 +42,52 @@ struct MainHomeView: View {
 
                     Spacer()
 
-                    Button(action: {}) {
+                    NavigationLink(destination: ProfileView()) {
                         Image(systemName: "person.circle.fill")
                             .resizable()
-                            .frame(width: 32, height: 32)
-                            .padding(.trailing)
+                            .frame(width: 28, height: 28)
+                    }
+                    Button(action: {}) {
+                        Image(systemName: "bell")
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                    }
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gearshape")
+                            .resizable()
+                            .frame(width: 24, height: 24)
                     }
                 }
                 .padding(.vertical, 8)
 
                 // 상단 메시지
-                VStack(spacing: 6) {
-                    Text("LET’S GO D-40")
-                        .font(.title)
-                        .bold()
-                    Text("하나가 되어 정상을 향해가는 순간\n힘들어도 극복하면서 자신있게!! 나아가자!!")
+                VStack(spacing: 8) {
+                    Text(profileMessage)
                         .font(.subheadline)
                         .multilineTextAlignment(.center)
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.blue)
+                        )
+                    NavigationLink("수정") { ProfileView() }
+                        .font(.caption)
                 }
                 .padding(.horizontal)
 
-                    HStack(spacing: 16) {
-                        ForEach(["월", "화", "수", "목", "금"], id: \.self) { day in
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.gray, lineWidth: 1)
-                                .frame(width: 50, height: 50)
-                                .overlay(Text(day).font(.subheadline))
-                        }
+                    HStack {
+                        Text("캘린더")
+                            .font(.title2.bold())
+                        Spacer()
+                        Button(action: {}) { Image(systemName: "plus") }
                     }
                     .padding(.vertical, 12)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("- 제 2회 리드컵 풋살 대회 | D-day 40")
+                        Text("- 제 9회 펜타컵 풋살 대회 | D-day 35")
+                        Text("- [일정을 등록하세요]")
+                    }
+                    .font(.subheadline)
                 }
                 .padding(.horizontal)
 
