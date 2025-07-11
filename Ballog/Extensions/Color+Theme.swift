@@ -8,5 +8,5 @@ extension Color {
         self.init(.sRGB, red: red, green: green, blue: blue, opacity: alpha)
     }
 
-    static let pageBackground = Color(hex: 0xFFF3E0)
+    static let pageBackground = Color.white
 }
