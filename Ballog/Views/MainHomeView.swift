@@ -35,13 +35,15 @@ struct MainHomeView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: Layout.spacing) {
+                Spacer(minLength: 60) // 위 여백
+
                 topBar
                 profileMessageSection
                 scheduleSection
-                DiaryDayView(day: sampleDiaryDay)
-                    .padding(.horizontal)
+                thisWeekScheduleSection // 추가된 부분
                 PixelTreeView(model: progressModel)
                     .padding(Layout.padding)
+
                 Spacer()
             }
             .padding(Layout.padding)
@@ -52,7 +54,7 @@ struct MainHomeView: View {
 
     private var topBar: some View {
         HStack(spacing: 16) {
-            Text("볼터치")
+            Text("볼로그")
                 .font(.title2.bold())
                 .padding(.leading)
 
@@ -94,7 +96,7 @@ struct MainHomeView: View {
     }
 
     private var scheduleSection: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("캘린더")
                     .font(.title2.bold())
@@ -103,15 +105,71 @@ struct MainHomeView: View {
                     Image(systemName: "plus")
                 }
             }
-            .padding(.vertical, 12)
-            VStack(alignment: .leading, spacing: 4) {
-                Text("- 제 2회 리드컵 풋살 대회 | D-day 40")
-                Text("- 제 9회 펜타컵 풋살 대회 | D-day 35")
-                Text("- [일정을 등록하세요]")
+            .padding(.horizontal)
+
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(scheduleTexts.indices, id: \.self) { index in
+                    Text(scheduleTexts[index])
+                        .padding(.vertical, 12)
+                        .padding(.horizontal)
+
+                    if index != scheduleTexts.count - 1 {
+                        Divider()
+                    }
+                }
             }
-            .font(.subheadline)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.gray)
+            )
+            .padding(.horizontal)
         }
-        .padding(.horizontal)
+    }
+
+    private var scheduleTexts: [String] {
+        [
+            "- 제 2회 리드컵 풋살 대회 | D-day 40",
+            "- 제 9회 펜타컵 풋살 대회 | D-day 35",
+            "- [일정을 등록하세요]"
+        ]
+    }
+
+    private var thisWeekScheduleSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("이번주 일정")
+                    .font(.title2.bold())
+                Spacer()
+                Button(action: {}) {
+                    Image(systemName: "plus")
+                }
+            }
+            .padding(.horizontal)
+
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(sampleDiaryDay.entries.indices, id: \.self) { index in
+                    let entry = sampleDiaryDay.entries[index]
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("- \(entry.title) | \(entry.time)")
+                        Text("  장소: \(entry.place)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 12)
+                    .padding(.horizontal)
+
+                    if index != sampleDiaryDay.entries.count - 1 {
+                        Divider()
+                    }
+                }
+            }
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.gray)
+            )
+            .padding(.horizontal)
+        }
     }
 
     private var sampleDiaryDay: DiaryDay {
