@@ -21,7 +21,7 @@ struct ContentView: View {
                     Text("개인")
                 }
 
-            TeamManagementView()
+            TeamManagementView_hae()
                 .tabItem {
                     Image(systemName: "person.3.fill")
                     Text("팀")

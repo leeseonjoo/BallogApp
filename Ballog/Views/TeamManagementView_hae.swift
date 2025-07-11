@@ -13,21 +13,21 @@ private enum Layout {
 }
 
 // MARK: - TeamMember 모델 정의
-struct TeamMember: Identifiable {
+struct MyTeamMember: Identifiable {
     var id = UUID()
     var name: String
 }
 
 // MARK: - 메인 팀 관리 뷰
-struct TeamManagementView: View {
+struct TeamManagementView_hae: View {
     // 선택된 팀원 정보 (팝업용)
-    @State private var selectedMember: TeamMember? = nil
+    @State private var selectedMember: MyTeamMember? = nil
 
     // 팀원 리스트
     let teamMembers = [
-        TeamMember(name: "혜진"),
-        TeamMember(name: "규원"),
-        TeamMember(name: "진주")
+        MyTeamMember(name: "혜진"),
+        MyTeamMember(name: "규원"),
+        MyTeamMember(name: "진주")
     ]
     
     var body: some View {
@@ -144,7 +144,7 @@ struct TeamManagementView: View {
 
 
 // MARK: - 팝업: 팀원 캐릭터 카드
-struct TeamMemberCardView: View {
+struct MyTeamMemberCardView: View {
     let memberName: String
     
     var body: some View {

@@ -19,7 +19,7 @@ struct TeamMember: Identifiable {
 }
 
 // MARK: - 메인 팀 관리 뷰
-struct TeamManagementView: View {
+struct TeamManagementView_sis: View {
     // 선택된 팀원 정보 (팝업용)
     @State private var selectedMember: TeamMember? = nil
 
