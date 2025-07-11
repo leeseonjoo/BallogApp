@@ -14,49 +14,30 @@ struct TeamListView: View {
                 .font(.headline)
                 .padding(.top,100)
 
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.gray)
-                .frame(height: 100)
-                .overlay(
-                    HStack(spacing: 12) {
-                        Image(systemName: "soccerball")
-                            .resizable()
-                            .frame(width: 40, height: 40)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("해그래 FS")
-                                .fontWeight(.bold)
-                            Text("여자 아마추어 풋살팀")
-                            Text("No6")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+            NavigationLink(destination: TeamManagementView()) {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.gray)
+                    .frame(height: 80)
+                    .overlay(
+                        HStack(spacing: 12) {
+                            Image(systemName: "soccerball")
+                                .resizable()
+                                .frame(width: 40, height: 40)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("해그래 FS")
+                                    .fontWeight(.bold)
+                                Text("풋살팀")
+                                Text("플레이어 (플레이어-코치)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
                         }
-                        Spacer()
-                    }
-                    .padding()
-                )
-            
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.gray)
-                .frame(height: 100)
-                .overlay(
-                    HStack(spacing: 12) {
-                        Image("team.png")
-                            .resizable()
-                            .frame(width: 40, height: 40)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("시스터즈 FS")
-                                .fontWeight(.bold)
-                            Text("여자 아마추어 축구팀")
-                            Text("No47")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        Spacer()
-                    }
-                    .padding()
-                )
+                        .padding()
+                    )
+            }
+            .buttonStyle(.plain)
+
             Spacer()
         }
         .padding(Layout.padding)
