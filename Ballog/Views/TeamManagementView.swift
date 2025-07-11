@@ -135,15 +135,10 @@ struct TeamManagementView: View {
                     Spacer()
                 }
             }
-            .navigationTitle("팀 훈련")
-            .sheet(item: $selectedMember) { member in
-                TeamMemberCardView(memberName: member.name)
             }
         }
-        .background(Color.pageBackground)
-        .ignoresSafeArea()
     }
-}
+
 
 // MARK: - 팝업: 팀원 캐릭터 카드
 struct TeamMemberCardView: View {
