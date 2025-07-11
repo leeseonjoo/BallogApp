@@ -40,9 +40,12 @@ struct TeamManagementView: View {
                         Image(systemName: "soccerball")
                             .resizable()
                             .frame(width: 30, height: 30)
-                        Text("해그래 FS")
-                            .font(.title)
-                            .fontWeight(.bold)
+                        NavigationLink(destination: TeamListView()) {
+                            Text("해그래 FS")
+                                .font(.title)
+                                .fontWeight(.bold)
+                        }
+                        .buttonStyle(.plain)
                         Spacer()
                     }
                     .padding(.horizontal, Layout.padding)
