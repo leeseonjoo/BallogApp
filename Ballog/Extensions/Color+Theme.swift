@@ -8,5 +8,9 @@ extension Color {
         self.init(.sRGB, red: red, green: green, blue: blue, opacity: alpha)
     }
 
-    static let pageBackground = Color(hex: 0xFFF3E0)
+    // The default background color used across the application
+    // was previously a light beige tone. To comply with the request
+    // to make all pages use a white background, update the constant
+    // to plain `.white`.
+    static let pageBackground = Color.white
 }
