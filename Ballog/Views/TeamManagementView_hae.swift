@@ -22,6 +22,13 @@ struct MyTeamMember: Identifiable {
 struct TeamManagementView_hae: View {
     // 선택된 팀원 정보 (팝업용)
     @State private var selectedMember: MyTeamMember? = nil
+    @State private var selectedDate: Date? = nil
+    @State private var showLog = false
+    private var loggedDates: [Date] {
+        let cal = Calendar.current
+        return [DateComponents(calendar: cal, year: 2025, month: 7, day: 4).date!,
+                DateComponents(calendar: cal, year: 2025, month: 7, day: 12).date!]
+    }
 
     // 팀원 리스트
     let teamMembers = [
@@ -80,6 +87,15 @@ struct TeamManagementView_hae: View {
                             }
                         }
                         .padding(.horizontal, Layout.padding)
+                    }
+
+                    SimpleCalendarView(selectedDate: $selectedDate, loggedDates: loggedDates)
+                        .padding()
+                    NavigationLink("", isActive: $showLog) {
+                        TeamTrainingLogView()
+                    }
+                    .onChange(of: selectedDate) { _ in
+                        if selectedDate != nil { showLog = true }
                     }
                     
                     // 4. 훈련 일정
