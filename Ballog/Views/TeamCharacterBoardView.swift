@@ -88,5 +88,5 @@ struct TeamCharacterBoardView: View {
         TeamCharacter(name: "샘플1", imageName: "soccer-player", isOnline: true),
         TeamCharacter(name: "샘플2", imageName: "football-player-2", isOnline: false, pose: .victory),
         TeamCharacter(name: "샘플3", imageName: "football-player-3", isOnline: true)
-    ], backgroundImage: "summer")
+    ], backgroundImage: "rain")
 }
