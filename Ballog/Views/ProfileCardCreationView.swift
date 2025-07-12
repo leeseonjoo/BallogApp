@@ -12,7 +12,7 @@ struct ProfileCardCreationView: View {
 
     private let icons = [
         "fan", "football-player-2", "football-player-3", "goalkeeper",
-        "medal", "reading-1", "reading-2", "question", "soccer-player",
+        "medal", "reading", "reading-2", "question", "soccer-player",
         "reading-4"
     ]
 
