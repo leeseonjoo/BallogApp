@@ -173,7 +173,7 @@ struct MainHomeView: View {
             entries: [
                 DiaryEntry(
                     color: .green,
-                    time: "12:00 - 12:12",
+                    time: "20:00 - 22:00",
                     title: "해그래 운동",
                     place: "서수원풋살장"
                 )
