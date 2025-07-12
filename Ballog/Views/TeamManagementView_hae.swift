@@ -33,12 +33,18 @@ struct TrainingLogWrapper: Identifiable {
     let log: TrainingLog
 }
 
+struct SelectedTeamLog: Identifiable {
+    let day: Date
+    let log: TeamTrainingLog
+    var id: TeamTrainingLog.ID { log.id }
+}
+
 // MARK: - 메인 팀 관리 뷰
 struct TeamManagementView_hae: View {
     // 선택된 팀원 정보 (팝업용)
     @State private var selectedMember: MyTeamMember? = nil
     @State private var selectedDate: Date? = nil
-    @State private var selectedLog: (Date, TeamTrainingLog)? = nil
+    @State private var selectedLog: SelectedTeamLog? = nil
     @State private var showLog = false
     @State private var showOptions = false
     @State private var showAttendance = false
@@ -97,7 +103,7 @@ struct TeamManagementView_hae: View {
                     }
                     TrainingScheduleSection(dates: tuesdayDates, formatter: dateFormatter)
                     TrainingLogsSection(logs: sortedLogs) { day, log in
-                        selectedLog = (day, log)
+                        selectedLog = SelectedTeamLog(day: day, log: log)
                     }
                     WriteLogButton { showLog = true }
                     TeamMembersSection(members: teamMembers) { member in
@@ -108,7 +114,7 @@ struct TeamManagementView_hae: View {
             }
         }
         .sheet(item: $selectedLog) { data in
-            TrainingLogDetailView(day: data.0, log: data.1)
+            TrainingLogDetailView(day: data.day, log: data.log)
         }
         .sheet(item: $selectedMember) { member in
             MyTeamMemberCardView(memberName: member.name)
