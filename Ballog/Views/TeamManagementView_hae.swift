@@ -98,7 +98,7 @@ struct TeamManagementView_hae: View {
                     
                     // 4. 훈련 일정
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("📅 팀 훈련 일정")
+                        Text("팀 정기 훈련 일정")
                             .font(.headline)
                         ForEach(0..<4) { index in
                             HStack {
