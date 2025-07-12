@@ -47,10 +47,7 @@ struct MainHomeView: View {
                 scheduleSection
                 thisWeekScheduleSection // 추가된 부분
                 if let card = card {
-                    Image(card.iconName)
-                        .resizable()
-                        .frame(width: 80, height: 80)
-                        .padding(Layout.padding)
+                    ProfileCardView(card: card, showIcon: false, showRecordButton: true)
                 }
 
                 Spacer()
