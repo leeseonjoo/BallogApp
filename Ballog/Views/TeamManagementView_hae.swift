@@ -102,9 +102,9 @@ struct TeamManagementView_hae: View {
                             .font(.headline)
                         ForEach(0..<4) { index in
                             HStack {
-                                Text("7월 \(20 + index)일 (일)")
+                                Text("7/ \(20 + index)")
                                 Spacer()
-                                Text("풋살장 A")
+                                Text("누누 풋살장")
                                 Spacer()
                                 Button("✅ 참석") {
                                     // 참석 처리
