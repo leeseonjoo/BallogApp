@@ -18,6 +18,20 @@ struct MyTeamMember: Identifiable {
     var id = UUID()
     var name: String
 }
+// MARK: - 모델 구조 추가
+
+struct TrainingLog: Identifiable {
+    let id = UUID()
+    let title: String
+    let memo: String
+    let duration: Int
+}
+
+struct TrainingLogWrapper: Identifiable {
+    let id = UUID()
+    let day: Date
+    let log: TrainingLog
+}
 
 // MARK: - 메인 팀 관리 뷰
 struct TeamManagementView_hae: View {
