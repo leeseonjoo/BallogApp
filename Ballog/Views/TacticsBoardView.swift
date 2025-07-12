@@ -111,7 +111,7 @@ struct TacticsBoardView: View {
                     }
                 }
                 .frame(width: geo.size.width, height: geo.size.width)
-                .onDrop(of: [UTType.plainText], isTargeted: nil) { providers, location in
+                .onDrop(of: [UTType.text], isTargeted: nil) { providers, location in
                     dropPlayer(from: providers, at: location)
                 }
             }
@@ -179,9 +179,9 @@ struct TacticsBoardView: View {
 
     private func dropPlayer(from providers: [NSItemProvider], at location: CGPoint) -> Bool {
         for provider in providers {
-            if provider.canLoadObject(ofClass: String.self) {
-                _ = provider.loadObject(ofClass: String.self) { team, _ in
-                    if let team = team {
+            if provider.canLoadObject(ofClass: NSString.self) {
+                _ = provider.loadObject(ofClass: NSString.self) { teamObj, _ in
+                    if let team = teamObj as String? {
                         DispatchQueue.main.async {
                             addPlayer(team: team, at: location)
                         }
