@@ -54,9 +54,14 @@ struct MainHomeView: View {
 
     private var topBar: some View {
         HStack(spacing: 16) {
-            Text("볼로그")
-                .font(.title2.bold())
-                .padding(.leading)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("볼로그")
+                    .font(.title2.bold())
+                Text(todayString)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.leading)
 
             Spacer()
 
@@ -85,10 +90,6 @@ struct MainHomeView: View {
                 .font(.subheadline)
                 .multilineTextAlignment(.center)
                 .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.blue)
-                }
             NavigationLink("수정") { ProfileView() }
                 .font(.caption)
         }
@@ -118,10 +119,6 @@ struct MainHomeView: View {
                     }
                 }
             }
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.gray)
-            )
             .padding(.horizontal)
         }
     }
@@ -164,10 +161,6 @@ struct MainHomeView: View {
                     }
                 }
             }
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.gray)
-            )
             .padding(.horizontal)
         }
     }
@@ -219,9 +212,5 @@ struct DiaryDayView: View {
             }
         }
         .padding(Layout.padding)
-        .background {
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.gray)
-        }
     }
 }

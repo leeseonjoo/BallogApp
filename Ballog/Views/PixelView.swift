@@ -18,7 +18,6 @@ struct PixelView: View {
                         Rectangle()
                             .fill(pixelColors[row][column] == Color.clear ? Color.white : pixelColors[row][column])
                             .frame(width: 16, height: 16)
-                            .overlay(Rectangle().stroke(Color.black, lineWidth: 0.5))
                     }
                 }
             }
