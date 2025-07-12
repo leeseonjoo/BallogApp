@@ -141,7 +141,7 @@ struct TeamManagementView_hae: View {
     private struct TeamHeaderView: View {
         var body: some View {
             HStack {
-                Image(systemName: "soccerball")
+                Image("pitch")
                     .resizable()
                     .frame(width: 30, height: 30)
                 NavigationLink(destination: TeamListView()) {

@@ -61,7 +61,7 @@ struct TeamManagementView_sis: View {
                     
                     // 1. 팀명 + 로고
                     HStack {
-                        Image(systemName: "soccerball")
+                        Image("pitch")
                             .resizable()
                             .frame(width: 30, height: 30)
                         NavigationLink(destination: TeamListView()) {
