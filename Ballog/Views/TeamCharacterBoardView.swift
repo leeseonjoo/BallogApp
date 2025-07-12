@@ -28,7 +28,6 @@ struct TeamCharacterBoardView: View {
     let members: [TeamCharacter]
     var onSelect: (TeamCharacter) -> Void = { _ in }
     var backgroundImage: String?
-    @State private var showField = false
 
     private var columns: [GridItem] {
         let count = members.count <= 3 ? members.count : 4
@@ -37,8 +36,6 @@ struct TeamCharacterBoardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Toggle("축구장 배경", isOn: $showField)
-                .padding(.horizontal, Layout.padding)
             ZStack {
                 if let bg = backgroundImage {
                     Image(bg)
@@ -48,7 +45,7 @@ struct TeamCharacterBoardView: View {
                         .clipped()
                 }
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(showField ? Color.green.opacity(0.2) : Color(UIColor.systemGray6))
+                    .fill(Color(UIColor.systemGray6).opacity(0.2))
                 LazyVGrid(columns: columns, spacing: 16) {
                     ForEach(members) { member in
                         VStack(spacing: 4) {
