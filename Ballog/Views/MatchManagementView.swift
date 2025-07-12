@@ -8,8 +8,7 @@ struct MatchManagementView: View {
         VStack {
             TeamCalendarView()
             if !attendanceStore.results.isEmpty {
-                List(attendanceStore.results.sorted(by: { $0.key < $1.key }), id: \.
-key) { date, result in
+                List(attendanceStore.results.sorted(by: { $0.key < $1.key }), id: \.key) { date, result in
                     Text(date, style: .date) + Text(result ? " 참석" : " 불참")
                 }
             }

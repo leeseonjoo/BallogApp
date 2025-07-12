@@ -12,8 +12,7 @@ struct TeamPageView: View {
     var body: some View {
         VStack {
             Picker("TeamTab", selection: $selection) {
-                ForEach(TeamTab.allCases, id: \.
-self) { Text($0.rawValue).tag($0) }
+                ForEach(TeamTab.allCases, id: \.self) { Text($0.rawValue).tag($0) }
             }
             .pickerStyle(.segmented)
             .padding()
