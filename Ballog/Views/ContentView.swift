@@ -46,4 +46,6 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(AttendanceStore())
+        .environmentObject(TeamTrainingLogStore())
 }

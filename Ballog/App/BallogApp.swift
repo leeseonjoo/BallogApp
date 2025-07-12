@@ -24,6 +24,7 @@ struct BallogApp: App {
     }()
 
     @StateObject private var attendanceStore = AttendanceStore()
+    @StateObject private var logStore = TeamTrainingLogStore()
     @AppStorage("profileCard") private var storedCard: String = ""
     @State private var showProfileCreator = false
 
@@ -31,6 +32,7 @@ struct BallogApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(attendanceStore)
+                .environmentObject(logStore)
                 .sheet(isPresented: $showProfileCreator) {
                     ProfileCardCreationView()
                 }
