@@ -24,6 +24,9 @@ struct TeamManagementView_hae: View {
     @State private var selectedMember: MyTeamMember? = nil
     @State private var selectedDate: Date? = nil
     @State private var showLog = false
+    @State private var showOptions = false
+    @State private var showAttendance = false
+    @EnvironmentObject private var attendanceStore: AttendanceStore
     private var loggedDates: [Date] {
         let cal = Calendar.current
         return [DateComponents(calendar: cal, year: 2025, month: 7, day: 4).date!,
@@ -89,13 +92,27 @@ struct TeamManagementView_hae: View {
                         .padding(.horizontal, Layout.padding)
                     }
 
-                    SimpleCalendarView(selectedDate: $selectedDate, loggedDates: loggedDates)
+                    InteractiveCalendarView(selectedDate: $selectedDate, attendance: $attendanceStore.results)
                         .padding()
+                        .onChange(of: selectedDate) { _ in showOptions = selectedDate != nil }
+                        .confirmationDialog("선택", isPresented: $showOptions, titleVisibility: .visible) {
+                            Button("매치 참석 가능 여부") { showAttendance = true }
+                            Button("훈련일지 작성") { showLog = true }
+                            Button("취소", role: .cancel) { selectedDate = nil }
+                        }
+                        .confirmationDialog("참석 여부", isPresented: $showAttendance, titleVisibility: .visible) {
+                            Button("참석") {
+                                if let date = selectedDate { attendanceStore.set(true, for: date) }
+                                selectedDate = nil
+                            }
+                            Button("불참", role: .destructive) {
+                                if let date = selectedDate { attendanceStore.set(false, for: date) }
+                                selectedDate = nil
+                            }
+                            Button("취소", role: .cancel) { selectedDate = nil }
+                        }
                     NavigationLink("", isActive: $showLog) {
                         TeamTrainingLogView()
-                    }
-                    .onChange(of: selectedDate) { _ in
-                        if selectedDate != nil { showLog = true }
                     }
                     
                     // 4. 훈련 일정

@@ -13,9 +13,19 @@ private enum Layout {
 }
 
 struct PersonalTrainingView: View {
+    @AppStorage("profileCard") private var storedCard: String = ""
+
+    private var card: ProfileCard? {
+        guard let data = storedCard.data(using: .utf8) else { return nil }
+        return try? JSONDecoder().decode(ProfileCard.self, from: data)
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: Layout.spacing) {
+                if let card = card {
+                    ProfileCardView(card: card)
+                }
                 // 상단 달력 헤더
                 HStack {
                     Text("2025년 7월")
@@ -92,7 +102,7 @@ struct PersonalTrainingView: View {
 
                 Spacer()
             }
-            .navigationTitle("개인 훈련")
+            .navigationTitle("")
         }
         .background(Color.pageBackground)
         .ignoresSafeArea()
