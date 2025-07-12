@@ -44,28 +44,28 @@ struct TeamManagementView_hae: View {
     @State private var showAttendance = false
     @EnvironmentObject private var attendanceStore: AttendanceStore
     @EnvironmentObject private var logStore: TeamTrainingLogStore
-
+    
     private var tuesdayDates: [Date] {
         let calendar = Calendar.current
         guard let first = calendar.nextDate(after: Date(), matching: DateComponents(weekday: 3), matchingPolicy: .nextTime) else { return [] }
         return (0..<4).compactMap { calendar.date(byAdding: .day, value: 7 * $0, to: first) }
     }
-
+    
     private var dateFormatter: DateFormatter {
         let f = DateFormatter()
         f.locale = Locale(identifier: "ko_KR")
         f.dateFormat = "M월 d일 (E)"
         return f
     }
-
+    
     @AppStorage("profileCard") private var storedCard: String = ""
-
+    
     private var userName: String {
         guard let data = storedCard.data(using: .utf8),
               let card = try? JSONDecoder().decode(ProfileCard.self, from: data) else { return "사용자" }
         return card.nickname
     }
-
+    
     private var teamMembers: [MyTeamMember] {
         [
             MyTeamMember(name: "혜진"),
@@ -74,12 +74,12 @@ struct TeamManagementView_hae: View {
             MyTeamMember(name: userName)
         ]
     }
-
+    
     private var sortedLogs: [(Date, TeamTrainingLog)] {
         logStore.logs.flatMap { day, logs in logs.map { (day, $0) } }
             .sorted { $0.0 > $1.0 }
     }
-
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -114,9 +114,9 @@ struct TeamManagementView_hae: View {
             MyTeamMemberCardView(memberName: member.name)
         }
     }
-
+    
     // MARK: - Subviews
-
+    
     private struct TeamHeaderView: View {
         var body: some View {
             HStack {
@@ -134,7 +134,7 @@ struct TeamManagementView_hae: View {
             .padding(.horizontal, Layout.padding)
         }
     }
-
+    
     private struct TeamQuoteView: View {
         var body: some View {
             HStack {
@@ -148,14 +148,14 @@ struct TeamManagementView_hae: View {
             .padding(.horizontal, Layout.padding)
         }
     }
-
+    
     private struct CalendarSection: View {
         @Binding var selectedDate: Date?
         @Binding var showLog: Bool
         @Binding var showOptions: Bool
         @Binding var showAttendance: Bool
         @EnvironmentObject private var attendanceStore: AttendanceStore
-
+        
         var body: some View {
             InteractiveCalendarView(selectedDate: $selectedDate, attendance: $attendanceStore.results)
                 .padding()
@@ -178,11 +178,11 @@ struct TeamManagementView_hae: View {
                 }
         }
     }
-
+    
     private struct TrainingScheduleSection: View {
         let dates: [Date]
         let formatter: DateFormatter
-
+        
         var body: some View {
             VStack(alignment: .leading, spacing: 12) {
                 Text("팀 정기 훈련 일정")
@@ -201,11 +201,11 @@ struct TeamManagementView_hae: View {
             .padding(.horizontal, Layout.padding)
         }
     }
-
+    
     private struct TrainingLogsSection: View {
         let logs: [(Date, TeamTrainingLog)]
         var onSelect: (Date, TeamTrainingLog) -> Void
-
+        
         var body: some View {
             VStack(alignment: .leading, spacing: 12) {
                 Text("📋 최근 팀 훈련 일지")
@@ -228,10 +228,10 @@ struct TeamManagementView_hae: View {
             .padding(.horizontal, Layout.padding)
         }
     }
-
+    
     private struct WriteLogButton: View {
         let action: () -> Void
-
+        
         var body: some View {
             Button(action: action) {
                 Text("✏️ 팀 훈련일지 작성")
@@ -243,11 +243,11 @@ struct TeamManagementView_hae: View {
             .padding(.horizontal, Layout.padding)
         }
     }
-
+    
     private struct TeamMembersSection: View {
         let members: [MyTeamMember]
         var onSelect: (MyTeamMember) -> Void
-
+        
         var body: some View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 24) {
@@ -266,24 +266,25 @@ struct TeamManagementView_hae: View {
             }
         }
     }
-
-
-// MARK: - 팝업: 팀원 캐릭터 카드
-struct MyTeamMemberCardView: View {
-    let memberName: String
     
-    var body: some View {
-        VStack(spacing: Layout.spacing) {
-            Text("⚽️ \(memberName)의 캐릭터 카드")
-                .font(.title2)
-                .padding()
-            Image(systemName: "person.crop.square")
-                .resizable()
-                .frame(width: 100, height: 100)
-                .padding(.bottom, 8)
-            Text("최근 훈련 4회 참석\n드리블 기술 향상 중")
-                .multilineTextAlignment(.center)
-                .padding()
+    
+    // MARK: - 팝업: 팀원 캐릭터 카드
+    struct MyTeamMemberCardView: View {
+        let memberName: String
+        
+        var body: some View {
+            VStack(spacing: Layout.spacing) {
+                Text("⚽️ \(memberName)의 캐릭터 카드")
+                    .font(.title2)
+                    .padding()
+                Image(systemName: "person.crop.square")
+                    .resizable()
+                    .frame(width: 100, height: 100)
+                    .padding(.bottom, 8)
+                Text("최근 훈련 4회 참석\n드리블 기술 향상 중")
+                    .multilineTextAlignment(.center)
+                    .padding()
+            }
         }
     }
 }
