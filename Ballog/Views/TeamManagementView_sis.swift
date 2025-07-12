@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 private enum Layout {
     static let spacing = DesignConstants.spacing
@@ -23,12 +24,35 @@ struct TeamManagementView_sis: View {
     // 선택된 팀원 정보 (팝업용)
     @State private var selectedMember: TeamMember? = nil
 
-    // 팀원 리스트
-    let teamMembers = [
-        TeamMember(name: "혜진"),
-        TeamMember(name: "영경"),
-        TeamMember(name: "희진")
-    ]
+    @AppStorage("profileCard") private var storedCard: String = ""
+
+    private var userName: String {
+        guard let data = storedCard.data(using: .utf8),
+              let card = try? JSONDecoder().decode(ProfileCard.self, from: data) else { return "사용자" }
+        return card.nickname
+    }
+
+    private var teamMembers: [TeamMember] {
+        [
+            TeamMember(name: "혜진"),
+            TeamMember(name: "영경"),
+            TeamMember(name: "희진"),
+            TeamMember(name: userName)
+        ]
+    }
+
+    private var tuesdayDates: [Date] {
+        let calendar = Calendar.current
+        guard let first = calendar.nextDate(after: Date(), matching: DateComponents(weekday: 3), matchingPolicy: .nextTime) else { return [] }
+        return (0..<4).compactMap { calendar.date(byAdding: .day, value: 7 * $0, to: first) }
+    }
+
+    private var dateFormatter: DateFormatter {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "ko_KR")
+        f.dateFormat = "M월 d일 (E)"
+        return f
+    }
     
     var body: some View {
         NavigationStack {
@@ -86,11 +110,11 @@ struct TeamManagementView_sis: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("📅 팀 훈련 일정")
                             .font(.headline)
-                        ForEach(0..<4) { index in
+                        ForEach(tuesdayDates, id: \..self) { date in
                             HStack {
-                                Text("7월 \(20 + index)일 (일)")
+                                Text(dateFormatter.string(from: date))
                                 Spacer()
-                                Text("풋살장 A")
+                                Text("누누 풋살장")
                                 Spacer()
                                 Button("✅ 참석") {
                                     // 참석 처리

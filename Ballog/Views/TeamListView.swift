@@ -7,6 +7,7 @@ private enum Layout {
 
 struct TeamListView: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var showAction = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: Layout.spacing) {
@@ -66,11 +67,14 @@ struct TeamListView: View {
             .navigationTitle("팀 리스트")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {}) {
+                    Button(action: { showAction = true }) {
                         Image(systemName: "plus")
                     }
                 }
             }
+            .background(
+                NavigationLink(destination: TeamActionSelectionView(), isActive: $showAction) { EmptyView() }
+            )
             .background(Color.pageBackground)
             .ignoresSafeArea()
         }
