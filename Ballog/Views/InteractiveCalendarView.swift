@@ -3,17 +3,27 @@ import SwiftUI
 struct InteractiveCalendarView: View {
     @Binding var selectedDate: Date?
     @Binding var attendance: [Date: Bool]
+    var title: String = "팀 캘린더"
+    @State private var showFullMonth = false
+
     var body: some View {
         VStack(alignment: .leading) {
-            Text("팀 캘린더")
-                .font(.headline)
+            HStack {
+                Text(title)
+                    .font(.headline)
+                Spacer()
+                Button(showFullMonth ? "닫기" : "전체달력보기") {
+                    showFullMonth.toggle()
+                }
+                .font(.caption)
+            }
             DaysOfWeekHeader()
-            CalendarGrid(selectedDate: $selectedDate, attendance: $attendance)
+            CalendarGrid(selectedDate: $selectedDate, attendance: $attendance, showFullMonth: showFullMonth)
         }
     }
 }
 
-private struct DaysOfWeekHeader: View {
+struct DaysOfWeekHeader: View {
     private let days = ["일", "월", "화", "수", "목", "금", "토"]
 
     var body: some View {
@@ -27,20 +37,26 @@ private struct DaysOfWeekHeader: View {
     }
 }
 
-private struct CalendarGrid: View {
+struct CalendarGrid: View {
     @Binding var selectedDate: Date?
     @Binding var attendance: [Date: Bool]
+    var showFullMonth: Bool
     private let calendar = Calendar.current
     private var monthDays: [Date] {
         let start = calendar.date(from: calendar.dateComponents([.year, .month], from: Date()))!
         let range = calendar.range(of: .day, in: .month, for: start)!
         return range.compactMap { calendar.date(byAdding: .day, value: $0 - 1, to: start) }
     }
+    private var weekDays: [Date] {
+        let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: Date())!.start
+        return (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: startOfWeek) }
+    }
+    private var days: [Date] { showFullMonth ? monthDays : weekDays }
 
     var body: some View {
         let columns = Array(repeating: GridItem(.flexible()), count: 7)
         LazyVGrid(columns: columns, spacing: 8) {
-            ForEach(monthDays, id: \.self) { date in
+            ForEach(days, id: \.self) { date in
                 let day = calendar.component(.day, from: date)
                 VStack(spacing: 2) {
                     Text("\(day)")

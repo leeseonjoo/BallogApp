@@ -73,25 +73,6 @@ struct TeamManagementView_hae: View {
                     
                     Divider()
                     
-                    // 3. 팀원 캐릭터
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 24) {
-                            ForEach(teamMembers) { member in
-                                VStack {
-                                    Image(systemName: "person.fill")
-                                        .resizable()
-                                        .frame(width: 50, height: 50)
-                                        .foregroundColor(.blue)
-                                    Text(member.name)
-                                }
-                                .onTapGesture {
-                                    selectedMember = member
-                                }
-                            }
-                        }
-                        .padding(.horizontal, Layout.padding)
-                    }
-
                     InteractiveCalendarView(selectedDate: $selectedDate, attendance: $attendanceStore.results)
                         .padding()
                         .onChange(of: selectedDate) { _ in showOptions = selectedDate != nil }
@@ -167,7 +148,26 @@ struct TeamManagementView_hae: View {
                             .cornerRadius(10)
                     }
                     .padding(.horizontal, Layout.padding)
-                    
+
+                    // 팀원 캐릭터
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 24) {
+                            ForEach(teamMembers) { member in
+                                VStack {
+                                    Image(systemName: "person.fill")
+                                        .resizable()
+                                        .frame(width: 50, height: 50)
+                                        .foregroundColor(.blue)
+                                    Text(member.name)
+                                }
+                                .onTapGesture {
+                                    selectedMember = member
+                                }
+                            }
+                        }
+                        .padding(.horizontal, Layout.padding)
+                    }
+
                     Spacer()
                 }
             }
