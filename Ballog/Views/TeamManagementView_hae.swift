@@ -28,6 +28,7 @@ struct TeamManagementView_hae: View {
     @State private var showOptions = false
     @State private var showAttendance = false
     @EnvironmentObject private var attendanceStore: AttendanceStore
+    @EnvironmentObject private var logStore: TeamTrainingLogStore
     private var loggedDates: [Date] {
         let cal = Calendar.current
         return [DateComponents(calendar: cal, year: 2025, month: 7, day: 4).date!,
@@ -62,6 +63,11 @@ struct TeamManagementView_hae: View {
             MyTeamMember(name: "진주"),
             MyTeamMember(name: userName)
         ]
+    }
+
+    private var sortedLogs: [(Date, TeamTrainingLog)] {
+        logStore.logs.flatMap { day, logs in logs.map { (day, $0) } }
+            .sorted { $0.0 > $1.0 }
     }
     
     var body: some View {
@@ -118,6 +124,7 @@ struct TeamManagementView_hae: View {
                         }
                     NavigationLink("", isActive: $showLog) {
                         TeamTrainingLogView()
+                            .environmentObject(logStore)
                     }
                     
                     // 4. 훈련 일정
@@ -144,11 +151,11 @@ struct TeamManagementView_hae: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("📋 최근 팀 훈련 일지")
                             .font(.headline)
-                        ForEach(1..<6) { idx in
+                        ForEach(sortedLogs, id: \.1.id) { day, log in
                             HStack {
-                                Text("7월 \(14 + idx)일 • 전술 훈련")
+                                Text(dateFormatter.string(from: day))
                                 Spacer()
-                                Text("작성 완료")
+                                Text(log.summary)
                                     .font(.caption)
                                     .foregroundColor(.green)
                             }
@@ -164,7 +171,7 @@ struct TeamManagementView_hae: View {
                     
                     // 6. 작성 버튼
                     Button(action: {
-                        // 훈련일지 작성 페이지로 이동
+                        showLog = true
                     }) {
                         Text("✏️ 팀 훈련일지 작성")
                             .padding()

@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct TeamTrainingLogView: View {
+    @EnvironmentObject private var logStore: TeamTrainingLogStore
+    @Environment(\.dismiss) private var dismiss
     @State private var date = Date()
     @State private var time = ""
     @State private var location = ""
@@ -30,9 +32,17 @@ struct TeamTrainingLogView: View {
             }
         }
         .navigationTitle("팀 훈련일지")
+        .toolbar {
+            Button("저장") {
+                let log = TeamTrainingLog(date: date, tactic: tactic, skill: skill, notes: notes)
+                logStore.add(log)
+                dismiss()
+            }
+        }
     }
 }
 
 #Preview {
     NavigationStack { TeamTrainingLogView() }
+        .environmentObject(TeamTrainingLogStore())
 }

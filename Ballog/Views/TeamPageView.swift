@@ -30,6 +30,8 @@ struct TeamPageView: View {
 }
 
 #Preview {
-    TeamPageView().environmentObject(AttendanceStore())
+    TeamPageView()
+        .environmentObject(AttendanceStore())
+        .environmentObject(TeamTrainingLogStore())
 }
 
