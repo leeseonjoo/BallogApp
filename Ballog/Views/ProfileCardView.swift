@@ -3,12 +3,14 @@ import SwiftUI
 struct ProfileCardView: View {
     let card: ProfileCard
     var showIcon: Bool = true
+    /// When `true`, displays the icon on the trailing side of the card.
+    var iconOnRight: Bool = false
     var showRecordButton: Bool = false
 
     var body: some View {
         VStack(spacing: 8) {
             HStack(alignment: .top) {
-                if showIcon {
+                if showIcon && !iconOnRight {
                     Image(card.iconName)
                         .resizable()
                         .frame(width: 80, height: 80)
@@ -22,6 +24,11 @@ struct ProfileCardView: View {
                     Text("선출 여부: \(card.athleteLevel)")
                 }
                 Spacer()
+                if showIcon && iconOnRight {
+                    Image(card.iconName)
+                        .resizable()
+                        .frame(width: 80, height: 80)
+                }
             }
 
             if showRecordButton {
