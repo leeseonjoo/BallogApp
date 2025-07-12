@@ -23,9 +23,6 @@ struct PersonalTrainingView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: Layout.spacing) {
-                if let card = card {
-                    ProfileCardView(card: card)
-                }
                 // 상단 달력 헤더
                 HStack {
                     Text("2025년 7월")
