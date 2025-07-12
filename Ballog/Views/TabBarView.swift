@@ -23,7 +23,7 @@ struct TabBarView: View {
             Spacer()
         }
         .padding(.vertical, 12)
-        .background(Color.pageBackground)
+        .background(Color.blue)
         .ignoresSafeArea()
     }
 }

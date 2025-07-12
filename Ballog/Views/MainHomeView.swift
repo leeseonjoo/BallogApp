@@ -70,7 +70,7 @@ struct MainHomeView: View {
                     .resizable()
                     .frame(width: 28, height: 28)
             }
-            Button(action: {}) {
+            NavigationLink(destination: NotificationView()) {
                 Image(systemName: "bell")
                     .resizable()
                     .frame(width: 24, height: 24)
@@ -90,8 +90,6 @@ struct MainHomeView: View {
                 .font(.subheadline)
                 .multilineTextAlignment(.center)
                 .padding()
-            NavigationLink("수정") { ProfileView() }
-                .font(.caption)
         }
         .padding(.horizontal)
     }
