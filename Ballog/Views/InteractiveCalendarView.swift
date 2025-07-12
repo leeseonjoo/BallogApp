@@ -7,7 +7,22 @@ struct InteractiveCalendarView: View {
         VStack(alignment: .leading) {
             Text("팀 캘린더")
                 .font(.headline)
+            DaysOfWeekHeader()
             CalendarGrid(selectedDate: $selectedDate, attendance: $attendance)
+        }
+    }
+}
+
+private struct DaysOfWeekHeader: View {
+    private let days = ["일", "월", "화", "수", "목", "금", "토"]
+
+    var body: some View {
+        let columns = Array(repeating: GridItem(.flexible()), count: 7)
+        LazyVGrid(columns: columns) {
+            ForEach(days, id: \.self) { day in
+                Text(day)
+                    .frame(maxWidth: .infinity)
+            }
         }
     }
 }
@@ -30,6 +45,7 @@ private struct CalendarGrid: View {
                 VStack(spacing: 2) {
                     Text("\(day)")
                         .frame(maxWidth: .infinity)
+                    Spacer(minLength: 16)
                     if calendar.component(.weekday, from: date) == 3 {
                         Text("정기 훈련")
                             .font(.caption2)
@@ -43,6 +59,7 @@ private struct CalendarGrid: View {
                         }
                     }
                 }
+                .frame(minHeight: 60)
                 .onTapGesture { selectedDate = date }
             }
         }
