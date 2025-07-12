@@ -50,6 +50,7 @@ struct TeamManagementView_hae: View {
     @State private var showAttendance = false
     @EnvironmentObject private var attendanceStore: AttendanceStore
     @EnvironmentObject private var logStore: TeamTrainingLogStore
+    @State private var trainingWeather: WeatherCondition = .clear
     
     private var tuesdayDates: [Date] {
         let calendar = Calendar.current
@@ -85,6 +86,15 @@ struct TeamManagementView_hae: View {
         logStore.logs.flatMap { day, logs in logs.map { (day, $0) } }
             .sorted { $0.0 > $1.0 }
     }
+
+    private var backgroundImage: String? {
+        let month = Calendar.current.component(.month, from: Date())
+        var name: String? = (6...8).contains(month) ? "summer" : nil
+        if let weatherName = trainingWeather.imageName {
+            name = weatherName
+        }
+        return name
+    }
     
     var body: some View {
         NavigationStack {
@@ -92,7 +102,7 @@ struct TeamManagementView_hae: View {
                 VStack(spacing: Layout.spacing) {
                     TeamHeaderView()
                     TeamQuoteView()
-                    TeamCharacterBoardView(members: teamMembers) { member in
+                    TeamCharacterBoardView(members: teamMembers, backgroundImage: backgroundImage) { member in
                         selectedMember = member
                     }
                     Divider()
@@ -111,6 +121,11 @@ struct TeamManagementView_hae: View {
                     WriteLogButton { showLog = true }
                     Spacer()
                 }
+            }
+        }
+        .onAppear {
+            if let next = tuesdayDates.first {
+                trainingWeather = WeatherService.weather(for: next)
             }
         }
         .sheet(item: $selectedLog) { data in
@@ -194,8 +209,14 @@ struct TeamManagementView_hae: View {
                 Text("팀 정기 훈련 일정")
                     .font(.headline)
                 ForEach(dates, id: \.self) { date in
+                    let weather = WeatherService.weather(for: date)
                     HStack {
                         Text(formatter.string(from: date))
+                        if let img = weather.imageName {
+                            Image(img)
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                        }
                         Spacer()
                         Text("누누 풋살장")
                         Spacer()
