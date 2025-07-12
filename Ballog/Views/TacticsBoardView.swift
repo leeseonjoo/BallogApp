@@ -70,6 +70,7 @@ struct TacticsBoardView: View {
     @State private var tempLine: TacticLine?
 
     @State private var selectedPlayerIndex: Int?
+    @State private var isDraggingPlayer = false
 
     private let paletteTeams: [(String, Color)] = [
         ("A", .red),
@@ -93,7 +94,7 @@ struct TacticsBoardView: View {
                         }
                         if let line = tempLine { draw(line: line, in: &context) }
                     }
-                    .gesture(drawingGesture)
+                    .simultaneousGesture(drawingGesture)
 
                     ForEach(players.indices, id: \.self) { index in
                         let binding = $players[index]
@@ -102,7 +103,11 @@ struct TacticsBoardView: View {
                             .gesture(
                                 DragGesture()
                                     .onChanged { value in
+                                        isDraggingPlayer = true
                                         binding.position.wrappedValue = value.location.data
+                                    }
+                                    .onEnded { _ in
+                                        isDraggingPlayer = false
                                     }
                             )
                             .onTapGesture {
@@ -116,8 +121,8 @@ struct TacticsBoardView: View {
                 }
             }
             controls
-        }
-        .onAppear { loadState() }
+        } 
+        .onAppear { reset() }
     }
 
     private var controls: some View {
@@ -159,7 +164,7 @@ struct TacticsBoardView: View {
     private var drawingGesture: some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
-                guard drawMode != .none else { return }
+                guard drawMode != .none && !isDraggingPlayer else { return }
                 if tempLine == nil {
                     tempLine = TacticLine(start: value.location.data, end: value.location.data, color: selectedLineColor.data, dashed: drawMode == .move)
                 } else {
@@ -167,7 +172,7 @@ struct TacticsBoardView: View {
                 }
             }
             .onEnded { value in
-                guard drawMode != .none else { tempLine = nil; return }
+                guard drawMode != .none && !isDraggingPlayer else { tempLine = nil; return }
                 if var line = tempLine {
                     line.end = value.location.data
                     lines.append(line)
@@ -206,6 +211,7 @@ struct TacticsBoardView: View {
         lines.removeAll()
         undoneLines.removeAll()
         players = Self.defaultPlayers
+        UserDefaults.standard.removeObject(forKey: storageKey)
     }
 
     private func saveState() {
