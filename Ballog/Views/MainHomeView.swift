@@ -103,7 +103,7 @@ struct MainHomeView: View {
     private var scheduleSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("캘린더")
+                Text("대회 일정")
                     .font(.title2.bold())
                 Spacer()
                 Button(action: {}) {
@@ -130,9 +130,7 @@ struct MainHomeView: View {
     private var scheduleTexts: [String] {
         [
             "- 제 2회 리드컵 풋살 대회 | D-day 40",
-            "- 제 9회 펜타컵 풋살 대회 | D-day 35",
-            "- [일정을 등록하세요]"
-        ]
+            "- 제 9회 펜타컵 풋살 대회 | D-day 35"        ]
     }
 
     private var thisWeekScheduleSection: some View {
