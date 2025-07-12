@@ -23,6 +23,10 @@ struct TeamTrainingLogView: View {
             }
             TextField("같이 훈련한 팀원 초대", text: $invited)
             TextField("팀 전술 훈련내용", text: $tactic)
+            Section(header: Text("전술 보드")) {
+                TacticsBoardView()
+                    .frame(maxWidth: .infinity, minHeight: 300, maxHeight: 300)
+            }
             Picker("기술 훈련", selection: $skill) {
                 ForEach(skills, id: \.self) { Text($0) }
             }
