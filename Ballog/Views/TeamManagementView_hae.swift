@@ -14,13 +14,10 @@ private enum Layout {
 }
 
 // MARK: - TeamMember 모델 정의
-struct MyTeamMember: Identifiable {
-    var id = UUID()
-    var name: String
-    var imageName: String = "soccer-player"
-    var isOnline: Bool = false
-    var pose: TeamCharacter.Pose = .wave
-}
+// ``TeamCharacter`` (defined in ``TeamCharacterBoardView``) is used throughout
+// this view. The previous ``MyTeamMember`` wrapper caused type mismatches when
+// interacting with ``TeamCharacterBoardView``. Members are now stored directly
+// as ``TeamCharacter`` values.
 // MARK: - 모델 구조 추가
 
 struct TrainingLog: Identifiable {
@@ -45,7 +42,7 @@ struct SelectedTeamLog: Identifiable {
 // MARK: - 메인 팀 관리 뷰
 struct TeamManagementView_hae: View {
     // 선택된 팀원 정보 (팝업용)
-    @State private var selectedMember: MyTeamMember? = nil
+    @State private var selectedMember: TeamCharacter? = nil
     @State private var selectedDate: Date? = nil
     @State private var selectedLog: SelectedTeamLog? = nil
     @State private var showLog = false
@@ -75,12 +72,12 @@ struct TeamManagementView_hae: View {
         return card.nickname
     }
     
-    private var teamMembers: [MyTeamMember] {
+    private var teamMembers: [TeamCharacter] {
         [
-            MyTeamMember(name: "혜진", imageName: "football-player-2", isOnline: true),
-            MyTeamMember(name: "규원", imageName: "football-player-3", isOnline: false, pose: .victory),
-            MyTeamMember(name: "진주", imageName: "goalkeeper", isOnline: true),
-            MyTeamMember(name: userName, imageName: "soccer-player", isOnline: false)
+            TeamCharacter(name: "혜진", imageName: "football-player-2", isOnline: true),
+            TeamCharacter(name: "규원", imageName: "football-player-3", isOnline: false, pose: .victory),
+            TeamCharacter(name: "진주", imageName: "goalkeeper", isOnline: true),
+            TeamCharacter(name: userName, imageName: "soccer-player", isOnline: false)
         ]
     }
     
