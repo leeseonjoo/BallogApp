@@ -23,9 +23,18 @@ struct BallogApp: App {
         }
     }()
 
+    @StateObject private var attendanceStore = AttendanceStore()
+    @AppStorage("profileCard") private var storedCard: String = ""
+    @State private var showProfileCreator = false
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(attendanceStore)
+                .sheet(isPresented: $showProfileCreator) {
+                    ProfileCardCreationView()
+                }
+                .onAppear { if storedCard.isEmpty { showProfileCreator = true } }
         }
         .modelContainer(sharedModelContainer)
     }
