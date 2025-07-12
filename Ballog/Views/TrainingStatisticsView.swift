@@ -1,7 +1,12 @@
 import SwiftUI
 
 struct TrainingStatisticsView: View {
-    private struct StatItem: Identifiable {
+    // "StatItem" is referenced by "StatChartSection" which is defined below
+    // the enclosing view. The "private" access level restricts usage to this
+    // type only, leading to a compilation error. Use "fileprivate" so that
+    // the helper view in the same file can access it while keeping it internal
+    // to this file.
+    fileprivate struct StatItem: Identifiable {
         let id = UUID()
         let label: String
         let value: Double
