@@ -47,7 +47,7 @@ struct MainHomeView: View {
                 scheduleSection
                 thisWeekScheduleSection // 추가된 부분
                 if let card = card {
-                    ProfileCardView(card: card, showIcon: false, showRecordButton: true)
+                    ProfileCardView(card: card, showIcon: true, iconOnRight: true, showRecordButton: true)
                 }
 
                 Spacer()
