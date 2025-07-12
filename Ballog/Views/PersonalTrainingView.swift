@@ -15,6 +15,9 @@ private enum Layout {
 struct PersonalTrainingView: View {
     @AppStorage("profileCard") private var storedCard: String = ""
 
+    @State private var selectedDate: Date? = nil
+    @State private var attendance: [Date: Bool] = [:]
+
     private var card: ProfileCard? {
         guard let data = storedCard.data(using: .utf8) else { return nil }
         return try? JSONDecoder().decode(ProfileCard.self, from: data)
@@ -23,20 +26,8 @@ struct PersonalTrainingView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: Layout.spacing) {
-                // 상단 달력 헤더
-                HStack {
-                    Text("2025년 7월")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                    Spacer()
-                    Button(action: {
-                        // 달력 전체 페이지 이동
-                    }) {
-                        Text("달력 보기")
-                            .foregroundColor(.blue)
-                    }
-                }
-                .padding(.horizontal, Layout.padding)
+                InteractiveCalendarView(selectedDate: $selectedDate, attendance: $attendance, title: "개인 캘린더")
+                    .padding(.horizontal, Layout.padding)
 
             // 훈련일지 작성 버튼
                 Button(action: {
@@ -89,8 +80,8 @@ struct PersonalTrainingView: View {
                             Text("유형별: 개인 6 / 팀 4 / 경기 2")
                         }
                     }
-                    Button("상세 통계 보기 →") {
-                        // 통계 페이지 이동
+                    NavigationLink(destination: TrainingStatisticsView()) {
+                        Text("상세 통계 보기 →")
                     }
                     .font(.caption)
                     .foregroundColor(.blue)
