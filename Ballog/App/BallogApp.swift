@@ -35,6 +35,9 @@ struct BallogApp: App {
                     ProfileCardCreationView()
                 }
                 .onAppear { if storedCard.isEmpty { showProfileCreator = true } }
+                .onChange(of: storedCard) { newValue in
+                    if newValue.isEmpty { showProfileCreator = true }
+                }
         }
         .modelContainer(sharedModelContainer)
     }
