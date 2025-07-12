@@ -24,6 +24,7 @@ struct TeamManagementView_hae: View {
     // 선택된 팀원 정보 (팝업용)
     @State private var selectedMember: MyTeamMember? = nil
     @State private var selectedDate: Date? = nil
+    @State private var selectedLog: (Date, TeamTrainingLog)? = nil
     @State private var showLog = false
     @State private var showOptions = false
     @State private var showAttendance = false
@@ -151,21 +152,20 @@ struct TeamManagementView_hae: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("📋 최근 팀 훈련 일지")
                             .font(.headline)
-                        ForEach(sortedLogs, id: \.1.id) { day, log in
-                            HStack {
-                                Text(dateFormatter.string(from: day))
-                                Spacer()
-                                Text(log.summary)
-                                    .font(.caption)
-                                    .foregroundColor(.green)
+                        if sortedLogs.isEmpty {
+                            Text("잊지 말고 훈련내용을 기억하세요")
+                                .foregroundColor(.secondary)
+                        } else {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 16) {
+                                    ForEach(sortedLogs, id: \.1.id) { day, log in
+                                        TrainingLogCardView(day: day, log: log)
+                                            .onTapGesture { selectedLog = (day, log) }
+                                    }
+                                }
+                                .padding(.horizontal, Layout.padding)
                             }
-                            Divider()
                         }
-                        Button("전체 보기 →") {
-                            // 이동
-                        }
-                        .font(.caption)
-                        .foregroundColor(.blue)
                     }
                     .padding(.horizontal, Layout.padding)
                     
@@ -204,6 +204,9 @@ struct TeamManagementView_hae: View {
                 }
             }
             }
+        }
+        .sheet(item: $selectedLog) { data in
+            TrainingLogDetailView(day: data.0, log: data.1)
         }
     }
 
