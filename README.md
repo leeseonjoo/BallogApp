@@ -1,6 +1,14 @@
 # BallogApp
 
-This project is organized using the MVVM (Model-View-ViewModel) pattern.
+BallogApp is a small SwiftUI experiment structured with the MVVM (Model–View–ViewModel) pattern.
+
+## Design Philosophy
+
+The UI follows the core principles described in Apple’s Human Interface Guidelines:
+
+1. **Clarity** – Text and controls use system fonts and default sizes to stay legible and familiar.
+2. **Deference** – Content is prioritized over decoration by keeping layouts simple and spacing consistent.
+3. **Depth** – Hierarchy is communicated through clean navigation stacks and unobtrusive transitions.
 
 ## Folder Structure
 
