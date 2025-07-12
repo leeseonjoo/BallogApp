@@ -17,6 +17,9 @@ private enum Layout {
 struct MyTeamMember: Identifiable {
     var id = UUID()
     var name: String
+    var imageName: String = "soccer-player"
+    var isOnline: Bool = false
+    var pose: TeamCharacter.Pose = .wave
 }
 // MARK: - 모델 구조 추가
 
@@ -74,10 +77,10 @@ struct TeamManagementView_hae: View {
     
     private var teamMembers: [MyTeamMember] {
         [
-            MyTeamMember(name: "혜진"),
-            MyTeamMember(name: "규원"),
-            MyTeamMember(name: "진주"),
-            MyTeamMember(name: userName)
+            MyTeamMember(name: "혜진", imageName: "football-player-2", isOnline: true),
+            MyTeamMember(name: "규원", imageName: "football-player-3", isOnline: false, pose: .victory),
+            MyTeamMember(name: "진주", imageName: "goalkeeper", isOnline: true),
+            MyTeamMember(name: userName, imageName: "soccer-player", isOnline: false)
         ]
     }
     
@@ -92,6 +95,9 @@ struct TeamManagementView_hae: View {
                 VStack(spacing: Layout.spacing) {
                     TeamHeaderView()
                     TeamQuoteView()
+                    TeamCharacterBoardView(members: teamMembers) { member in
+                        selectedMember = member
+                    }
                     Divider()
                     CalendarSection(selectedDate: $selectedDate,
                                     showLog: $showLog,
@@ -106,9 +112,6 @@ struct TeamManagementView_hae: View {
                         selectedLog = SelectedTeamLog(day: day, log: log)
                     }
                     WriteLogButton { showLog = true }
-                    TeamMembersSection(members: teamMembers) { member in
-                        selectedMember = member
-                    }
                     Spacer()
                 }
             }
@@ -249,30 +252,6 @@ struct TeamManagementView_hae: View {
             .padding(.horizontal, Layout.padding)
         }
     }
-    
-    private struct TeamMembersSection: View {
-        let members: [MyTeamMember]
-        var onSelect: (MyTeamMember) -> Void
-        
-        var body: some View {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 24) {
-                    ForEach(members) { member in
-                        VStack {
-                            Image(systemName: "person.fill")
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                                .foregroundColor(.blue)
-                            Text(member.name)
-                        }
-                        .onTapGesture { onSelect(member) }
-                    }
-                }
-                .padding(.horizontal, Layout.padding)
-            }
-        }
-    }
-    
     
     // MARK: - 팝업: 팀원 캐릭터 카드
     struct MyTeamMemberCardView: View {
