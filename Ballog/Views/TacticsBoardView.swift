@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 // Codable wrappers for Color and CGPoint
 private struct ColorData: Codable {
@@ -60,7 +61,7 @@ private struct TacticsState: Codable {
 struct TacticsBoardView: View {
     enum DrawMode { case none, pass, move }
 
-    @State private var players: [PlayerIcon] = Self.defaultPlayers
+    @State private var players: [PlayerIcon] = []
     @State private var lines: [TacticLine] = []
     @State private var undoneLines: [TacticLine] = []
 
@@ -69,6 +70,11 @@ struct TacticsBoardView: View {
     @State private var tempLine: TacticLine?
 
     @State private var selectedPlayerIndex: Int?
+
+    private let paletteTeams: [(String, Color)] = [
+        ("A", .red),
+        ("B", .blue)
+    ]
 
     private let storageKey = "TacticsBoardState"
 
@@ -105,6 +111,9 @@ struct TacticsBoardView: View {
                     }
                 }
                 .frame(width: geo.size.width, height: geo.size.width)
+                .onDrop(of: [UTType.plainText], isTargeted: nil) { providers, location in
+                    dropPlayer(from: providers, at: location)
+                }
             }
             controls
         }
@@ -117,6 +126,10 @@ struct TacticsBoardView: View {
                 ColorPicker("", selection: $selectedLineColor).labelsHidden()
                 Button("패스") { drawMode = .pass }
                 Button("이동") { drawMode = .move }
+                ForEach(paletteTeams, id: \.0) { team, color in
+                    PalettePlayerView(name: team, color: color)
+                        .onDrag { NSItemProvider(object: NSString(string: team)) }
+                }
                 Button("Undo") { undo() }
                 Button("Redo") { redo() }
                 Button("Reset") { reset() }
@@ -164,6 +177,29 @@ struct TacticsBoardView: View {
             }
     }
 
+    private func dropPlayer(from providers: [NSItemProvider], at location: CGPoint) -> Bool {
+        for provider in providers {
+            if provider.canLoadObject(ofClass: String.self) {
+                _ = provider.loadObject(ofClass: String.self) { team, _ in
+                    if let team = team {
+                        DispatchQueue.main.async {
+                            addPlayer(team: team, at: location)
+                        }
+                    }
+                }
+                return true
+            }
+        }
+        return false
+    }
+
+    private func addPlayer(team: String, at location: CGPoint) {
+        let color: Color = team == "A" ? .red : .blue
+        let count = players.filter { $0.name.hasPrefix(team) }.count + 1
+        let newPlayer = PlayerIcon(name: "\(team)\(count)", color: color.data, position: location.data)
+        players.append(newPlayer)
+    }
+
     private func undo() { if let line = lines.popLast() { undoneLines.append(line) } }
     private func redo() { if let line = undoneLines.popLast() { lines.append(line) } }
     private func reset() {
@@ -189,20 +225,7 @@ struct TacticsBoardView: View {
         lines = state.lines
     }
 
-    private static var defaultPlayers: [PlayerIcon] {
-        [
-            PlayerIcon(name: "A1", color: Color.red.data, position: CGPoint(x: 60, y: 60).data),
-            PlayerIcon(name: "A2", color: Color.red.data, position: CGPoint(x: 60, y: 250).data),
-            PlayerIcon(name: "A3", color: Color.red.data, position: CGPoint(x: 110, y: 110).data),
-            PlayerIcon(name: "A4", color: Color.red.data, position: CGPoint(x: 110, y: 200).data),
-            PlayerIcon(name: "A5", color: Color.red.data, position: CGPoint(x: 150, y: 150).data),
-            PlayerIcon(name: "B1", color: Color.blue.data, position: CGPoint(x: 260, y: 60).data),
-            PlayerIcon(name: "B2", color: Color.blue.data, position: CGPoint(x: 260, y: 250).data),
-            PlayerIcon(name: "B3", color: Color.blue.data, position: CGPoint(x: 310, y: 110).data),
-            PlayerIcon(name: "B4", color: Color.blue.data, position: CGPoint(x: 310, y: 200).data),
-            PlayerIcon(name: "B5", color: Color.blue.data, position: CGPoint(x: 260, y: 150).data)
-        ]
-    }
+    private static var defaultPlayers: [PlayerIcon] { [] }
 }
 
 private struct PlayerView: View {
@@ -214,6 +237,22 @@ private struct PlayerView: View {
             .frame(width: 36, height: 36)
             .overlay(
                 Text(player.name)
+                    .font(.caption2)
+                    .foregroundColor(.white)
+            )
+    }
+}
+
+private struct PalettePlayerView: View {
+    var name: String
+    var color: Color
+
+    var body: some View {
+        Circle()
+            .fill(color)
+            .frame(width: 36, height: 36)
+            .overlay(
+                Text(name)
                     .font(.caption2)
                     .foregroundColor(.white)
             )
