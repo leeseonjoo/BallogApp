@@ -30,11 +30,6 @@ struct TeamManagementView_hae: View {
     @State private var showAttendance = false
     @EnvironmentObject private var attendanceStore: AttendanceStore
     @EnvironmentObject private var logStore: TeamTrainingLogStore
-    private var loggedDates: [Date] {
-        let cal = Calendar.current
-        return [DateComponents(calendar: cal, year: 2025, month: 7, day: 4).date!,
-                DateComponents(calendar: cal, year: 2025, month: 7, day: 12).date!]
-    }
 
     private var tuesdayDates: [Date] {
         let calendar = Calendar.current
@@ -70,143 +65,191 @@ struct TeamManagementView_hae: View {
         logStore.logs.flatMap { day, logs in logs.map { (day, $0) } }
             .sorted { $0.0 > $1.0 }
     }
-    
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: Layout.spacing) {
-                    
-                    // 1. 팀명 + 로고
-                    HStack {
-                        Image(systemName: "soccerball")
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                        NavigationLink(destination: TeamListView()) {
-                            Text("해그래 FS")
-                                .font(.title)
-                                .fontWeight(.bold)
-                        }
-                        .buttonStyle(.plain)
-                        Spacer()
-                    }
-                    .padding(.horizontal, Layout.padding)
-                    
-                    // 2. 팀원 한마디
-                    HStack {
-                        Image(systemName: "quote.bubble")
-                            .foregroundColor(.gray)
-                        Text("“오늘도 파이팅!” - 잔디요정")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Spacer()
-                    }
-                    .padding(.horizontal, Layout.padding)
-                    
+                    TeamHeaderView()
+                    TeamQuoteView()
                     Divider()
-                    
-                    InteractiveCalendarView(selectedDate: $selectedDate, attendance: $attendanceStore.results)
-                        .padding()
-                        .onChange(of: selectedDate) { _ in showOptions = selectedDate != nil }
-                        .confirmationDialog("선택", isPresented: $showOptions, titleVisibility: .visible) {
-                            Button("매치 참석 가능 여부") { showAttendance = true }
-                            Button("훈련일지 작성") { showLog = true }
-                            Button("취소", role: .cancel) { selectedDate = nil }
-                        }
-                        .confirmationDialog("참석 여부", isPresented: $showAttendance, titleVisibility: .visible) {
-                            Button("참석") {
-                                if let date = selectedDate { attendanceStore.set(true, for: date) }
-                                selectedDate = nil
-                            }
-                            Button("불참", role: .destructive) {
-                                if let date = selectedDate { attendanceStore.set(false, for: date) }
-                                selectedDate = nil
-                            }
-                            Button("취소", role: .cancel) { selectedDate = nil }
-                        }
+                    CalendarSection(selectedDate: $selectedDate,
+                                    showLog: $showLog,
+                                    showOptions: $showOptions,
+                                    showAttendance: $showAttendance)
                     NavigationLink("", isActive: $showLog) {
                         TeamTrainingLogView()
                             .environmentObject(logStore)
                     }
-                    
-                    // 4. 훈련 일정
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("팀 정기 훈련 일정")
-                            .font(.headline)
-                        ForEach(tuesdayDates, id: \..self) { date in
-                            HStack {
-	
-                                Text(dateFormatter.string(from: date))	
-                                Spacer()
-                                Text("누누 풋살장")
-                                Spacer()
-                                Button("✅ 참석") {
-                                    // 참석 처리
-                                }
-                                .buttonStyle(.borderedProminent)
-                            }
-                        }
+                    TrainingScheduleSection(dates: tuesdayDates, formatter: dateFormatter)
+                    TrainingLogsSection(logs: sortedLogs) { day, log in
+                        selectedLog = (day, log)
                     }
-                    .padding(.horizontal, Layout.padding)
-                    
-                    // 5. 훈련 일지 요약
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("📋 최근 팀 훈련 일지")
-                            .font(.headline)
-                        if sortedLogs.isEmpty {
-                            Text("잊지 말고 훈련내용을 기억하세요")
-                                .foregroundColor(.secondary)
-                        } else {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 16) {
-                                    ForEach(sortedLogs, id: \.1.id) { day, log in
-                                        TrainingLogCardView(day: day, log: log)
-                                            .onTapGesture { selectedLog = (day, log) }
-                                    }
-                                }
-                                .padding(.horizontal, Layout.padding)
-                            }
-                        }
+                    WriteLogButton { showLog = true }
+                    TeamMembersSection(members: teamMembers) { member in
+                        selectedMember = member
                     }
-                    .padding(.horizontal, Layout.padding)
-                    
-                    // 6. 작성 버튼
-                    Button(action: {
-                        showLog = true
-                    }) {
-                        Text("✏️ 팀 훈련일지 작성")
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.yellow.opacity(0.2))
-                            .cornerRadius(10)
-                    }
-                    .padding(.horizontal, Layout.padding)
-
-                    // 팀원 캐릭터
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 24) {
-                            ForEach(teamMembers) { member in
-                                VStack {
-                                    Image(systemName: "person.fill")
-                                        .resizable()
-                                        .frame(width: 50, height: 50)
-                                        .foregroundColor(.blue)
-                                    Text(member.name)
-                                }
-                                .onTapGesture {
-                                    selectedMember = member
-                                }
-                            }
-                        }
-                        .padding(.horizontal, Layout.padding)
-                    }
-
                     Spacer()
                 }
-            }
             }
         }
         .sheet(item: $selectedLog) { data in
             TrainingLogDetailView(day: data.0, log: data.1)
+        }
+        .sheet(item: $selectedMember) { member in
+            MyTeamMemberCardView(memberName: member.name)
+        }
+    }
+
+    // MARK: - Subviews
+
+    private struct TeamHeaderView: View {
+        var body: some View {
+            HStack {
+                Image(systemName: "soccerball")
+                    .resizable()
+                    .frame(width: 30, height: 30)
+                NavigationLink(destination: TeamListView()) {
+                    Text("해그래 FS")
+                        .font(.title)
+                        .fontWeight(.bold)
+                }
+                .buttonStyle(.plain)
+                Spacer()
+            }
+            .padding(.horizontal, Layout.padding)
+        }
+    }
+
+    private struct TeamQuoteView: View {
+        var body: some View {
+            HStack {
+                Image(systemName: "quote.bubble")
+                    .foregroundColor(.gray)
+                Text("“오늘도 파이팅!” - 잔디요정")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Spacer()
+            }
+            .padding(.horizontal, Layout.padding)
+        }
+    }
+
+    private struct CalendarSection: View {
+        @Binding var selectedDate: Date?
+        @Binding var showLog: Bool
+        @Binding var showOptions: Bool
+        @Binding var showAttendance: Bool
+        @EnvironmentObject private var attendanceStore: AttendanceStore
+
+        var body: some View {
+            InteractiveCalendarView(selectedDate: $selectedDate, attendance: $attendanceStore.results)
+                .padding()
+                .onChange(of: selectedDate) { _ in showOptions = selectedDate != nil }
+                .confirmationDialog("선택", isPresented: $showOptions, titleVisibility: .visible) {
+                    Button("매치 참석 가능 여부") { showAttendance = true }
+                    Button("훈련일지 작성") { showLog = true }
+                    Button("취소", role: .cancel) { selectedDate = nil }
+                }
+                .confirmationDialog("참석 여부", isPresented: $showAttendance, titleVisibility: .visible) {
+                    Button("참석") {
+                        if let date = selectedDate { attendanceStore.set(true, for: date) }
+                        selectedDate = nil
+                    }
+                    Button("불참", role: .destructive) {
+                        if let date = selectedDate { attendanceStore.set(false, for: date) }
+                        selectedDate = nil
+                    }
+                    Button("취소", role: .cancel) { selectedDate = nil }
+                }
+        }
+    }
+
+    private struct TrainingScheduleSection: View {
+        let dates: [Date]
+        let formatter: DateFormatter
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("팀 정기 훈련 일정")
+                    .font(.headline)
+                ForEach(dates, id: \.self) { date in
+                    HStack {
+                        Text(formatter.string(from: date))
+                        Spacer()
+                        Text("누누 풋살장")
+                        Spacer()
+                        Button("✅ 참석") {}
+                            .buttonStyle(.borderedProminent)
+                    }
+                }
+            }
+            .padding(.horizontal, Layout.padding)
+        }
+    }
+
+    private struct TrainingLogsSection: View {
+        let logs: [(Date, TeamTrainingLog)]
+        var onSelect: (Date, TeamTrainingLog) -> Void
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("📋 최근 팀 훈련 일지")
+                    .font(.headline)
+                if logs.isEmpty {
+                    Text("잊지 말고 훈련내용을 기억하세요")
+                        .foregroundColor(.secondary)
+                } else {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 16) {
+                            ForEach(logs, id: \.1.id) { day, log in
+                                TrainingLogCardView(day: day, log: log)
+                                    .onTapGesture { onSelect(day, log) }
+                            }
+                        }
+                        .padding(.horizontal, Layout.padding)
+                    }
+                }
+            }
+            .padding(.horizontal, Layout.padding)
+        }
+    }
+
+    private struct WriteLogButton: View {
+        let action: () -> Void
+
+        var body: some View {
+            Button(action: action) {
+                Text("✏️ 팀 훈련일지 작성")
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.yellow.opacity(0.2))
+                    .cornerRadius(10)
+            }
+            .padding(.horizontal, Layout.padding)
+        }
+    }
+
+    private struct TeamMembersSection: View {
+        let members: [MyTeamMember]
+        var onSelect: (MyTeamMember) -> Void
+
+        var body: some View {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 24) {
+                    ForEach(members) { member in
+                        VStack {
+                            Image(systemName: "person.fill")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(.blue)
+                            Text(member.name)
+                        }
+                        .onTapGesture { onSelect(member) }
+                    }
+                }
+                .padding(.horizontal, Layout.padding)
+            }
         }
     }
 
