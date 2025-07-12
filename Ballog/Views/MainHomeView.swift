@@ -19,11 +19,16 @@ struct DiaryDay {
 }
 
 struct MainHomeView: View {
-    @StateObject private var progressModel = SkillProgressModel()
     @State private var selectedDate: String?
     @AppStorage("profileMessage")
     private var profileMessage: String =
         "하나가 되어 정상을 향해가는 순간\n힘들어도 극복하면서 자신있게!! 나아가자!!"
+    @AppStorage("profileCard") private var storedCard: String = ""
+
+    private var card: ProfileCard? {
+        guard let data = storedCard.data(using: .utf8) else { return nil }
+        return try? JSONDecoder().decode(ProfileCard.self, from: data)
+    }
 
     private var todayString: String {
         let formatter = DateFormatter()
@@ -41,8 +46,12 @@ struct MainHomeView: View {
                 profileMessageSection
                 scheduleSection
                 thisWeekScheduleSection // 추가된 부분
-                PixelTreeView(model: progressModel)
-                    .padding(Layout.padding)
+                if let card = card {
+                    Image(card.iconName)
+                        .resizable()
+                        .frame(width: 80, height: 80)
+                        .padding(Layout.padding)
+                }
 
                 Spacer()
             }
