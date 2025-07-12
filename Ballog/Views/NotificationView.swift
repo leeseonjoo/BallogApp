@@ -13,6 +13,7 @@ struct NotificationView: View {
 
     var body: some View {
         NavigationStack {
+            Spacer(minLength: 100) // 위 여백
             List(posts, id: \.self) { post in
                 Text(post)
             }
