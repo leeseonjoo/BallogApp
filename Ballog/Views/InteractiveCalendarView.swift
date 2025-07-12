@@ -25,7 +25,7 @@ private struct CalendarGrid: View {
     var body: some View {
         let columns = Array(repeating: GridItem(.flexible()), count: 7)
         LazyVGrid(columns: columns, spacing: 8) {
-            ForEach(monthDays, id: \\.self) { date in
+            ForEach(monthDays, id: \.self) { date in
                 let day = calendar.component(.day, from: date)
                 VStack(spacing: 2) {
                     Text("\(day)")
