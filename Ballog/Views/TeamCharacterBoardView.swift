@@ -4,8 +4,8 @@ private enum Layout {
     static let padding = DesignConstants.horizontalPadding
 }
 
-struct TeamCharacter: Identifiable {
-    enum Pose: CaseIterable {
+struct TeamCharacter: Identifiable, Codable {
+    enum Pose: String, CaseIterable, Codable {
         case wave
         case victory
 
