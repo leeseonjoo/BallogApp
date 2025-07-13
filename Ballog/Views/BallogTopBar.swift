@@ -46,7 +46,7 @@ struct BallogTopBarModifier: ViewModifier {
     func body(content: Content) -> some View {
         ZStack(alignment: .top) {
             content
-                .padding(.top, 60)
+                .padding(.top, 100)
             BallogTopBar()
         }
         .ignoresSafeArea(edges: .top)
