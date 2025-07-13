@@ -33,6 +33,7 @@ struct BallogApp: App {
     @AppStorage("autoLogin") private var autoLogin: Bool = false
     @AppStorage("savedUsername") private var savedUsername: String = ""
     @AppStorage("savedPassword") private var savedPassword: String = ""
+    @AppStorage("isAdminUser") private var isAdminUser: Bool = false
     @State private var showProfileCreator = false
     private let persistenceController = CoreDataStack.shared
 
@@ -66,6 +67,7 @@ struct BallogApp: App {
                     req.predicate = NSPredicate(format: "username == %@", savedUsername)
                     if let account = try? persistenceController.container.viewContext.fetch(req).first,
                        account.password == savedPassword {
+                        isAdminUser = account.isAdmin
                         isLoggedIn = true
                     }
                 }
