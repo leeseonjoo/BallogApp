@@ -18,6 +18,7 @@ struct SettingsView: View {
     @AppStorage("autoLogin") private var autoLogin: Bool = false
     @AppStorage("savedUsername") private var savedUsername: String = ""
     @AppStorage("savedPassword") private var savedPassword: String = ""
+    @AppStorage("isAdminUser") private var isAdminUser: Bool = false
     @State private var showLogoutAlert = false
 
     var body: some View {
@@ -45,6 +46,7 @@ struct SettingsView: View {
                     autoLogin = false
                     savedUsername = ""
                     savedPassword = ""
+                    isAdminUser = false
                 }
                 Button("아니오", role: .cancel) { }
             }

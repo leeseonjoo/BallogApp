@@ -8,6 +8,7 @@ struct LoginView: View {
     @AppStorage("savedPassword") private var savedPassword: String = ""
     @AppStorage("rememberID") private var rememberID: Bool = false
     @AppStorage("autoLogin") private var autoLogin: Bool = false
+    @AppStorage("isAdminUser") private var isAdminUser: Bool = false
     @Environment(\.managedObjectContext) private var context
 
     @State private var username: String = ""
@@ -52,6 +53,7 @@ struct LoginView: View {
             let req = AccountEntity.fetchRequest()
             req.predicate = NSPredicate(format: "username == %@", username)
             if let account = try? context.fetch(req).first, account.password == password {
+                isAdminUser = account.isAdmin
                 isLoggedIn = true
             }
         }
@@ -81,6 +83,7 @@ struct LoginView: View {
 
         if rememberID { savedUsername = username } else { savedUsername = "" }
         if autoLogin { savedPassword = password } else { savedPassword = "" }
+        isAdminUser = account.isAdmin
         isLoggedIn = true
     }
 }
