@@ -42,7 +42,10 @@ struct MainHomeView: View {
     }
 
     private var competitionEvents: [TeamEvent] {
-        eventStore.events.filter { $0.type == .match }.sorted { $0.date < $1.date }
+        let fiveMonthsLater = calendar.date(byAdding: .month, value: 5, to: Date()) ?? Date()
+        return eventStore.events.filter { 
+            ($0.type == .match || $0.type == .tournament) && $0.date <= fiveMonthsLater
+        }.sorted { $0.date < $1.date }
     }
 
     private var thisWeekEvents: [TeamEvent] {
@@ -125,7 +128,7 @@ struct MainHomeView: View {
     private var scheduleSection: some View {
         VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
             HStack {
-                Text("대회 일정")
+                Text("대회/매치 일정")
                     .font(.title2.bold())
                     .foregroundColor(Color.primaryText)
                 Spacer()
@@ -141,10 +144,27 @@ struct MainHomeView: View {
                     ForEach(competitionEvents) { event in
                         VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
                             HStack {
-                                Text("\(dateFormatter.string(from: event.date)) \(event.title)")
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                    .foregroundColor(Color.primaryText)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("\(dateFormatter.string(from: event.date)) \(event.title)")
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(Color.primaryText)
+                                    
+                                    HStack(spacing: 4) {
+                                        Text(event.type.rawValue)
+                                            .font(.caption)
+                                            .foregroundColor(event.type == .match ? .red : .orange)
+                                        
+                                        Text("•")
+                                            .font(.caption)
+                                            .foregroundColor(Color.secondaryText)
+                                        
+                                        Text(event.place)
+                                            .font(.caption)
+                                            .foregroundColor(Color.secondaryText)
+                                    }
+                                }
+                                
                                 Spacer()
                                 Text("D-day \(dDay(from: event.date))")
                                     .font(.caption)

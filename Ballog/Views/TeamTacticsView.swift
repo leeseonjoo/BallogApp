@@ -16,22 +16,37 @@ struct TeamTacticsView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(tacticStore.tactics) { tactic in
-                    NavigationLink(destination: TeamTacticDetailView(tactic: tactic, count: count(for: tactic))) {
-                        HStack {
-                            Text(tactic.name)
-                            Spacer()
-                            Text("\(count(for: tactic))회")
-                                .foregroundColor(.secondary)
-                                .font(.caption)
-                        }
+            VStack(spacing: 0) {
+                // Header with + button
+                HStack {
+                    Text("전술 목록")
+                        .font(.title2.bold())
+                        .foregroundColor(Color.primaryText)
+                    Spacer()
+                    Button(action: { showingForm = true }) {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(Color.primaryBlue)
+                            .font(.title2)
                     }
                 }
-                .onDelete { tacticStore.remove(at: $0) }
-            }
-            .toolbar {
-                Button(action: { showingForm = true }) { Image(systemName: "plus") }
+                .padding(DesignConstants.horizontalPadding)
+                .padding(.vertical, DesignConstants.verticalPadding)
+                
+                // Tactics List
+                List {
+                    ForEach(tacticStore.tactics) { tactic in
+                        NavigationLink(destination: TeamTacticDetailView(tactic: tactic, count: count(for: tactic))) {
+                            HStack {
+                                Text(tactic.name)
+                                Spacer()
+                                Text("\(count(for: tactic))회")
+                                    .foregroundColor(.secondary)
+                                    .font(.caption)
+                            }
+                        }
+                    }
+                    .onDelete { tacticStore.remove(at: $0) }
+                }
             }
             .sheet(isPresented: $showingForm) {
                 TeamTacticFormView { tactic in

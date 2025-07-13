@@ -49,24 +49,11 @@ struct TeamManagementView: View {
     @State private var showLog = false
     @State private var showOptions = false
     @State private var showAttendance = false
+    @State private var showEventCreation = false
     @EnvironmentObject private var attendanceStore: AttendanceStore
     @EnvironmentObject private var logStore: TeamTrainingLogStore
     @EnvironmentObject private var eventStore: TeamEventStore
     @State private var trainingWeather: WeatherCondition = .clear
-    
-    private var tuesdayDates: [Date] {
-        let calendar = Calendar.current
-        guard let first = calendar.nextDate(after: Date(), matching: DateComponents(weekday: 3), matchingPolicy: .nextTime) else { return [] }
-        return (0..<4).compactMap { calendar.date(byAdding: .day, value: 7 * $0, to: first) }
-    }
-    
-    private var dateFormatter: DateFormatter {
-        let f = DateFormatter()
-        f.locale = Locale(identifier: "ko_KR")
-        f.dateFormat = "M월 d일 (E)"
-        return f
-    }
-    
     
     private var teamMembers: [TeamCharacter] {
         team.members
@@ -90,7 +77,7 @@ struct TeamManagementView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: Layout.spacing) {
-                    TeamHeaderView(teamName: team.name)
+                    TeamHeaderView(teamName: team.name, team: team)
                     TeamCharacterBoardView(members: teamMembers, backgroundImage: backgroundImage) { member in
                         selectedMember = member
                     }
@@ -98,12 +85,12 @@ struct TeamManagementView: View {
                     CalendarSection(selectedDate: $selectedDate,
                                     showLog: $showLog,
                                     showOptions: $showOptions,
-                                    showAttendance: $showAttendance)
+                                    showAttendance: $showAttendance,
+                                    showEventCreation: $showEventCreation)
                     NavigationLink("", isActive: $showLog) {
                         TeamTrainingLogView()
                             .environmentObject(logStore)
                     }
-                    TrainingScheduleSection(dates: tuesdayDates, formatter: dateFormatter)
                     TrainingLogsSection(logs: sortedLogs) { day, log in
                         selectedLog = SelectedTeamLog(day: day, log: log)
                     }
@@ -112,16 +99,15 @@ struct TeamManagementView: View {
                 }
             }
         }
-        .onAppear {
-            if let next = tuesdayDates.first {
-                trainingWeather = WeatherService.weather(for: next)
-            }
-        }
         .sheet(item: $selectedLog) { data in
             TrainingLogDetailView(day: data.day, log: data.log)
         }
         .sheet(item: $selectedMember) { member in
             MyTeamMemberCardView(memberName: member.name)
+        }
+        .sheet(isPresented: $showEventCreation) {
+            TeamEventCreationView()
+                .environmentObject(eventStore)
         }
     }
     
@@ -129,13 +115,23 @@ struct TeamManagementView: View {
     
     private struct TeamHeaderView: View {
         let teamName: String
+        let team: Team
         @State private var showJoinRequestManagement = false
         
         var body: some View {
             HStack {
-                Image("pitch")
-                    .resizable()
-                    .frame(width: 30, height: 30)
+                if let logoData = team.logo, let uiImage = UIImage(data: logoData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+                } else {
+                    Image("pitch")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                }
+                
                 NavigationLink(destination: TeamListView()) {
                     Text(teamName)
                         .font(.title)
@@ -151,7 +147,7 @@ struct TeamManagementView: View {
             }
             .padding(.horizontal, Layout.padding)
             .sheet(isPresented: $showJoinRequestManagement) {
-                TeamJoinRequestManagementView(team: Team(name: teamName, region: "서울", creatorName: "홍길동"))
+                TeamJoinRequestManagementView(team: team)
             }
         }
     }
@@ -162,57 +158,49 @@ struct TeamManagementView: View {
         @Binding var showLog: Bool
         @Binding var showOptions: Bool
         @Binding var showAttendance: Bool
+        @Binding var showEventCreation: Bool
         @EnvironmentObject private var attendanceStore: AttendanceStore
+        @EnvironmentObject private var eventStore: TeamEventStore
         
         var body: some View {
-            InteractiveCalendarView(selectedDate: $selectedDate, attendance: $attendanceStore.results)
-                .padding()
-                .onChange(of: selectedDate) { _ in showOptions = selectedDate != nil }
-                .confirmationDialog("선택", isPresented: $showOptions, titleVisibility: .visible) {
-                    Button("매치 참석 가능 여부") { showAttendance = true }
-                    Button("훈련일지 작성") { showLog = true }
-                    Button("취소", role: .cancel) { selectedDate = nil }
-                }
-                .confirmationDialog("참석 여부", isPresented: $showAttendance, titleVisibility: .visible) {
-                    Button("참석") {
-                        if let date = selectedDate { attendanceStore.set(true, for: date) }
-                        selectedDate = nil
+            VStack(spacing: 8) {
+                InteractiveCalendarView(selectedDate: $selectedDate, attendance: $attendanceStore.results)
+                    .padding()
+                    .onChange(of: selectedDate) { _ in showOptions = selectedDate != nil }
+                    .confirmationDialog("선택", isPresented: $showOptions, titleVisibility: .visible) {
+                        Button("일정 추가") { showEventCreation = true }
+                        Button("매치 참석 가능 여부") { showAttendance = true }
+                        Button("훈련일지 작성") { showLog = true }
+                        Button("취소", role: .cancel) { selectedDate = nil }
                     }
-                    Button("불참", role: .destructive) {
-                        if let date = selectedDate { attendanceStore.set(false, for: date) }
-                        selectedDate = nil
-                    }
-                    Button("취소", role: .cancel) { selectedDate = nil }
-                }
-        }
-    }
-    
-    private struct TrainingScheduleSection: View {
-        let dates: [Date]
-        let formatter: DateFormatter
-        
-        var body: some View {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("팀 정기 훈련 일정")
-                    .font(.headline)
-                ForEach(dates, id: \.self) { date in
-                    let weather = WeatherService.weather(for: date)
-                    HStack {
-                        Text(formatter.string(from: date))
-                        if let img = weather.imageName {
-                            Image(img)
-                                .resizable()
-                                .frame(width: 20, height: 20)
+                    .confirmationDialog("참석 여부", isPresented: $showAttendance, titleVisibility: .visible) {
+                        Button("참석") {
+                            if let date = selectedDate { attendanceStore.set(true, for: date) }
+                            selectedDate = nil
                         }
-                        Spacer()
-                        Text("누누 풋살장")
-                        Spacer()
-                        Button("✅ 참석") {}
-                            .buttonStyle(.borderedProminent)
+                        Button("불참", role: .destructive) {
+                            if let date = selectedDate { attendanceStore.set(false, for: date) }
+                            selectedDate = nil
+                        }
+                        Button("취소", role: .cancel) { selectedDate = nil }
                     }
+                
+                // 일정 추가 버튼
+                Button(action: { showEventCreation = true }) {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(Color.primaryBlue)
+                        Text("팀 일정 추가")
+                            .fontWeight(.medium)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                            .fill(Color.primaryBlue.opacity(0.1))
+                    )
                 }
             }
-            .padding(.horizontal, Layout.padding)
         }
     }
     

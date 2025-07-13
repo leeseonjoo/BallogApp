@@ -48,6 +48,18 @@ struct ProfileCardView: View {
                             .foregroundColor(Color.secondaryText)
                     }
                     
+                    // Team Role (if has team and role)
+                    if card.hasTeam, let role = card.teamRole {
+                        HStack(spacing: 4) {
+                            Image(systemName: role == .coach ? "person.2.circle" : "figure.soccer")
+                                .font(.caption)
+                                .foregroundColor(Color.primaryBlue)
+                            Text("\(role.rawValue)")
+                                .font(.subheadline)
+                                .foregroundColor(Color.primaryBlue)
+                        }
+                    }
+                    
                     // Plap Level
                     HStack(spacing: 4) {
                         Image(systemName: "star.fill")

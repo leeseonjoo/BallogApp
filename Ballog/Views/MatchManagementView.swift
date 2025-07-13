@@ -3,42 +3,27 @@ import SwiftUI
 struct MatchManagementView: View {
     @EnvironmentObject private var attendanceStore: AttendanceStore
     @EnvironmentObject private var eventStore: TeamEventStore
-    @State private var selectedTab: MatchTab = .upcoming
     @State private var showCreateMatch = false
     @State private var showMatchDetail = false
     @State private var selectedMatch: TeamEvent?
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Tab Picker
-                tabPickerSection
-                
-                // Content
-                ScrollView {
-                    VStack(spacing: DesignConstants.sectionSpacing) {
-                        switch selectedTab {
-                        case .upcoming:
-                            upcomingMatchesSection
-                        case .past:
-                            pastMatchesSection
-                        case .statistics:
-                            matchStatisticsSection
-                        }
-                    }
-                    .padding(DesignConstants.horizontalPadding)
+            ScrollView {
+                VStack(spacing: DesignConstants.sectionSpacing) {
+                    // Upcoming Matches Section
+                    upcomingMatchesSection
+                    
+                    // Past Matches Section
+                    pastMatchesSection
+                    
+                    // Statistics Section
+                    matchStatisticsSection
                 }
+                .padding(DesignConstants.horizontalPadding)
             }
             .background(Color.pageBackground)
             .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showCreateMatch = true }) {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundColor(Color.primaryBlue)
-                    }
-                }
-            }
             .sheet(isPresented: $showCreateMatch) {
                 CreateMatchView { newMatch in
                     eventStore.addEvent(newMatch)
@@ -48,19 +33,9 @@ struct MatchManagementView: View {
                 MatchDetailView(matchEvent: matchEvent)
             }
         }
-        .ballogTopBar()
     }
     
-    private var tabPickerSection: some View {
-        Picker("MatchTab", selection: $selectedTab) {
-            ForEach(MatchTab.allCases, id: \.self) { tab in
-                Text(tab.rawValue).tag(tab)
-            }
-        }
-        .pickerStyle(.segmented)
-        .padding(DesignConstants.horizontalPadding)
-        .padding(.vertical, DesignConstants.verticalPadding)
-    }
+
     
     private var upcomingMatchesSection: some View {
         VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
@@ -69,9 +44,16 @@ struct MatchManagementView: View {
                     .font(.title2.bold())
                     .foregroundColor(Color.primaryText)
                 Spacer()
-                Text("\(upcomingMatches.count)개")
-                    .font(.caption)
-                    .foregroundColor(Color.secondaryText)
+                HStack(spacing: 8) {
+                    Text("\(upcomingMatches.count)개")
+                        .font(.caption)
+                        .foregroundColor(Color.secondaryText)
+                    Button(action: { showCreateMatch = true }) {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(Color.primaryBlue)
+                            .font(.title2)
+                    }
+                }
             }
             
             if upcomingMatches.isEmpty {
@@ -95,9 +77,16 @@ struct MatchManagementView: View {
                     .font(.title2.bold())
                     .foregroundColor(Color.primaryText)
                 Spacer()
-                Text("\(pastMatches.count)개")
-                    .font(.caption)
-                    .foregroundColor(Color.secondaryText)
+                HStack(spacing: 8) {
+                    Text("\(pastMatches.count)개")
+                        .font(.caption)
+                        .foregroundColor(Color.secondaryText)
+                    Button(action: { showCreateMatch = true }) {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(Color.primaryBlue)
+                            .font(.title2)
+                    }
+                }
             }
             
             if pastMatches.isEmpty {
@@ -116,9 +105,17 @@ struct MatchManagementView: View {
     
     private var matchStatisticsSection: some View {
         VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
-            Text("매치 통계")
-                .font(.title2.bold())
-                .foregroundColor(Color.primaryText)
+            HStack {
+                Text("매치 통계")
+                    .font(.title2.bold())
+                    .foregroundColor(Color.primaryText)
+                Spacer()
+                Button(action: { showCreateMatch = true }) {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundColor(Color.primaryBlue)
+                        .font(.title2)
+                }
+            }
             
             LazyVGrid(columns: [
                 GridItem(.flexible()),
@@ -231,11 +228,7 @@ struct MatchManagementView: View {
     }
 }
 
-enum MatchTab: String, CaseIterable {
-    case upcoming = "예정"
-    case past = "지난"
-    case statistics = "통계"
-}
+
 
 struct MatchCard: View {
     let matchEvent: TeamEvent

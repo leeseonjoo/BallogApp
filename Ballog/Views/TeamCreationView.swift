@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import PhotosUI
 
 struct TeamCreationView: View {
     private enum Step: Int { case name, sport, gender, type, source, region, done }
@@ -19,6 +20,8 @@ struct TeamCreationView: View {
     @State private var teamType = "club"
     @State private var source = "인스타"
     @State private var region = ""
+    @State private var teamLogo: Data?
+    @State private var selectedLogoItem: PhotosPickerItem?
 
     private var userCard: ProfileCard? {
         guard let data = storedCard.data(using: .utf8) else { return nil }
@@ -35,9 +38,38 @@ struct TeamCreationView: View {
             Spacer()
             switch step {
             case .name:
-                Text("팀 이름 작성해주세요")
-                TextField("팀 이름", text: $teamName)
-                    .textFieldStyle(.roundedBorder)
+                VStack(spacing: DesignConstants.largeSpacing) {
+                    Text("팀 이름 작성해주세요")
+                        .font(.title2.bold())
+                        .foregroundColor(Color.primaryText)
+                    
+                    TextField("팀 이름", text: $teamName)
+                        .textFieldStyle(.roundedBorder)
+                    
+                    VStack(spacing: DesignConstants.smallSpacing) {
+                        Text("팀 로고 (선택사항)")
+                            .font(.headline)
+                            .foregroundColor(Color.primaryText)
+                        
+                        if let teamLogo = teamLogo, let uiImage = UIImage(data: teamLogo) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 100, height: 100)
+                                .clipShape(Circle())
+                        } else {
+                            Image(systemName: "camera.circle")
+                                .resizable()
+                                .frame(width: 100, height: 100)
+                                .foregroundColor(Color.secondaryText)
+                        }
+                        
+                        PhotosPicker(selection: $selectedLogoItem, matching: .images) {
+                            Text("로고 선택")
+                                .foregroundColor(Color.primaryBlue)
+                        }
+                    }
+                }
             case .sport:
                 Text("어떤 스포츠 인가요?")
                 Picker("스포츠", selection: $sport) {
@@ -116,6 +148,13 @@ struct TeamCreationView: View {
         }
         .padding()
         .navigationTitle("팀 만들기")
+        .onChange(of: selectedLogoItem) { newItem in
+            if let newItem {
+                Task {
+                    teamLogo = try? await newItem.loadTransferable(type: Data.self)
+                }
+            }
+        }
     }
 
     private func nextStep() {
@@ -135,7 +174,8 @@ struct TeamCreationView: View {
                     region: region,
                     members: [member],
                     creatorId: userCard?.nickname ?? "나",
-                    creatorName: userCard?.nickname ?? "나"
+                    creatorName: userCard?.nickname ?? "나",
+                    logo: teamLogo
                 )
                 teamStore.addTeam(team)
                 currentTeamID = team.id.uuidString

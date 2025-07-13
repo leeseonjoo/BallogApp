@@ -215,6 +215,9 @@ struct TeamCalendarView: View {
     @EnvironmentObject private var eventStore: TeamEventStore
     @State private var showEnhancedCalendar = false
     
+    // 일정 변경 감지를 위한 상태
+    @State private var eventUpdateTrigger = false
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -265,7 +268,8 @@ struct TeamCalendarView: View {
                 PublicMatchListView(viewModel: viewModel)
             }
             .sheet(isPresented: $viewModel.showingEventSheet) {
-                EventCreationView(viewModel: viewModel)
+                TeamEventCreationView()
+                    .environmentObject(eventStore)
             }
             .sheet(isPresented: $viewModel.showingCalendarIntegration) {
                 CalendarIntegrationView(viewModel: viewModel)
@@ -292,6 +296,10 @@ struct TeamCalendarView: View {
                     let event = TeamEvent(title: title, date: date, place: match.court.name, type: .match)
                     eventStore.add(event)
                 }
+            }
+            .onChange(of: eventStore.events.count) { _ in
+                // 일정이 추가되면 캘린더 업데이트
+                eventUpdateTrigger.toggle()
             }
         }
         .ballogTopBar()
@@ -396,10 +404,23 @@ struct TeamCalendarView: View {
                 .foregroundColor(Color.primaryText)
             
             VStack(spacing: DesignConstants.smallSpacing) {
-                ForEach(viewModel.events.sorted(by: { $0.date < $1.date })) { event in
-                    EventCard(event: event) {
-                        viewModel.addToExternalCalendar(event)
+                ForEach(eventStore.events.sorted(by: { $0.date < $1.date })) { event in
+                    TeamEventCard(event: event) {
+                        // 외부 캘린더에 추가
+                        let calendarEvent = CalendarEvent(
+                            title: event.title,
+                            date: event.date,
+                            type: event.type == .match ? .match : .training,
+                            notes: event.notes
+                        )
+                        viewModel.addToExternalCalendar(calendarEvent)
                     }
+                }
+                
+                if eventStore.events.isEmpty {
+                    Text("등록된 일정이 없습니다")
+                        .foregroundColor(Color.secondaryText)
+                        .padding()
                 }
             }
         }
@@ -452,8 +473,8 @@ struct TeamCalendarView: View {
     }
     
     private func hasTrainingEvent(on date: Date) -> Bool {
-        viewModel.events.contains { event in
-            Calendar.current.isDate(event.date, inSameDayAs: date) && event.type == .training
+        eventStore.events.contains { event in
+            Calendar.current.isDate(event.date, inSameDayAs: date) && (event.type == .training || event.type == .regularTraining)
         }
     }
     
@@ -901,6 +922,132 @@ struct PublicMatchCard: View {
         .overlay(
             RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
                 .stroke(Color.borderColor, lineWidth: 1)
+        )
+    }
+}
+
+// MARK: - TeamEventCard
+struct TeamEventCard: View {
+    let event: TeamEvent
+    let onAddToCalendar: () -> Void
+    
+    private var eventIcon: String {
+        switch event.type {
+        case .match: return "sportscourt"
+        case .training: return "figure.walk"
+        case .tournament: return "trophy"
+        case .regularTraining: return "repeat"
+        }
+    }
+    
+    private var eventColor: Color {
+        switch event.type {
+        case .match: return .red
+        case .training: return .blue
+        case .tournament: return .orange
+        case .regularTraining: return .green
+        }
+    }
+    
+
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
+            HStack {
+                Image(systemName: eventIcon)
+                    .foregroundColor(eventColor)
+                    .font(.title3)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(event.title)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color.primaryText)
+                    
+                    HStack(spacing: 4) {
+                        Text(event.date, style: .date)
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                        
+                        Text("•")
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                        
+                        Text(event.place)
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                    }
+                }
+                
+                Spacer()
+                
+                Button(action: onAddToCalendar) {
+                    Image(systemName: "calendar.badge.plus")
+                        .foregroundColor(Color.primaryBlue)
+                        .font(.caption)
+                }
+            }
+            
+            if let notes = event.notes, !notes.isEmpty {
+                Text(notes)
+                    .font(.caption)
+                    .foregroundColor(Color.secondaryText)
+                    .padding(.leading, 24)
+            }
+            
+            // 매치 정보
+            if event.type == .match, let opponent = event.opponent {
+                HStack {
+                    Text("상대팀: \(opponent)")
+                        .font(.caption)
+                        .foregroundColor(Color.secondaryText)
+                    
+                    if let matchType = event.matchType {
+                        Text("• \(matchType)")
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                    }
+                }
+                .padding(.leading, 24)
+            }
+            
+            // 대회 정보
+            if event.type == .tournament, let tournamentName = event.tournamentName {
+                HStack {
+                    Text("대회: \(tournamentName)")
+                        .font(.caption)
+                        .foregroundColor(Color.secondaryText)
+                    
+                    if let round = event.tournamentRound {
+                        Text("• \(round)")
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                    }
+                }
+                .padding(.leading, 24)
+            }
+            
+            // 훈련 정보
+            if (event.type == .training || event.type == .regularTraining), let trainingType = event.trainingType {
+                HStack {
+                    Text("훈련 종류: \(trainingType.rawValue)")
+                        .font(.caption)
+                        .foregroundColor(Color.secondaryText)
+                    
+                    if event.isRecurring {
+                        Text("• 반복")
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                    }
+                }
+                .padding(.leading, 24)
+            }
+        }
+        .padding(DesignConstants.cardPadding)
+        .background(
+            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                .fill(Color.cardBackground)
+                .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
         )
     }
 }

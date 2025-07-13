@@ -13,6 +13,7 @@ struct Team: Identifiable, Codable {
     var creatorId: String
     var creatorName: String
     var createdAt: Date
+    var logo: Data?
 
     init(
         id: UUID = UUID(),
@@ -26,7 +27,8 @@ struct Team: Identifiable, Codable {
         members: [TeamCharacter] = [],
         creatorId: String = "",
         creatorName: String = "",
-        createdAt: Date = Date()
+        createdAt: Date = Date(),
+        logo: Data? = nil
     ) {
         self.id = id
         self.name = name
@@ -40,5 +42,6 @@ struct Team: Identifiable, Codable {
         self.creatorId = creatorId
         self.creatorName = creatorName
         self.createdAt = createdAt
+        self.logo = logo
     }
 }

@@ -28,6 +28,7 @@ struct TeamCharacter: Identifiable, Codable {
     var pose: Pose = .wave
     var recentAttendance: Bool = true
     var trainingLogs: Int = 0
+    var role: TeamRole = .player
 }
 
 struct TeamCharacterBoardView: View {

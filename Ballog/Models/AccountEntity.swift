@@ -48,6 +48,13 @@ public class TeamEventEntity: NSManagedObject {
     @NSManaged public var opponentScore: Int32
     @NSManaged public var result: String?
     @NSManaged public var notes: String?
+    // 추가 필드
+    @NSManaged public var trainingType: String?
+    @NSManaged public var isRecurring: Bool
+    @NSManaged public var recurringWeekday: Int32
+    @NSManaged public var endDate: Date?
+    @NSManaged public var tournamentName: String?
+    @NSManaged public var tournamentRound: String?
     
     @nonobjc public class func fetchRequest() -> NSFetchRequest<TeamEventEntity> {
         return NSFetchRequest<TeamEventEntity>(entityName: "TeamEventEntity")

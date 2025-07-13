@@ -181,7 +181,39 @@ final class CoreDataStack {
         eventNotes.attributeType = .stringAttributeType
         eventNotes.isOptional = true
 
-        teamEventEntity.properties = [eventId, eventDate, eventTitle, eventPlace, eventType, eventOpponent, eventMatchType, eventOurScore, eventOpponentScore, eventResult, eventNotes]
+        // 새로운 필드들 추가
+        let eventTrainingType = NSAttributeDescription()
+        eventTrainingType.name = "trainingType"
+        eventTrainingType.attributeType = .stringAttributeType
+        eventTrainingType.isOptional = true
+
+        let eventIsRecurring = NSAttributeDescription()
+        eventIsRecurring.name = "isRecurring"
+        eventIsRecurring.attributeType = .booleanAttributeType
+        eventIsRecurring.isOptional = false
+        eventIsRecurring.defaultValue = false
+
+        let eventRecurringWeekday = NSAttributeDescription()
+        eventRecurringWeekday.name = "recurringWeekday"
+        eventRecurringWeekday.attributeType = .integer32AttributeType
+        eventRecurringWeekday.isOptional = true
+
+        let eventEndDate = NSAttributeDescription()
+        eventEndDate.name = "endDate"
+        eventEndDate.attributeType = .dateAttributeType
+        eventEndDate.isOptional = true
+
+        let eventTournamentName = NSAttributeDescription()
+        eventTournamentName.name = "tournamentName"
+        eventTournamentName.attributeType = .stringAttributeType
+        eventTournamentName.isOptional = true
+
+        let eventTournamentRound = NSAttributeDescription()
+        eventTournamentRound.name = "tournamentRound"
+        eventTournamentRound.attributeType = .stringAttributeType
+        eventTournamentRound.isOptional = true
+
+        teamEventEntity.properties = [eventId, eventDate, eventTitle, eventPlace, eventType, eventTrainingType, eventIsRecurring, eventRecurringWeekday, eventEndDate, eventOpponent, eventMatchType, eventOurScore, eventOpponentScore, eventResult, eventNotes, eventTournamentName, eventTournamentRound]
 
         // PersonalTrainingLog Entity
         let personalTrainingLogEntity = NSEntityDescription()

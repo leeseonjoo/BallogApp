@@ -6,6 +6,8 @@ private enum TeamTab: String, CaseIterable {
     case ranking = "팀 랭킹"
     case match = "매치 관리"
     case tactics = "전술"
+    
+    static let orderedCases: [TeamTab] = [.manage, .goals, .ranking, .match, .tactics]
 }
 
 struct TeamPageView: View {
@@ -25,7 +27,7 @@ struct TeamPageView: View {
                 VStack(spacing: 0) {
                     // Tab Picker
                     Picker("TeamTab", selection: $selection) {
-                        ForEach(TeamTab.allCases, id: \.self) { tab in
+                        ForEach(TeamTab.orderedCases, id: \.self) { tab in
                             Text(tab.rawValue).tag(tab)
                         }
                     }

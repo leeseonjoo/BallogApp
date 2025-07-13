@@ -7,6 +7,7 @@ struct ProfileCard: Codable {
     var hasTeam: Bool
     var plapLevel: String
     var athleteLevel: String
+    var teamRole: TeamRole?
 }
 
 extension ProfileCard {

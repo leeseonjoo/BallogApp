@@ -32,6 +32,7 @@ struct BallogApp: App {
     @StateObject private var requestStore = TeamJoinRequestStore()
     @StateObject private var personalTrainingStore = PersonalTrainingStore()
     @StateObject private var teamGoalStore = TeamGoalStore()
+    @StateObject private var matchMatchingStore = MatchMatchingStore()
     @AppStorage("profileCard") private var storedCard: String = ""
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
     @AppStorage("autoLogin") private var autoLogin: Bool = false
@@ -77,6 +78,7 @@ struct BallogApp: App {
                         .environmentObject(requestStore)
                         .environmentObject(personalTrainingStore)
                         .environmentObject(teamGoalStore)
+                        .environmentObject(matchMatchingStore)
                         .sheet(isPresented: $showProfileCreator) {
                             ProfileCardCreationView(onSave: { cardString in
                                 saveProfileCard(for: savedUsername, card: cardString)

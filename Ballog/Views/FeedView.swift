@@ -1,36 +1,83 @@
 import SwiftUI
 
 struct FeedView: View {
-    @State private var selectedTab: FeedTab = .all
     @State private var posts: [FeedPost] = []
     @State private var showCreatePost = false
+    @State private var showMatchRequest = false
+    @State private var showAvailabilitySurvey = false
     @State private var searchText = ""
+    @State private var selectedTab = 0
+    @EnvironmentObject private var matchMatchingStore: MatchMatchingStore
+    @AppStorage("currentTeamID") private var currentTeamID: String = ""
+    @EnvironmentObject private var teamStore: TeamStore
     
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Header with Search
-                headerSection
+                // Header with Search (일반 피드만)
+                if selectedTab == 0 {
+                    generalFeedHeaderSection
+                }
                 
-                // Tab Picker
-                tabPickerSection
+                // Tab Selector
+                HStack(spacing: 0) {
+                    Button(action: { selectedTab = 0 }) {
+                        VStack(spacing: 4) {
+                            Text("소통·훈련·성과")
+                                .font(.subheadline)
+                                .fontWeight(selectedTab == 0 ? .semibold : .medium)
+                                .foregroundColor(selectedTab == 0 ? Color.primaryText : Color.secondaryText)
+                            
+                            Rectangle()
+                                .fill(selectedTab == 0 ? Color.primaryBlue : Color.clear)
+                                .frame(height: 2)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    
+                    Button(action: { selectedTab = 1 }) {
+                        VStack(spacing: 4) {
+                            Text("매치 매칭")
+                                .font(.subheadline)
+                                .fontWeight(selectedTab == 1 ? .semibold : .medium)
+                                .foregroundColor(selectedTab == 1 ? Color.primaryText : Color.secondaryText)
+                            
+                            Rectangle()
+                                .fill(selectedTab == 1 ? Color.primaryRed : Color.clear)
+                                .frame(height: 2)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(.horizontal, DesignConstants.horizontalPadding)
+                .padding(.top, 8)
                 
-                // Feed Content
-                feedContentSection
+                // Tab Content
+                if selectedTab == 0 {
+                    // 일반 피드 탭
+                    generalFeedTab
+                } else {
+                    // 매치 매칭 피드 탭
+                    matchFeedTab
+                }
             }
             .background(Color.pageBackground)
             .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showCreatePost = true }) {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundColor(Color.primaryBlue)
-                    }
-                }
-            }
             .sheet(isPresented: $showCreatePost) {
                 CreatePostView { newPost in
                     posts.insert(newPost, at: 0)
+                }
+            }
+            .sheet(isPresented: $showMatchRequest) {
+                if let currentTeam = getCurrentTeam() {
+                    CreateMatchRequestView(team: currentTeam)
+                        .environmentObject(matchMatchingStore)
+                }
+            }
+            .sheet(isPresented: $showAvailabilitySurvey) {
+                if let currentTeam = getCurrentTeam() {
+                    TeamAvailabilitySurveyView(team: currentTeam)
+                        .environmentObject(matchMatchingStore)
                 }
             }
             .onAppear {
@@ -40,16 +87,83 @@ struct FeedView: View {
         .ballogTopBar()
     }
     
-    private var headerSection: some View {
+    // 일반 피드 탭
+    private var generalFeedTab: some View {
+        VStack(spacing: 0) {
+            // + 버튼
+            HStack {
+                Spacer()
+                Button(action: { showCreatePost = true }) {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundColor(Color.primaryBlue)
+                        .font(.title2)
+                }
+            }
+            .padding(.horizontal, DesignConstants.horizontalPadding)
+            .padding(.top, 8)
+            
+            ScrollView {
+                LazyVStack(spacing: DesignConstants.spacing) {
+                    ForEach(filteredGeneralPosts) { post in
+                        FeedPostCard(post: post) { updatedPost in
+                            if let index = posts.firstIndex(where: { $0.id == updatedPost.id }) {
+                                posts[index] = updatedPost
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, DesignConstants.horizontalPadding)
+                .padding(.top, 16)
+            }
+        }
+    }
+    
+    // 매치 매칭 피드 탭
+    private var matchFeedTab: some View {
+        VStack(spacing: 0) {
+            // + 버튼 (메뉴)
+            HStack {
+                Spacer()
+                Menu {
+                    Button(action: { showAvailabilitySurvey = true }) {
+                        Label("가용성 조사", systemImage: "calendar")
+                    }
+                    Button(action: { showMatchRequest = true }) {
+                        Label("매치 요청", systemImage: "sportscourt")
+                    }
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundColor(Color.primaryRed)
+                        .font(.title2)
+                }
+            }
+            .padding(.horizontal, DesignConstants.horizontalPadding)
+            .padding(.top, 8)
+            
+            ScrollView {
+                LazyVStack(spacing: DesignConstants.spacing) {
+                    ForEach(filteredMatchPosts) { post in
+                        FeedPostCard(post: post) { updatedPost in
+                            if let index = posts.firstIndex(where: { $0.id == updatedPost.id }) {
+                                posts[index] = updatedPost
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, DesignConstants.horizontalPadding)
+                .padding(.top, 16)
+            }
+        }
+    }
+    
+    // 일반 피드 헤더(검색)
+    private var generalFeedHeaderSection: some View {
         VStack(spacing: DesignConstants.smallSpacing) {
-            // Search Bar
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(Color.secondaryText)
-                
                 TextField("피드 검색...", text: $searchText)
                     .textFieldStyle(PlainTextFieldStyle())
-                
                 if !searchText.isEmpty {
                     Button("취소") {
                         searchText = ""
@@ -68,51 +182,16 @@ struct FeedView: View {
         .padding(.vertical, 8)
     }
     
-    private var tabPickerSection: some View {
-        Picker("FeedTab", selection: $selectedTab) {
-            ForEach(FeedTab.allCases, id: \.self) { tab in
-                Text(tab.rawValue).tag(tab)
-            }
-        }
-        .pickerStyle(.segmented)
-        .padding(DesignConstants.horizontalPadding)
-        .padding(.bottom, DesignConstants.verticalPadding)
-    }
-    
-    private var feedContentSection: some View {
-        ScrollView {
-            LazyVStack(spacing: DesignConstants.spacing) {
-                ForEach(filteredPosts) { post in
-                    FeedPostCard(post: post) { updatedPost in
-                        if let index = posts.firstIndex(where: { $0.id == updatedPost.id }) {
-                            posts[index] = updatedPost
-                        }
-                    }
-                }
-            }
-            .padding(DesignConstants.horizontalPadding)
+    // 일반 피드(소통/훈련/성과)
+    private var filteredGeneralPosts: [FeedPost] {
+        posts.filter { post in
+            (post.type == .communication || post.type == .training || post.type == .achievement) &&
+            (searchText.isEmpty || post.content.localizedCaseInsensitiveContains(searchText) || post.author.localizedCaseInsensitiveContains(searchText))
         }
     }
-    
-    private var filteredPosts: [FeedPost] {
-        let filtered = posts.filter { post in
-            if !searchText.isEmpty {
-                return post.content.localizedCaseInsensitiveContains(searchText) ||
-                       post.author.localizedCaseInsensitiveContains(searchText)
-            }
-            return true
-        }
-        
-        switch selectedTab {
-        case .all:
-            return filtered
-        case .communication:
-            return filtered.filter { $0.type == .communication }
-        case .training:
-            return filtered.filter { $0.type == .training }
-        case .achievement:
-            return filtered.filter { $0.type == .achievement }
-        }
+    // 매치 피드
+    private var filteredMatchPosts: [FeedPost] {
+        posts.filter { $0.type == .match }
     }
     
     private func loadSamplePosts() {
@@ -160,16 +239,24 @@ struct FeedView: View {
                 time: Date().addingTimeInterval(-14400),
                 imageURL: nil,
                 isLiked: true
+            ),
+            FeedPost(
+                id: UUID(),
+                author: "팀 매니저",
+                content: "다음 주 토요일 오후 2시에 다른 팀과 친선경기를 잡았습니다. 참가 가능한 분들 댓글로 알려주세요! ⚽️",
+                type: .match,
+                likes: 18,
+                comments: 12,
+                time: Date().addingTimeInterval(-18000),
+                imageURL: nil,
+                isLiked: false
             )
         ]
     }
-}
-
-enum FeedTab: String, CaseIterable {
-    case all = "전체"
-    case communication = "소통"
-    case training = "훈련"
-    case achievement = "성과"
+    
+    private func getCurrentTeam() -> Team? {
+        return teamStore.teams.first { $0.id.uuidString == currentTeamID }
+    }
 }
 
 struct FeedPost: Identifiable {
@@ -185,7 +272,7 @@ struct FeedPost: Identifiable {
 }
 
 enum PostType {
-    case communication, training, achievement
+    case communication, training, achievement, match
     
     var icon: String {
         switch self {
@@ -195,6 +282,8 @@ enum PostType {
             return "figure.walk"
         case .achievement:
             return "trophy"
+        case .match:
+            return "sportscourt"
         }
     }
     
@@ -206,6 +295,8 @@ enum PostType {
             return Color.primaryGreen
         case .achievement:
             return Color.primaryOrange
+        case .match:
+            return Color.primaryRed
         }
     }
     
@@ -217,6 +308,8 @@ enum PostType {
             return "훈련 기록"
         case .achievement:
             return "성과 공유"
+        case .match:
+            return "매치 매칭"
         }
     }
 }
