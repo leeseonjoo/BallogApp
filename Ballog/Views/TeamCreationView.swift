@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 
 struct TeamCreationView: View {
-    private enum Step: Int { case name, sport, gender, type, source, done }
+    private enum Step: Int { case name, sport, gender, type, source, region, done }
     @State private var step: Step = .name
 
     @EnvironmentObject private var teamStore: TeamStore
@@ -10,12 +10,19 @@ struct TeamCreationView: View {
     @EnvironmentObject private var logStore: TeamTrainingLogStore
     @AppStorage("currentTeamID") private var currentTeamID: String = ""
     @AppStorage("hasTeam") private var hasTeam: Bool = true
+    @AppStorage("profileCard") private var storedCard: String = ""
 
     @State private var teamName = ""
     @State private var sport = "풋살"
     @State private var gender = "남자"
     @State private var teamType = "club"
     @State private var source = "인스타"
+    @State private var region = ""
+
+    private var userCard: ProfileCard? {
+        guard let data = storedCard.data(using: .utf8) else { return nil }
+        return try? JSONDecoder().decode(ProfileCard.self, from: data)
+    }
 
     private let sports = ["풋살", "축구"]
     private let genders = ["남자", "여자", "혼성"]
@@ -52,6 +59,10 @@ struct TeamCreationView: View {
                 Picker("경로", selection: $source) {
                     ForEach(sources, id: \..self) { Text($0) }
                 }
+            case .region:
+                Text("주요활동지역이 어디인가요?")
+                TextField("지역", text: $region)
+                    .textFieldStyle(.roundedBorder)
             case .done:
                 Text("축하합니다 팀 생성이 완료 되었어요!")
                     .font(.headline)
@@ -75,7 +86,19 @@ struct TeamCreationView: View {
         if let next = Step(rawValue: step.rawValue + 1) {
             step = next
             if step == .done {
-                let team = Team(name: teamName, sport: sport, gender: gender, type: teamType)
+                let member = TeamCharacter(
+                    name: userCard?.nickname ?? "나",
+                    imageName: userCard?.iconName ?? "soccer-player",
+                    isOnline: false
+                )
+                let team = Team(
+                    name: teamName,
+                    sport: sport,
+                    gender: gender,
+                    type: teamType,
+                    region: region,
+                    members: [member]
+                )
                 teamStore.add(team)
                 currentTeamID = team.id.uuidString
                 hasTeam = true
