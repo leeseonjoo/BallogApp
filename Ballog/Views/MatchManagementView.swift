@@ -45,8 +45,8 @@ struct MatchManagementView: View {
                     eventStore.addEvent(newMatch)
                 }
             }
-            .sheet(item: $selectedMatch) { match in
-                MatchDetailView(match: match)
+            .sheet(item: $selectedMatch) { matchEvent in
+                MatchDetailView(match: matchEvent)
             }
         }
         .ballogTopBar()
@@ -79,9 +79,9 @@ struct MatchManagementView: View {
                 emptyMatchesView("예정된 매치가 없습니다", "새로운 매치를 등록해보세요")
             } else {
                 VStack(spacing: DesignConstants.smallSpacing) {
-                    ForEach(upcomingMatches) { match in
-                        MatchCard(match: match) {
-                            selectedMatch = match
+                    ForEach(upcomingMatches) { matchEvent in
+                        MatchCard(match: matchEvent) {
+                            selectedMatch = matchEvent
                         }
                     }
                 }
@@ -105,9 +105,9 @@ struct MatchManagementView: View {
                 emptyMatchesView("지난 매치가 없습니다", "매치 기록을 확인해보세요")
             } else {
                 VStack(spacing: DesignConstants.smallSpacing) {
-                    ForEach(pastMatches) { match in
-                        PastMatchCard(match: match) {
-                            selectedMatch = match
+                    ForEach(pastMatches) { matchEvent in
+                        PastMatchCard(match: matchEvent) {
+                            selectedMatch = matchEvent
                         }
                     }
                 }
@@ -162,8 +162,8 @@ struct MatchManagementView: View {
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: DesignConstants.spacing) {
-                        ForEach(recentMatches.prefix(5), id: \.id) { match in
-                            PerformanceCard(match: match)
+                        ForEach(recentMatches.prefix(5), id: \.id) { matchEvent in
+                            PerformanceCard(match: matchEvent)
                         }
                     }
                     .padding(.horizontal, DesignConstants.horizontalPadding)
@@ -397,13 +397,15 @@ struct MatchStatCard: View {
                 .frame(width: 24, height: 24)
                 .foregroundColor(color)
             
-            Text(value)
-                .font(.title2.bold())
-                .foregroundColor(Color.primaryText)
-            
-            Text(title)
-                .font(.caption)
-                .foregroundColor(Color.secondaryText)
+            VStack(spacing: 2) {
+                Text(value)
+                    .font(.title2.bold())
+                    .foregroundColor(Color.primaryText)
+                
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(Color.secondaryText)
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(DesignConstants.cardPadding)
@@ -418,63 +420,100 @@ struct PerformanceCard: View {
     let match: TeamEvent
     
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: DesignConstants.smallSpacing) {
             Text(match.date, style: .date)
-                .font(.caption2)
+                .font(.caption)
                 .foregroundColor(Color.secondaryText)
             
             if let ourScore = match.ourScore, let opponentScore = match.opponentScore {
-                Text("\(ourScore)-\(opponentScore)")
-                    .font(.headline)
-                    .fontWeight(.bold)
-                    .foregroundColor(match.result == .win ? Color.successColor : 
-                                   match.result == .loss ? Color.errorColor : Color.secondaryText)
+                HStack(spacing: 4) {
+                    Text("\(ourScore)")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.primaryText)
+                    
+                    Text("-")
+                        .font(.caption)
+                        .foregroundColor(Color.secondaryText)
+                    
+                    Text("\(opponentScore)")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.primaryText)
+                }
+            } else {
+                Text("미정")
+                    .font(.caption)
+                    .foregroundColor(Color.secondaryText)
             }
             
-            Text(match.result?.rawValue ?? "무승부")
-                .font(.caption2)
-                .foregroundColor(Color.secondaryText)
+            if let result = match.result {
+                Text(result.rawValue)
+                    .font(.caption)
+                    .foregroundColor(result == .win ? Color.successColor : 
+                                   result == .loss ? Color.errorColor : Color.secondaryText)
+            }
         }
-        .padding(DesignConstants.smallPadding)
+        .frame(width: 80)
+        .padding(DesignConstants.cardPadding)
         .background(
-            RoundedRectangle(cornerRadius: DesignConstants.smallCornerRadius)
+            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
                 .fill(Color.cardBackground)
         )
     }
 }
 
 struct CreateMatchView: View {
+    let onCreate: (TeamEvent) -> Void
     @Environment(\.dismiss) private var dismiss
+    
     @State private var title = ""
-    @State private var place = ""
     @State private var date = Date()
+    @State private var place = ""
     @State private var opponent = ""
     @State private var matchType: MatchType = .friendly
-    
-    let onCreate: (TeamEvent) -> Void
     
     enum MatchType: String, CaseIterable {
         case friendly = "친선경기"
         case league = "리그"
-        case tournament = "토너먼트"
+        case cup = "컵대회"
         case practice = "연습경기"
     }
     
     var body: some View {
         NavigationStack {
-            Form {
-                Section("매치 정보") {
-                    TextField("매치 제목", text: $title)
-                    TextField("장소", text: $place)
-                    DatePicker("날짜", selection: $date, displayedComponents: [.date, .hourAndMinute])
-                    TextField("상대팀", text: $opponent)
-                    Picker("매치 유형", selection: $matchType) {
-                        ForEach(MatchType.allCases, id: \.self) { type in
-                            Text(type.rawValue).tag(type)
+            ScrollView {
+                VStack(spacing: DesignConstants.sectionSpacing) {
+                    VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
+                        Text("매치 정보")
+                            .font(.title2.bold())
+                            .foregroundColor(Color.primaryText)
+                        
+                        VStack(spacing: DesignConstants.smallSpacing) {
+                            TextField("매치 제목", text: $title)
+                                .textFieldStyle(.roundedBorder)
+                            
+                            DatePicker("날짜 및 시간", selection: $date)
+                                .datePickerStyle(.compact)
+                            
+                            TextField("장소", text: $place)
+                                .textFieldStyle(.roundedBorder)
+                            
+                            TextField("상대팀 (선택사항)", text: $opponent)
+                                .textFieldStyle(.roundedBorder)
+                            
+                            Picker("경기 유형", selection: $matchType) {
+                                ForEach(MatchType.allCases, id: \.self) { type in
+                                    Text(type.rawValue).tag(type)
+                                }
+                            }
+                            .pickerStyle(.menu)
                         }
                     }
                 }
+                .padding(DesignConstants.horizontalPadding)
             }
+            .background(Color.pageBackground)
             .navigationTitle("새 매치")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
