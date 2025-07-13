@@ -57,6 +57,34 @@ struct MainHomeView: View {
         return formatter.string(from: Date())
     }
 
+    private var competitionEvents: [TeamEvent] {
+        eventStore.events.filter { $0.type == .match }.sorted { $0.date < $1.date }
+    }
+
+    private var thisWeekEvents: [TeamEvent] {
+        eventStore.events.filter {
+            calendar.isDate($0.date, equalTo: Date(), toGranularity: .weekOfYear)
+        }.sorted { $0.date < $1.date }
+    }
+
+    private var dateFormatter: DateFormatter {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "ko_KR")
+        f.dateFormat = "M월 d일"
+        return f
+    }
+
+    private var timeFormatter: DateFormatter {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm"
+        return f
+    }
+
+    private func dDay(from date: Date) -> Int {
+        let diff = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: date))
+        return diff.day ?? 0
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: Layout.spacing) {
@@ -127,31 +155,27 @@ struct MainHomeView: View {
                 Text("대회 일정")
                     .font(.title2.bold())
                 Spacer()
-                Button(action: {}) {
-                    Image(systemName: "plus")
-                }
             }
             .padding(.horizontal)
 
             VStack(alignment: .leading, spacing: 0) {
-                ForEach(scheduleTexts.indices, id: \.self) { index in
-                    Text(scheduleTexts[index])
+                if competitionEvents.isEmpty {
+                    Text("등록된 일정이 없습니다")
                         .padding(.vertical, 12)
                         .padding(.horizontal)
-
-                    if index != scheduleTexts.count - 1 {
-                        Divider()
+                } else {
+                    ForEach(competitionEvents) { event in
+                        Text("- \(dateFormatter.string(from: event.date)) \(event.title) | D-day \(dDay(from: event.date))")
+                            .padding(.vertical, 12)
+                            .padding(.horizontal)
+                        if event.id != competitionEvents.last?.id {
+                            Divider()
+                        }
                     }
                 }
             }
             .padding(.horizontal)
         }
-    }
-
-    private var scheduleTexts: [String] {
-        [
-            "- 제 2회 리드컵 풋살 대회 | D-day 40",
-            "- 제 9회 펜타컵 풋살 대회 | D-day 35"        ]
     }
 
     private var thisWeekScheduleSection: some View {
@@ -160,46 +184,32 @@ struct MainHomeView: View {
                 Text("이번주 일정")
                     .font(.title2.bold())
                 Spacer()
-                Button(action: {}) {
-                    Image(systemName: "plus")
-                }
             }
             .padding(.horizontal)
 
             VStack(alignment: .leading, spacing: 0) {
-                ForEach(sampleDiaryDay.entries.indices, id: \.self) { index in
-                    let entry = sampleDiaryDay.entries[index]
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("- \(entry.title) | \(entry.time)")
-                        Text("  장소: \(entry.place)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.vertical, 12)
-                    .padding(.horizontal)
-
-                    if index != sampleDiaryDay.entries.count - 1 {
-                        Divider()
+                if thisWeekEvents.isEmpty {
+                    Text("등록된 일정이 없습니다")
+                        .padding(.vertical, 12)
+                        .padding(.horizontal)
+                } else {
+                    ForEach(thisWeekEvents) { event in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("- \(timeFormatter.string(from: event.date)) | \(event.title)")
+                            Text("  장소: \(event.place)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.vertical, 12)
+                        .padding(.horizontal)
+                        if event.id != thisWeekEvents.last?.id {
+                            Divider()
+                        }
                     }
                 }
             }
             .padding(.horizontal)
         }
-    }
-
-    private var sampleDiaryDay: DiaryDay {
-        DiaryDay(
-            date: "06 (화)",
-            entries: [
-                DiaryEntry(
-                    color: .green,
-                    time: "20:00 - 22:00",
-                    title: "해그래 운동",
-                    place: "서수원풋살장"
-                )
-            ]
-        )
     }
 }
 
