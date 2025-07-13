@@ -49,6 +49,7 @@ struct MatchManagementView: View {
                 MatchDetailView(match: match)
             }
         }
+        .ballogTopBar()
     }
     
     private var tabPickerSection: some View {
@@ -124,28 +125,28 @@ struct MatchManagementView: View {
                 GridItem(.flexible()),
                 GridItem(.flexible())
             ], spacing: DesignConstants.spacing) {
-                StatCard(
+                MatchStatCard(
                     title: "총 매치",
                     value: "\(allMatches.count)",
                     icon: "sportscourt",
                     color: Color.primaryBlue
                 )
                 
-                StatCard(
+                MatchStatCard(
                     title: "승률",
                     value: "\(winRate)%",
                     icon: "trophy",
                     color: Color.primaryOrange
                 )
                 
-                StatCard(
+                MatchStatCard(
                     title: "평균 득점",
                     value: "\(averageGoals)",
                     icon: "soccer.ball.inverse",
                     color: Color.primaryGreen
                 )
                 
-                StatCard(
+                MatchStatCard(
                     title: "평균 실점",
                     value: "\(averageConceded)",
                     icon: "shield",
@@ -383,7 +384,7 @@ struct PastMatchCard: View {
     }
 }
 
-struct StatCard: View {
+struct MatchStatCard: View {
     let title: String
     let value: String
     let icon: String
@@ -540,6 +541,7 @@ struct MatchDetailView: View {
                 }
             }
         }
+        .ballogTopBar()
     }
     
     private var matchInfoSection: some View {
@@ -551,8 +553,8 @@ struct MatchDetailView: View {
             VStack(spacing: DesignConstants.smallSpacing) {
                 InfoRow(title: "제목", value: match.title)
                 InfoRow(title: "장소", value: match.place)
-                InfoRow(title: "날짜", value: match.date, style: .date)
-                InfoRow(title: "시간", value: match.date, style: .time)
+                InfoRow(title: "날짜", value: match.date, dateStyle: .date)
+                InfoRow(title: "시간", value: match.date, dateStyle: .time)
                 if let opponent = match.opponent {
                     InfoRow(title: "상대팀", value: opponent)
                 }
@@ -641,7 +643,7 @@ struct MatchDetailView: View {
 struct InfoRow: View {
     let title: String
     let value: Any
-    var style: DateFormatter.Style?
+    var dateStyle: Text.DateStyle?
     
     var body: some View {
         HStack {
@@ -651,7 +653,7 @@ struct InfoRow: View {
             
             Spacer()
             
-            if let date = value as? Date, let style = style {
+            if let date = value as? Date, let style = dateStyle {
                 Text(date, style: style)
                     .font(.subheadline)
                     .foregroundColor(Color.primaryText)

@@ -64,17 +64,18 @@ struct NotificationView: View {
                 }
             }
         }
+        .ballogTopBar()
     }
     
     private var notificationStatsSection: some View {
         HStack(spacing: DesignConstants.spacing) {
-            StatCard(
+            NotificationStatCard(
                 title: "전체",
                 count: notifications.count,
                 color: Color.primaryBlue
             )
             
-            StatCard(
+            NotificationStatCard(
                 title: "읽지 않음",
                 count: notifications.filter { !$0.isRead }.count,
                 color: Color.primaryOrange
@@ -123,7 +124,7 @@ struct NotificationItem: Identifiable {
     var isRead: Bool
 }
 
-enum NotificationType {
+enum NotificationType: CaseIterable {
     case training, team, match, system
     
     var icon: String {
@@ -153,7 +154,7 @@ enum NotificationType {
     }
 }
 
-struct StatCard: View {
+struct NotificationStatCard: View {
     let title: String
     let count: Int
     let color: Color

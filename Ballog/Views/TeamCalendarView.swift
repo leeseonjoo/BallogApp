@@ -106,32 +106,32 @@ struct TeamCalendarView: View {
     
     var body: some View {
         NavigationStack {
-            List {
-                Section(header: Text("우리 팀 가용 시간")) {
-                    ForEach(viewModel.myTeamAvailability) { availability in
-                        Text("\(availability.day) \(availability.timeRange) (\(availability.myTeamCount)명)")
-                    }
+            ScrollView {
+                VStack(spacing: DesignConstants.sectionSpacing) {
+                    // 우리 팀 가용 시간
+                    availabilitySection(
+                        title: "우리 팀 가용 시간",
+                        availabilities: viewModel.myTeamAvailability,
+                        isClickable: false
+                    )
+                    
+                    // 상대 팀 가용 시간
+                    availabilitySection(
+                        title: "상대 팀 가용 시간",
+                        availabilities: viewModel.opponentTeamAvailability,
+                        isClickable: false
+                    )
+                    
+                    // 공통 가용 시간
+                    availabilitySection(
+                        title: "공통 가용 시간",
+                        availabilities: viewModel.commonAvailability,
+                        isClickable: true
+                    )
                 }
-                
-                Section(header: Text("상대 팀 가용 시간")) {
-                    ForEach(viewModel.opponentTeamAvailability) { availability in
-                        Text("\(availability.day) \(availability.timeRange) (\(availability.opponentTeamCount)명)")
-                    }
-                }
-                
-                Section(header: Text("공통 가용 시간")) {
-                    ForEach(viewModel.commonAvailability) { availability in
-                        Button(action: {
-                            selectedAvailability = availability
-                            showCourtSheet = true
-                        }) {
-                            Text("\(availability.day) \(availability.timeRange) (합계 \(availability.totalCount)명)")
-                                .fontWeight(.bold)
-                                .foregroundColor(.green)
-                        }
-                    }
-                }
+                .padding(DesignConstants.horizontalPadding)
             }
+            .background(Color.pageBackground)
             .navigationTitle("팀 캘린더 매칭")
             .sheet(isPresented: $showCourtSheet) {
                 if let availability = selectedAvailability {
@@ -153,8 +153,33 @@ struct TeamCalendarView: View {
                 if let match = viewModel.confirmedMatch,
                    let date = Self.date(from: match.date, timeRange: match.timeRange) {
                     let title = "매치 \(match.teamA) vs \(match.teamB ?? "?")"
-                    let event = TeamEvent(date: date, title: title, place: match.court.name, type: .match)
+                    let event = TeamEvent(title: title, date: date, place: match.court.name, type: .match)
                     eventStore.add(event)
+                }
+            }
+        }
+        .ballogTopBar()
+    }
+    
+    private func availabilitySection(title: String, availabilities: [Availability], isClickable: Bool) -> some View {
+        VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
+            Text(title)
+                .font(.title2.bold())
+                .foregroundColor(Color.primaryText)
+            
+            VStack(spacing: DesignConstants.smallSpacing) {
+                ForEach(availabilities) { availability in
+                    if isClickable {
+                        Button(action: {
+                            selectedAvailability = availability
+                            showCourtSheet = true
+                        }) {
+                            AvailabilityCard(availability: availability, isHighlighted: true)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    } else {
+                        AvailabilityCard(availability: availability, isHighlighted: false)
+                    }
                 }
             }
         }
@@ -186,23 +211,81 @@ struct CourtSelectionView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                Toggle("비공개 초대 매치", isOn: $isPrivateMatch)
-                    .padding()
-                
-                List {
-                    ForEach(viewModel.courts.filter { $0.availableTimeRanges.contains(availability.timeRange) }) { court in
-                        Button(action: {
-                            viewModel.confirmMatch(selectedDay: availability.day, selectedTimeRange: availability.timeRange, selectedCourt: court, isPrivate: isPrivateMatch)
-                            dismissTrigger()
-                        }) {
-                            Text("\(court.name) - \(court.location)")
+            ScrollView {
+                VStack(spacing: DesignConstants.sectionSpacing) {
+                    // Toggle Section
+                    VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
+                        Text("매치 설정")
+                            .font(.title2.bold())
+                            .foregroundColor(Color.primaryText)
+                        
+                        Toggle("비공개 초대 매치", isOn: $isPrivateMatch)
+                            .padding(DesignConstants.cardPadding)
+                            .background(
+                                RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                                    .fill(Color.cardBackground)
+                            )
+                    }
+                    
+                    // Courts Section
+                    VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
+                        Text("구장 선택")
+                            .font(.title2.bold())
+                            .foregroundColor(Color.primaryText)
+                        
+                        VStack(spacing: DesignConstants.smallSpacing) {
+                            ForEach(viewModel.courts.filter { $0.availableTimeRanges.contains(availability.timeRange) }) { court in
+                                Button(action: {
+                                    viewModel.confirmMatch(selectedDay: availability.day, selectedTimeRange: availability.timeRange, selectedCourt: court, isPrivate: isPrivateMatch)
+                                    dismissTrigger()
+                                }) {
+                                    CourtCard(court: court)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
                         }
                     }
                 }
+                .padding(DesignConstants.horizontalPadding)
             }
+            .background(Color.pageBackground)
             .navigationTitle("구장 선택")
+            .navigationBarTitleDisplayMode(.inline)
         }
+    }
+}
+
+struct CourtCard: View {
+    let court: FutsalCourt
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
+                Text(court.name)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(Color.primaryText)
+                
+                Text(court.location)
+                    .font(.caption)
+                    .foregroundColor(Color.secondaryText)
+            }
+            
+            Spacer()
+            
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundColor(Color.secondaryText)
+        }
+        .padding(DesignConstants.cardPadding)
+        .background(
+            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                .fill(Color.cardBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                .stroke(Color.borderColor, lineWidth: 1)
+        )
     }
 }
 
@@ -211,18 +294,137 @@ struct PublicMatchListView: View {
     
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(viewModel.publicMatches) { match in
-                    VStack(alignment: .leading) {
-                        Text("날짜: \(match.date)")
-                        Text("시간: \(match.timeRange)")
-                        Text("구장: \(match.court.name)")
-                        Text("팀: \(match.teamA) vs ?")
+            ScrollView {
+                VStack(spacing: DesignConstants.sectionSpacing) {
+                    if viewModel.publicMatches.isEmpty {
+                        emptyMatchesView
+                    } else {
+                        VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
+                            Text("공개 매치")
+                                .font(.title2.bold())
+                                .foregroundColor(Color.primaryText)
+                            
+                            VStack(spacing: DesignConstants.smallSpacing) {
+                                ForEach(viewModel.publicMatches) { match in
+                                    PublicMatchCard(match: match)
+                                }
+                            }
+                        }
                     }
                 }
+                .padding(DesignConstants.horizontalPadding)
             }
+            .background(Color.pageBackground)
             .navigationTitle("공개 매치 리스트")
+            .navigationBarTitleDisplayMode(.large)
         }
+    }
+    
+    private var emptyMatchesView: some View {
+        VStack(spacing: DesignConstants.largeSpacing) {
+            Image(systemName: "sportscourt")
+                .resizable()
+                .frame(width: 60, height: 60)
+                .foregroundColor(Color.secondaryText)
+            
+            VStack(spacing: DesignConstants.smallSpacing) {
+                Text("공개 매치가 없습니다")
+                    .font(.headline)
+                    .foregroundColor(Color.primaryText)
+                
+                Text("새로운 공개 매치를 만들어보세요")
+                    .font(.subheadline)
+                    .foregroundColor(Color.secondaryText)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(DesignConstants.largePadding)
+        .background(
+            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                .fill(Color.cardBackground)
+        )
+    }
+}
+
+struct AvailabilityCard: View {
+    let availability: Availability
+    let isHighlighted: Bool
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
+                Text("\(availability.day) \(availability.timeRange)")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(Color.primaryText)
+                
+                Text("우리팀 \(availability.myTeamCount)명, 상대팀 \(availability.opponentTeamCount)명")
+                    .font(.caption)
+                    .foregroundColor(Color.secondaryText)
+            }
+            
+            Spacer()
+            
+            if isHighlighted {
+                Text("합계 \(availability.totalCount)명")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(Color.primaryGreen)
+            }
+        }
+        .padding(DesignConstants.cardPadding)
+        .background(
+            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                .fill(isHighlighted ? Color.primaryGreen.opacity(0.1) : Color.cardBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                .stroke(isHighlighted ? Color.primaryGreen.opacity(0.3) : Color.clear, lineWidth: 1)
+        )
+    }
+}
+
+struct PublicMatchCard: View {
+    let match: MatchInfo
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("\(match.date) \(match.timeRange)")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color.primaryText)
+                    
+                    Text(match.court.name)
+                        .font(.caption)
+                        .foregroundColor(Color.secondaryText)
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text("\(match.teamA) vs ?")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color.primaryBlue)
+                    
+                    Text(match.isPrivate ? "비공개" : "공개")
+                        .font(.caption2)
+                        .foregroundColor(Color.secondaryText)
+                }
+            }
+        }
+        .padding(DesignConstants.cardPadding)
+        .background(
+            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                .fill(Color.cardBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                .stroke(Color.borderColor, lineWidth: 1)
+        )
     }
 }
 

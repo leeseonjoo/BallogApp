@@ -136,7 +136,7 @@ struct FeedView: View {
                 likes: 8,
                 comments: 3,
                 time: Date().addingTimeInterval(-7200),
-                imageURL: "training_photo_1",
+                imageURL: nil,
                 isLiked: true
             ),
             FeedPost(
@@ -158,7 +158,7 @@ struct FeedView: View {
                 likes: 15,
                 comments: 6,
                 time: Date().addingTimeInterval(-14400),
-                imageURL: "team_photo_1",
+                imageURL: nil,
                 isLiked: true
             )
         ]
@@ -374,8 +374,6 @@ struct CreatePostView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var content = ""
     @State private var selectedType: PostType = .communication
-    @State private var showImagePicker = false
-    @State private var selectedImage: String?
     
     let onPost: (FeedPost) -> Void
     
@@ -448,6 +446,7 @@ struct CreatePostView: View {
                                 .fill(Color.primaryBlue.opacity(0.1))
                         )
                     }
+                    .disabled(true) // 이미지 선택 기능은 현재 비활성화
                 }
                 
                 Spacer()
@@ -481,7 +480,7 @@ struct CreatePostView: View {
             likes: 0,
             comments: 0,
             time: Date(),
-            imageURL: selectedImage,
+            imageURL: nil,
             isLiked: false
         )
         onPost(newPost)

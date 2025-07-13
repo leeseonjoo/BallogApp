@@ -9,6 +9,7 @@ import SwiftUI
 struct ContentView: View {
     @AppStorage("isAdminUser") private var isAdminUser: Bool = false
     @State private var selectedTab: Int = 0
+    @EnvironmentObject private var eventStore: TeamEventStore
 
     var body: some View {
         ZStack(alignment: .bottom) {

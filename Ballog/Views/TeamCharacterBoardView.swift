@@ -50,8 +50,8 @@ struct TeamCharacterBoardView: View {
         
         var imageName: String? {
             switch self {
-            case .livingRoom: return "living_room"
-            case .footballField: return "football_field"
+            case .livingRoom: return nil
+            case .footballField: return nil
             }
         }
     }
