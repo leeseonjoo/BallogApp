@@ -149,8 +149,8 @@ struct TeamCalendarView: View {
             .alert(item: $viewModel.confirmedMatch) { match in
                 Alert(title: Text("매치 확정!"), message: Text("날짜: \(match.date)\n시간: \(match.timeRange)\n구장: \(match.court.name)\n팀: \(match.teamA) vs \(match.teamB ?? "?")"), dismissButton: .default(Text("확인")))
             }
-            .onChange(of: viewModel.confirmedMatch) { match in
-                if let match = match,
+            .onChange(of: viewModel.confirmedMatch?.id) { _ in
+                if let match = viewModel.confirmedMatch,
                    let date = Self.date(from: match.date, timeRange: match.timeRange) {
                     let title = "매치 \(match.teamA) vs \(match.teamB ?? "?")"
                     let event = TeamEvent(date: date, title: title, place: match.court.name, type: .match)
