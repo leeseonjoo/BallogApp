@@ -7,11 +7,6 @@ struct SignUpView: View {
     @State private var email = ""
     @AppStorage("accounts") private var storedAccountsData: Data = Data()
 
-    private var accounts: [String: Account] {
-        get { (try? JSONDecoder().decode([String: Account].self, from: storedAccountsData)) ?? [:] }
-        set { storedAccountsData = (try? JSONEncoder().encode(newValue)) ?? Data() }
-    }
-
     var body: some View {
         NavigationStack {
             Form {
@@ -31,16 +26,30 @@ struct SignUpView: View {
         }
     }
 
-    private func register() {
+    private var accounts: [String: Account] {
+        get {
+            (try? JSONDecoder().decode([String: Account].self, from: storedAccountsData)) ?? [:]
+        }
+        set {
+            if let encoded = try? JSONEncoder().encode(newValue) {
+                storedAccountsData = encoded
+            }
+        }
+    }
+
+    private mutating func register() {
         guard !username.isEmpty, !password.isEmpty, !email.isEmpty else { return }
         var dict = accounts
         dict[username] = Account(username: username, password: password, email: email)
-        accounts = dict
-        dismiss()
+        // 구조체 내에서 accounts = dict 호출 시 self 변경이 막히는 문제를 해결하려면 아래처럼 DispatchQueue.main.async 사용
+        DispatchQueue.main.async {
+            self.accounts = dict
+            dismiss()
+        }
     }
 }
 
-struct Account: Codable {
+struct Account: Codable, Hashable {
     var username: String
     var password: String
     var email: String
@@ -49,4 +58,3 @@ struct Account: Codable {
 #Preview {
     SignUpView()
 }
-
