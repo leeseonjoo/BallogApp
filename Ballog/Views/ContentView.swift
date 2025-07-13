@@ -58,4 +58,5 @@ struct ContentView: View {
     ContentView()
         .environmentObject(AttendanceStore())
         .environmentObject(TeamTrainingLogStore())
+        .environmentObject(TeamTacticStore())
 }
