@@ -432,18 +432,18 @@ struct CreatePostView: View {
                         .font(.headline)
                         .foregroundColor(Color.primaryText)
                     
-                    Button(action: { showImagePicker = true }) {
+                    Button(action: {}) {
                         HStack {
                             Image(systemName: "photo")
-                                .foregroundColor(Color.primaryBlue)
+                                .foregroundColor(Color.secondaryText)
                             Text("사진 선택")
-                                .foregroundColor(Color.primaryBlue)
+                                .foregroundColor(Color.secondaryText)
                             Spacer()
                         }
                         .padding(DesignConstants.cardPadding)
                         .background(
                             RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                                .fill(Color.primaryBlue.opacity(0.1))
+                                .fill(Color.cardBackground)
                         )
                     }
                     .disabled(true) // 이미지 선택 기능은 현재 비활성화
