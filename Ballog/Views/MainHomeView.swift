@@ -85,11 +85,14 @@ struct MainHomeView: View {
             ScrollView {
                 VStack(spacing: DesignConstants.sectionSpacing) {
                     quoteSection
+                    
+                    // Character Card Section
+                    if let card = card {
+                        characterCardSection(card: card)
+                    }
+                    
                     scheduleSection
                     thisWeekScheduleSection
-                    if let card = card {
-                        ProfileCardView(card: card, showIcon: true, iconOnRight: true, showRecordButton: true)
-                    }
                 }
                 .padding(DesignConstants.horizontalPadding)
             }
@@ -110,6 +113,23 @@ struct MainHomeView: View {
                     RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
                         .fill(Color.cardBackground)
                 )
+        }
+    }
+    
+    private func characterCardSection(card: ProfileCard) -> some View {
+        VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
+            HStack {
+                HStack(spacing: DesignConstants.smallSpacing) {
+                    Image(systemName: "person.circle.fill")
+                        .foregroundColor(Color.primaryBlue)
+                    Text("내 캐릭터")
+                        .font(.title2.bold())
+                        .foregroundColor(Color.primaryText)
+                }
+                Spacer()
+            }
+            
+            ProfileCardView(card: card, showIcon: true, iconOnRight: true, showRecordButton: true)
         }
     }
 

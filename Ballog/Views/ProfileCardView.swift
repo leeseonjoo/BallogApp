@@ -6,6 +6,7 @@ struct ProfileCardView: View {
     /// When `true`, displays the icon on the trailing side of the card.
     var iconOnRight: Bool = false
     var showRecordButton: Bool = false
+    @State private var isPressed = false
 
     var body: some View {
         VStack(spacing: DesignConstants.cardSpacing) {
@@ -16,10 +17,16 @@ struct ProfileCardView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
-                    // Nickname
-                    Text(card.nickname)
-                        .font(.title2.bold())
-                        .foregroundColor(Color.primaryText)
+                    // Nickname and Level Badge
+                    HStack {
+                        Text(card.nickname)
+                            .font(.title2.bold())
+                            .foregroundColor(Color.primaryText)
+                        
+                        Spacer()
+                        
+                        levelBadge
+                    }
                     
                     // Birthdate
                     HStack(spacing: 4) {
@@ -96,9 +103,30 @@ struct ProfileCardView: View {
         .padding(DesignConstants.cardPadding)
         .background(
             RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                .fill(Color.cardBackground)
-                .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+                .fill(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color.cardBackground,
+                            Color.cardBackground.opacity(0.8)
+                        ]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 3)
         )
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.easeInOut(duration: 0.1), value: isPressed)
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = true
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = false
+                }
+            }
+        }
     }
     
     private var characterIcon: some View {
@@ -109,8 +137,75 @@ struct ProfileCardView: View {
             .padding(DesignConstants.smallPadding)
             .background(
                 Circle()
-                    .fill(Color.primaryBlue.opacity(0.1))
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color.primaryBlue.opacity(0.2),
+                                Color.primaryBlue.opacity(0.1)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
             )
+            .overlay(
+                Circle()
+                    .stroke(Color.primaryBlue.opacity(0.3), lineWidth: 1)
+            )
+    }
+    
+    private var levelBadge: some View {
+        let levelColor = getLevelColor(for: card.plapLevel)
+        let levelText = getLevelText(for: card.plapLevel)
+        
+        return Text(levelText)
+            .font(.caption2)
+            .fontWeight(.bold)
+            .foregroundColor(.white)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(
+                RoundedRectangle(cornerRadius: DesignConstants.smallCornerRadius)
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                levelColor,
+                                levelColor.opacity(0.8)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            )
+            .shadow(color: levelColor.opacity(0.3), radius: 2, x: 0, y: 1)
+    }
+    
+    private func getLevelColor(for level: String) -> Color {
+        if level.contains("프로") {
+            return Color.primaryRed
+        } else if level.contains("세미프로") {
+            return Color.primaryOrange
+        } else if level.contains("아마추어") {
+            return Color.primaryGreen
+        } else if level.contains("비기너") {
+            return Color.primaryBlue
+        } else {
+            return Color.secondaryText
+        }
+    }
+    
+    private func getLevelText(for level: String) -> String {
+        if level.contains("프로") {
+            return "PRO"
+        } else if level.contains("세미프로") {
+            return "SEMI"
+        } else if level.contains("아마추어") {
+            return "AMATEUR"
+        } else if level.contains("비기너") {
+            return "BEGINNER"
+        } else {
+            return "NONE"
+        }
     }
 }
 
