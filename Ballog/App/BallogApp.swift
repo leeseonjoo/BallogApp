@@ -25,21 +25,28 @@ struct BallogApp: App {
 
     @StateObject private var attendanceStore = AttendanceStore()
     @StateObject private var logStore = TeamTrainingLogStore()
+    @StateObject private var teamStore = TeamStore()
     @AppStorage("profileCard") private var storedCard: String = ""
+    @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
     @State private var showProfileCreator = false
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(attendanceStore)
-                .environmentObject(logStore)
-                .sheet(isPresented: $showProfileCreator) {
-                    ProfileCardCreationView()
-                }
-                .onAppear { if storedCard.isEmpty { showProfileCreator = true } }
-                .onChange(of: storedCard) { newValue in
-                    if newValue.isEmpty { showProfileCreator = true }
-                }
+            if isLoggedIn {
+                ContentView()
+                    .environmentObject(attendanceStore)
+                    .environmentObject(logStore)
+                    .environmentObject(teamStore)
+                    .sheet(isPresented: $showProfileCreator) {
+                        ProfileCardCreationView()
+                    }
+                    .onAppear { if storedCard.isEmpty { showProfileCreator = true } }
+                    .onChange(of: storedCard) { newValue in
+                        if newValue.isEmpty { showProfileCreator = true }
+                    }
+            } else {
+                LoginView()
+            }
         }
         .modelContainer(sharedModelContainer)
     }
