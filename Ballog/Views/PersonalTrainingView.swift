@@ -12,27 +12,67 @@ private enum Layout {
     static let padding = DesignConstants.horizontalPadding
 }
 
+struct DiaryEntry: Identifiable {
+    let id = UUID()
+    let color: Color
+    let time: String
+    let title: String
+    let place: String
+}
+
+struct DiaryDay {
+    let date: String
+    let entries: [DiaryEntry]
+}
+
 struct PersonalTrainingView: View {
     @AppStorage("profileCard") private var storedCard: String = ""
-
+    @EnvironmentObject private var personalTrainingStore: PersonalTrainingStore
+    
     @State private var selectedDate: Date? = nil
-    @State private var attendance: [Date: Bool] = [:]
-    @State private var logs: [String] = []
+    @State private var showTrainingLogView = false
+    @State private var showGoalSettingView = false
 
     private var card: ProfileCard? {
         guard let data = storedCard.data(using: .utf8) else { return nil }
         return try? JSONDecoder().decode(ProfileCard.self, from: data)
+    }
+    
+    private var recentLogs: [PersonalTrainingLog] {
+        personalTrainingStore.logs.sorted { $0.date > $1.date }.prefix(3).map { $0 }
+    }
+    
+    private var totalTrainingTime: Int {
+        personalTrainingStore.logs.reduce(0) { $0 + $1.duration }
+    }
+    
+    private var totalTrainingCount: Int {
+        personalTrainingStore.logs.count
+    }
+    
+    private var averageMood: PersonalTrainingLog.TrainingMood {
+        let moods = personalTrainingStore.logs.map { $0.mood }
+        let moodCounts = Dictionary(grouping: moods, by: { $0 }).mapValues { $0.count }
+        return moodCounts.max(by: { $0.value < $1.value })?.key ?? .normal
     }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: DesignConstants.sectionSpacing) {
+                    // Profile Section
+                    if let card = card {
+                        profileSection(card: card)
+                    }
+                    
                     // Calendar Section
                     calendarSection
                     
                     // Training Log Section
                     trainingLogSection
+                    
+                    // Goals Section
+                    goalsSection
                     
                     // Statistics Section
                     statisticsSection
@@ -42,11 +82,46 @@ struct PersonalTrainingView: View {
             .background(Color.pageBackground)
         }
         .ballogTopBar()
+        .sheet(isPresented: $showTrainingLogView) {
+            PersonalTrainingLogView()
+                .environmentObject(personalTrainingStore)
+        }
+        .sheet(isPresented: $showGoalSettingView) {
+            PersonalGoalSettingView()
+                .environmentObject(personalTrainingStore)
+        }
+    }
+    
+    private func profileSection(card: ProfileCard) -> some View {
+        VStack(spacing: DesignConstants.sectionHeaderSpacing) {
+            HStack {
+                VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
+                    Text("안녕하세요, \(card.nickname)님!")
+                        .font(.title2.bold())
+                        .foregroundColor(Color.primaryText)
+                    
+                    Text("오늘도 훈련에 집중해보세요 💪")
+                        .font(.subheadline)
+                        .foregroundColor(Color.secondaryText)
+                }
+                Spacer()
+                
+                Image(systemName: card.iconName)
+                    .resizable()
+                    .frame(width: 50, height: 50)
+                    .foregroundColor(Color.primaryBlue)
+            }
+            .padding(DesignConstants.cardPadding)
+            .background(
+                RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                    .fill(Color.cardBackground)
+            )
+        }
     }
     
     private var calendarSection: some View {
         VStack(spacing: DesignConstants.sectionHeaderSpacing) {
-            InteractiveCalendarView(selectedDate: $selectedDate, attendance: $attendance, title: "개인 캘린더")
+            InteractiveCalendarView(selectedDate: $selectedDate, attendance: $personalTrainingStore.attendance, title: "개인 캘린더")
                 .padding(DesignConstants.cardPadding)
                 .background(
                     RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
@@ -67,7 +142,7 @@ struct PersonalTrainingView: View {
             VStack(spacing: DesignConstants.smallSpacing) {
                 // Write Log Button
                 Button(action: {
-                    // 훈련일지 작성 페이지 이동
+                    showTrainingLogView = true
                 }) {
                     HStack {
                         Image(systemName: "plus.circle.fill")
@@ -92,7 +167,7 @@ struct PersonalTrainingView: View {
                         .font(.headline)
                         .foregroundColor(Color.primaryText)
                     
-                    if logs.isEmpty {
+                    if recentLogs.isEmpty {
                         VStack(spacing: DesignConstants.smallSpacing) {
                             Image(systemName: "doc.text")
                                 .resizable()
@@ -111,23 +186,36 @@ struct PersonalTrainingView: View {
                         )
                     } else {
                         VStack(spacing: 0) {
-                            ForEach(logs, id: \.self) { log in
+                            ForEach(recentLogs) { log in
                                 VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
                                     HStack {
-                                        Text(log)
-                                            .font(.subheadline)
-                                            .foregroundColor(Color.primaryText)
-                                        Spacer()
-                                        HStack(spacing: 4) {
-                                            Image(systemName: "checkmark.circle.fill")
-                                                .foregroundColor(Color.successColor)
-                                            Text("훈련완료")
-                                                .font(.caption)
-                                                .foregroundColor(Color.successColor)
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(log.title)
+                                                .font(.subheadline)
+                                                .fontWeight(.medium)
+                                                .foregroundColor(Color.primaryText)
+                                            
+                                            HStack(spacing: 8) {
+                                                Image(systemName: log.category.icon)
+                                                    .font(.caption)
+                                                    .foregroundColor(Color.primaryBlue)
+                                                Text(log.category.rawValue)
+                                                    .font(.caption)
+                                                    .foregroundColor(Color.secondaryText)
+                                                Text("\(log.duration)분")
+                                                    .font(.caption)
+                                                    .foregroundColor(Color.secondaryText)
+                                                Text(log.mood.emoji)
+                                                    .font(.caption)
+                                            }
                                         }
+                                        Spacer()
+                                        Text(log.date, style: .date)
+                                            .font(.caption)
+                                            .foregroundColor(Color.secondaryText)
                                     }
                                     
-                                    if log != logs.last {
+                                    if log != recentLogs.last {
                                         Divider()
                                             .padding(.vertical, DesignConstants.smallSpacing)
                                     }
@@ -140,11 +228,106 @@ struct PersonalTrainingView: View {
                                 .fill(Color.cardBackground)
                         )
                         
-                        Button("전체 보기 →") {
-                            // 전체 훈련일지 리스트 페이지 이동
+                        NavigationLink(destination: PersonalTrainingLogListView()) {
+                            HStack {
+                                Text("전체 보기 →")
+                                    .font(.caption)
+                                    .foregroundColor(Color.primaryBlue)
+                                Spacer()
+                            }
+                            .padding(.top, DesignConstants.smallSpacing)
                         }
-                        .font(.caption)
-                        .foregroundColor(Color.primaryBlue)
+                    }
+                }
+            }
+        }
+    }
+    
+    private var goalsSection: some View {
+        VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
+            HStack {
+                Text("🎯 목표 관리")
+                    .font(.title2.bold())
+                    .foregroundColor(Color.primaryText)
+                Spacer()
+                Button("목표 설정") {
+                    showGoalSettingView = true
+                }
+                .font(.caption)
+                .foregroundColor(Color.primaryBlue)
+            }
+            
+            let activeGoals = personalTrainingStore.goals.filter { !$0.isCompleted }
+            
+            if activeGoals.isEmpty {
+                VStack(spacing: DesignConstants.smallSpacing) {
+                    Image(systemName: "target")
+                        .resizable()
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(Color.secondaryText)
+                    
+                    Text("목표를 설정하고 달성해보세요")
+                        .font(.subheadline)
+                        .foregroundColor(Color.secondaryText)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(DesignConstants.largePadding)
+                .background(
+                    RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                        .fill(Color.cardBackground)
+                )
+            } else {
+                VStack(spacing: DesignConstants.smallSpacing) {
+                    ForEach(activeGoals.prefix(3)) { goal in
+                        VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(goal.title)
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(Color.primaryText)
+                                    
+                                    Text(goal.description)
+                                        .font(.caption)
+                                        .foregroundColor(Color.secondaryText)
+                                        .lineLimit(2)
+                                }
+                                Spacer()
+                                
+                                VStack(alignment: .trailing, spacing: 4) {
+                                    Text("\(goal.progress)%")
+                                        .font(.caption)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(Color.primaryBlue)
+                                    
+                                    ProgressView(value: Double(goal.progress), total: 100)
+                                        .progressViewStyle(LinearProgressViewStyle(tint: Color.primaryBlue))
+                                        .frame(width: 60)
+                                }
+                            }
+                            
+                            if goal != activeGoals.prefix(3).last {
+                                Divider()
+                                    .padding(.vertical, DesignConstants.smallSpacing)
+                            }
+                        }
+                        .padding(DesignConstants.cardPadding)
+                    }
+                }
+                .background(
+                    RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                        .fill(Color.cardBackground)
+                )
+                
+                if activeGoals.count > 3 {
+                    NavigationLink(destination: PersonalGoalListView()) {
+                        HStack {
+                            Text("전체 목표 보기 →")
+                                .font(.caption)
+                                .foregroundColor(Color.primaryBlue)
+                            Spacer()
+                        }
                         .padding(.top, DesignConstants.smallSpacing)
                     }
                 }
@@ -161,7 +344,7 @@ struct PersonalTrainingView: View {
                 Spacer()
             }
             
-            if logs.isEmpty {
+            if personalTrainingStore.logs.isEmpty {
                 VStack(spacing: DesignConstants.smallSpacing) {
                     Image(systemName: "chart.bar")
                         .resizable()
@@ -183,11 +366,15 @@ struct PersonalTrainingView: View {
                 VStack(spacing: DesignConstants.smallSpacing) {
                     HStack {
                         VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
-                            Text("총 횟수: \(logs.count)회")
+                            Text("총 횟수: \(totalTrainingCount)회")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                                 .foregroundColor(Color.primaryText)
-                            Text("총 시간: 10시간")
+                            Text("총 시간: \(totalTrainingTime / 60)시간 \(totalTrainingTime % 60)분")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundColor(Color.primaryText)
+                            Text("평균 기분: \(averageMood.emoji) \(averageMood.rawValue)")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                                 .foregroundColor(Color.primaryText)
@@ -231,5 +418,6 @@ struct PersonalTrainingView: View {
 
 #Preview {
     PersonalTrainingView()
+        .environmentObject(PersonalTrainingStore())
 }
 

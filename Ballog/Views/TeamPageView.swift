@@ -2,6 +2,7 @@ import SwiftUI
 
 private enum TeamTab: String, CaseIterable {
     case manage = "팀 관리"
+    case goals = "목표 관리"
     case ranking = "팀 랭킹"
     case match = "매치 관리"
     case tactics = "전술"
@@ -10,6 +11,7 @@ private enum TeamTab: String, CaseIterable {
 struct TeamPageView: View {
     @State private var selection: TeamTab = .manage
     @EnvironmentObject private var teamStore: TeamStore
+    @EnvironmentObject private var teamGoalStore: TeamGoalStore
     @AppStorage("currentTeamID") private var currentTeamID: String = ""
     @AppStorage("hasTeam") private var hasTeam: Bool = true
 
@@ -39,6 +41,9 @@ struct TeamPageView: View {
                     TabView(selection: $selection) {
                         TeamManagementView(team: team)
                             .tag(TeamTab.manage)
+                        
+                        TeamGoalManagementView(team: team)
+                            .tag(TeamTab.goals)
                         
                         TeamRankingView()
                             .tag(TeamTab.ranking)
@@ -186,5 +191,6 @@ struct TeamPageView: View {
         .environmentObject(AttendanceStore())
         .environmentObject(TeamTrainingLogStore())
         .environmentObject(TeamTacticStore())
+        .environmentObject(TeamGoalStore())
 }
 

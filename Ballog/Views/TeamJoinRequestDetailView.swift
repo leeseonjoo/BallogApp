@@ -66,9 +66,9 @@ struct TeamJoinRequestDetailView: View {
                 .foregroundColor(Color.primaryText)
             
             VStack(spacing: DesignConstants.smallSpacing) {
-                InfoRow(title: "신청자", value: request.applicantName)
-                InfoRow(title: "신청일", value: request.createdAt, style: .date)
-                InfoRow(title: "상태", value: request.status.rawValue)
+                RequestInfoRow(title: "신청자", value: request.applicantName)
+                RequestInfoRow(title: "신청일", value: request.createdAt, style: .date)
+                RequestInfoRow(title: "상태", value: request.status.rawValue)
             }
             .padding(DesignConstants.cardPadding)
             .background(
@@ -175,7 +175,7 @@ struct TeamJoinRequestDetailView: View {
     }
 }
 
-struct InfoRow: View {
+struct RequestInfoRow: View {
     let title: String
     let value: Any
     var style: Text.DateStyle?

@@ -551,12 +551,12 @@ struct MatchDetailView: View {
                 .foregroundColor(Color.primaryText)
             
             VStack(spacing: DesignConstants.smallSpacing) {
-                InfoRow(title: "제목", value: match.title)
-                InfoRow(title: "장소", value: match.place)
-                InfoRow(title: "날짜", value: match.date, dateStyle: .date)
-                InfoRow(title: "시간", value: match.date, dateStyle: .time)
+                MatchInfoRow(title: "제목", value: match.title)
+                MatchInfoRow(title: "장소", value: match.place)
+                MatchInfoRow(title: "날짜", value: match.date, dateStyle: .date)
+                MatchInfoRow(title: "시간", value: match.date, dateStyle: .time)
                 if let opponent = match.opponent {
-                    InfoRow(title: "상대팀", value: opponent)
+                    MatchInfoRow(title: "상대팀", value: opponent)
                 }
             }
             .padding(DesignConstants.cardPadding)
@@ -640,7 +640,7 @@ struct MatchDetailView: View {
     }
 }
 
-struct InfoRow: View {
+struct MatchInfoRow: View {
     let title: String
     let value: Any
     var dateStyle: Text.DateStyle?

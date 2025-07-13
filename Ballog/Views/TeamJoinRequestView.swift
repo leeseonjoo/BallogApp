@@ -60,12 +60,12 @@ struct TeamJoinRequestView: View {
                 .foregroundColor(Color.primaryText)
             
             VStack(spacing: DesignConstants.smallSpacing) {
-                InfoRow(title: "팀명", value: team.name)
-                InfoRow(title: "스포츠", value: team.sport)
-                InfoRow(title: "성별", value: team.gender)
-                InfoRow(title: "지역", value: team.region.isEmpty ? "미설정" : team.region)
-                InfoRow(title: "훈련시간", value: team.trainingTime)
-                InfoRow(title: "생성자", value: team.creatorName)
+                TeamInfoRow(title: "팀명", value: team.name)
+                TeamInfoRow(title: "스포츠", value: team.sport)
+                TeamInfoRow(title: "성별", value: team.gender)
+                TeamInfoRow(title: "지역", value: team.region.isEmpty ? "미설정" : team.region)
+                TeamInfoRow(title: "훈련시간", value: team.trainingTime)
+                TeamInfoRow(title: "생성자", value: team.creatorName)
             }
             .padding(DesignConstants.cardPadding)
             .background(
@@ -116,7 +116,7 @@ struct TeamJoinRequestView: View {
     }
 }
 
-struct InfoRow: View {
+struct TeamInfoRow: View {
     let title: String
     let value: String
     
