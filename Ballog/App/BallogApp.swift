@@ -63,12 +63,17 @@ struct BallogApp: App {
             }
             .onAppear {
                 if !isLoggedIn && autoLogin {
-                    let req = AccountEntity.fetchRequest()
-                    req.predicate = NSPredicate(format: "username == %@", savedUsername)
-                    if let account = try? persistenceController.container.viewContext.fetch(req).first,
-                       account.password == savedPassword {
-                        isAdminUser = account.isAdmin
+                    if savedUsername == AdminCredentials.username && savedPassword == AdminCredentials.password {
+                        isAdminUser = true
                         isLoggedIn = true
+                    } else {
+                        let req = AccountEntity.fetchRequest()
+                        req.predicate = NSPredicate(format: "username == %@", savedUsername)
+                        if let account = try? persistenceController.container.viewContext.fetch(req).first,
+                           account.password == savedPassword {
+                            isAdminUser = account.isAdmin
+                            isLoggedIn = true
+                        }
                     }
                 }
             }
