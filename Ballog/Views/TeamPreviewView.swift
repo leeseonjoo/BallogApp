@@ -4,9 +4,21 @@ struct TeamPreviewView: View {
     let team: Team
     var body: some View {
         VStack(spacing: 16) {
-            Text(team.name)
-                .font(.largeTitle)
-                .padding(.top)
+            VStack(spacing: DesignConstants.smallSpacing) {
+                Text(team.name)
+                    .font(.largeTitle)
+                    .padding(.top)
+                
+                HStack(spacing: 4) {
+                    Image(systemName: "person.circle.fill")
+                        .font(.caption)
+                        .foregroundColor(Color.primaryBlue)
+                    Text("생성자: \(team.creatorName)")
+                        .font(.subheadline)
+                        .foregroundColor(Color.secondaryText)
+                }
+            }
+            
             TeamCharacterBoardView(members: team.members)
             Spacer()
         }

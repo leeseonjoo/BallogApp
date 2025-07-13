@@ -10,6 +10,9 @@ struct Team: Identifiable, Codable {
     let code: String
     var trainingTime: String
     var members: [TeamCharacter]
+    var creatorId: String
+    var creatorName: String
+    var createdAt: Date
 
     init(
         id: UUID = UUID(),
@@ -20,7 +23,10 @@ struct Team: Identifiable, Codable {
         region: String = "",
         code: String = String(UUID().uuidString.prefix(8)),
         trainingTime: String = "매주 화요일 19:00",
-        members: [TeamCharacter] = []
+        members: [TeamCharacter] = [],
+        creatorId: String = "",
+        creatorName: String = "",
+        createdAt: Date = Date()
     ) {
         self.id = id
         self.name = name
@@ -31,5 +37,8 @@ struct Team: Identifiable, Codable {
         self.code = code
         self.trainingTime = trainingTime
         self.members = members
+        self.creatorId = creatorId
+        self.creatorName = creatorName
+        self.createdAt = createdAt
     }
 }

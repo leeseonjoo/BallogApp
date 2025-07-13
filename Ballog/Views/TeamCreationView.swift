@@ -133,7 +133,9 @@ struct TeamCreationView: View {
                     gender: gender,
                     type: teamType,
                     region: region,
-                    members: [member]
+                    members: [member],
+                    creatorId: userCard?.nickname ?? "나",
+                    creatorName: userCard?.nickname ?? "나"
                 )
                 teamStore.add(team)
                 currentTeamID = team.id.uuidString

@@ -86,6 +86,15 @@ struct TeamPageView: View {
                     Text(team.trainingTime)
                         .font(.caption)
                         .foregroundColor(Color.tertiaryText)
+                    
+                    HStack(spacing: 4) {
+                        Image(systemName: "person.circle.fill")
+                            .font(.caption)
+                            .foregroundColor(Color.primaryBlue)
+                        Text("생성자: \(team.creatorName)")
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                    }
                 }
                 
                 Spacer()
