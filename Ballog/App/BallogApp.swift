@@ -52,6 +52,9 @@ struct BallogApp: App {
                         .onChange(of: storedCard) { newValue in
                             if newValue.isEmpty { showProfileCreator = true }
                         }
+                        .onChange(of: isLoggedIn) { newValue in
+                            if !newValue { showProfileCreator = false }
+                        }
                 } else {
                     LoginView()
                         .environmentObject(eventStore)
