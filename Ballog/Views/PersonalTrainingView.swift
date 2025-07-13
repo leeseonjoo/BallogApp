@@ -101,6 +101,7 @@ struct PersonalTrainingView: View {
         }
         .background(Color.pageBackground)
         .ignoresSafeArea()
+        .ballogTopBar()
     }
 }
 

@@ -129,12 +129,6 @@ struct TeamManagementView: View {
             if let next = tuesdayDates.first {
                 trainingWeather = WeatherService.weather(for: next)
             }
-            if eventStore.events.isEmpty {
-                let events = tuesdayDates.map { date in
-                    TeamEvent(date: date, title: "정기 훈련", place: "누누 풋살장", type: .training)
-                }
-                eventStore.events.append(contentsOf: events)
-            }
         }
         .sheet(item: $selectedLog) { data in
             TrainingLogDetailView(day: data.day, log: data.log)
