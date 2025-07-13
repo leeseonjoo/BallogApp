@@ -17,6 +17,7 @@ struct PersonalTrainingView: View {
 
     @State private var selectedDate: Date? = nil
     @State private var attendance: [Date: Bool] = [:]
+    @State private var logs: [String] = []
 
     private var card: ProfileCard? {
         guard let data = storedCard.data(using: .utf8) else { return nil }
@@ -45,23 +46,28 @@ struct PersonalTrainingView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("📋 최근 훈련 일지")
                         .font(.headline)
-                    ForEach(0..<5) { index in
-                        HStack {
-                            Text("7월 \(20 - index)일 • 개인훈련")
-                            Spacer()
-                            Text("👍 훈련완료")
-                                .font(.caption)
-                                .foregroundColor(.green)
+                    if logs.isEmpty {
+                        Text("훈련일지를 기록하세요")
+                            .foregroundColor(.secondary)
+                    } else {
+                        ForEach(logs, id: \.self) { log in
+                            HStack {
+                                Text(log)
+                                Spacer()
+                                Text("👍 훈련완료")
+                                    .font(.caption)
+                                    .foregroundColor(.green)
+                            }
+                            .padding(.vertical, 4)
+                            Divider()
                         }
-                        .padding(.vertical, 4)
-                        Divider()
+                        Button("전체 보기 →") {
+                            // 전체 훈련일지 리스트 페이지 이동
+                        }
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                        .padding(.top, 4)
                     }
-                    Button("전체 보기 →") {
-                        // 전체 훈련일지 리스트 페이지 이동
-                    }
-                    .font(.caption)
-                    .foregroundColor(.blue)
-                    .padding(.top, 4)
                 }
                 .padding(.horizontal, Layout.padding)
 
@@ -69,22 +75,23 @@ struct PersonalTrainingView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("📊 훈련 통계 요약")
                         .font(.headline)
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text("총 횟수: 12회")
-                            Text("총 시간: 10시간")
+                    if logs.isEmpty {
+                        Text("훈련을 시작하고 통계를 확인해보세요")
+                            .foregroundColor(.secondary)
+                    } else {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text("총 횟수: \(logs.count)회")
+                                Text("총 시간: 10시간")
+                            }
+                            Spacer()
                         }
-                        Spacer()
-                        VStack(alignment: .leading) {
-                            Text("기술별: 삼자패스 2h")
-                            Text("유형별: 개인 6 / 팀 4 / 경기 2")
+                        NavigationLink(destination: TrainingStatisticsView()) {
+                            Text("상세 통계 보기 →")
                         }
+                        .font(.caption)
+                        .foregroundColor(.blue)
                     }
-                    NavigationLink(destination: TrainingStatisticsView()) {
-                        Text("상세 통계 보기 →")
-                    }
-                    .font(.caption)
-                    .foregroundColor(.blue)
                 }
                 .padding(.horizontal, Layout.padding)
 

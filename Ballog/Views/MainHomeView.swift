@@ -20,9 +20,29 @@ struct DiaryDay {
 
 struct MainHomeView: View {
     @State private var selectedDate: String?
-    @AppStorage("profileMessage")
-    private var profileMessage: String =
-        "하나가 되어 정상을 향해가는 순간\n힘들어도 극복하면서 자신있게!! 나아가자!!"
+    private let quotes = [
+        "노력은 배신하지 않는다. – 일본 야구선수 이치로",
+        "오늘 걷지 않으면 내일은 뛰어야 한다. – 독일 속담",
+        "성공은 우연이 아니다. 그것은 노력, 끈기, 배움, 희생, 그리고 무엇보다 자신이 하는 일에 대한 사랑이다. – 펠레",
+        "남과 비교하지 말고 어제의 나와 비교하라.",
+        "변화는 불편함에서 시작된다.",
+        "포기하지 않는 한 실패는 없다. – 토마스 에디슨",
+        "지금 하는 작은 선택들이 미래의 나를 만든다.",
+        "행동 없는 비전은 환상일 뿐이다. – 토니 로빈스",
+        "매일 1%씩 나아가라. 1년이면 37배 성장한다. – 제임스 클리어 《Atomic Habits》",
+        "당신이 통제할 수 있는 유일한 것은 오늘의 행동이다.",
+        "습관이 운명을 만든다.",
+        "실패란 더 현명해지기 위한 데이터다.",
+        "원하는 결과를 얻으려면, 그에 맞는 사람이 되어야 한다.",
+        "아무도 보는 사람이 없을 때의 노력이 진짜 실력을 만든다.",
+        "당신이 꿈꾸는 삶을 살고 싶다면, 지금 그 삶에 걸맞은 행동을 하라.",
+        "하루하루를 마지막 날처럼 살아라. – 스티브 잡스",
+        "준비하는 자에게 기회는 반드시 온다.",
+        "나를 힘들게 하는 것이 나를 성장시킨다.",
+        "변명보다 행동이 더 많아야 한다.",
+        "시작이 반이다. 하지만 끝까지 가야 진짜다."
+    ]
+    @State private var quote: String = ""
     @AppStorage("profileCard") private var storedCard: String = ""
 
     private var card: ProfileCard? {
@@ -43,7 +63,7 @@ struct MainHomeView: View {
                 Spacer(minLength: 60) // 위 여백
 
                 topBar
-                profileMessageSection
+                quoteSection
                 scheduleSection
                 thisWeekScheduleSection // 추가된 부분
                 if let card = card {
@@ -55,6 +75,7 @@ struct MainHomeView: View {
             .padding(Layout.padding)
             .background(Color.pageBackground)
             .ignoresSafeArea()
+            .onAppear { quote = quotes.randomElement() ?? "" }
         }
     }
 
@@ -90,9 +111,9 @@ struct MainHomeView: View {
         .padding(.vertical, 8)
     }
 
-    private var profileMessageSection: some View {
+    private var quoteSection: some View {
         VStack(spacing: 8) {
-            Text(profileMessage)
+            Text(quote)
                 .font(.subheadline)
                 .multilineTextAlignment(.center)
                 .padding()

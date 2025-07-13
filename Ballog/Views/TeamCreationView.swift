@@ -5,6 +5,10 @@ struct TeamCreationView: View {
     private enum Step: Int { case name, sport, gender, type, source, done }
     @State private var step: Step = .name
 
+    @EnvironmentObject private var teamStore: TeamStore
+    @AppStorage("currentTeamID") private var currentTeamID: String = ""
+    @AppStorage("hasTeam") private var hasTeam: Bool = true
+
     @State private var teamName = ""
     @State private var sport = "풋살"
     @State private var gender = "남자"
@@ -49,7 +53,7 @@ struct TeamCreationView: View {
             case .done:
                 Text("축하합니다 팀 생성이 완료 되었어요!")
                     .font(.headline)
-                Text("환영합니다 \(teamName) 님 !")
+                Text("환영합니다 \(teamName) 팀!")
                 NavigationLink("멤버 추가하기") {
                     TeamLinkShareView(teamName: teamName)
                 }
@@ -68,6 +72,12 @@ struct TeamCreationView: View {
     private func nextStep() {
         if let next = Step(rawValue: step.rawValue + 1) {
             step = next
+            if step == .done {
+                let team = Team(name: teamName, sport: sport, gender: gender, type: teamType)
+                teamStore.add(team)
+                currentTeamID = team.id.uuidString
+                hasTeam = true
+            }
         }
     }
 }
