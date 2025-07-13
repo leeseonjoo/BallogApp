@@ -6,12 +6,30 @@ struct Team: Identifiable, Codable {
     var sport: String
     var gender: String
     var type: String
-    
-    init(id: UUID = UUID(), name: String, sport: String = "풋살", gender: String = "혼성", type: String = "club") {
+    var region: String
+    let code: String
+    var trainingTime: String
+    var members: [TeamCharacter]
+
+    init(
+        id: UUID = UUID(),
+        name: String,
+        sport: String = "풋살",
+        gender: String = "혼성",
+        type: String = "club",
+        region: String = "",
+        code: String = String(UUID().uuidString.prefix(8)),
+        trainingTime: String = "매주 화요일 19:00",
+        members: [TeamCharacter] = []
+    ) {
         self.id = id
         self.name = name
         self.sport = sport
         self.gender = gender
         self.type = type
+        self.region = region
+        self.code = code
+        self.trainingTime = trainingTime
+        self.members = members
     }
 }

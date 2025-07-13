@@ -67,21 +67,9 @@ struct TeamManagementView: View {
         return f
     }
     
-    @AppStorage("profileCard") private var storedCard: String = ""
-    
-    private var userName: String {
-        guard let data = storedCard.data(using: .utf8),
-              let card = try? JSONDecoder().decode(ProfileCard.self, from: data) else { return "사용자" }
-        return card.nickname
-    }
     
     private var teamMembers: [TeamCharacter] {
-        [
-            TeamCharacter(name: "혜진", imageName: "football-player-2", isOnline: true),
-            TeamCharacter(name: "규원", imageName: "football-player-3", isOnline: false, pose: .victory),
-            TeamCharacter(name: "진주", imageName: "goalkeeper", isOnline: true),
-            TeamCharacter(name: userName, imageName: "soccer-player", isOnline: false)
-        ]
+        team.members
     }
     
     private var sortedLogs: [(Date, TeamTrainingLog)] {
@@ -103,7 +91,6 @@ struct TeamManagementView: View {
             ScrollView {
                 VStack(spacing: Layout.spacing) {
                     TeamHeaderView(teamName: team.name)
-                    TeamQuoteView()
                     TeamCharacterBoardView(members: teamMembers, backgroundImage: backgroundImage) { member in
                         selectedMember = member
                     }
@@ -159,19 +146,6 @@ struct TeamManagementView: View {
         }
     }
     
-    private struct TeamQuoteView: View {
-        var body: some View {
-            HStack {
-                Image(systemName: "quote.bubble")
-                    .foregroundColor(.gray)
-                Text("“오늘도 파이팅!” - 잔디요정")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Spacer()
-            }
-            .padding(.horizontal, Layout.padding)
-        }
-    }
     
     private struct CalendarSection: View {
         @Binding var selectedDate: Date?
