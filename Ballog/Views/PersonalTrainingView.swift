@@ -110,6 +110,22 @@ struct PersonalTrainingView: View {
     
     private var calendarSection: some View {
         VStack(spacing: DesignConstants.sectionHeaderSpacing) {
+            HStack {
+                Text(getCurrentWeekString())
+                    .font(.title2.bold())
+                    .foregroundColor(Color.primaryText)
+                
+                Spacer()
+                
+                HStack(spacing: 8) {
+                    Image(systemName: "star.fill")
+                        .foregroundColor(.yellow)
+                    Text("이번달: \(getMonthlyTrainingCount())개")
+                        .font(.caption)
+                        .foregroundColor(Color.secondaryText)
+                }
+            }
+            
             InteractiveCalendarView(selectedDate: $selectedDate, attendance: $personalTrainingStore.attendance, title: "개인 캘린더")
                 .padding(DesignConstants.cardPadding)
                 .background(
@@ -119,117 +135,164 @@ struct PersonalTrainingView: View {
         }
     }
     
+    private func getCurrentWeekString() -> String {
+        let calendar = Calendar.current
+        let now = Date()
+        let month = calendar.component(.month, from: now)
+        let weekOfMonth = calendar.component(.weekOfMonth, from: now)
+        
+        return "\(month)월 \(weekOfMonth)주차"
+    }
+    
+    private func getMonthlyTrainingCount() -> Int {
+        let calendar = Calendar.current
+        let now = Date()
+        let month = calendar.component(.month, from: now)
+        let year = calendar.component(.year, from: now)
+        
+        return personalTrainingStore.logs.filter { log in
+            let logMonth = calendar.component(.month, from: log.date)
+            let logYear = calendar.component(.year, from: log.date)
+            return logMonth == month && logYear == year
+        }.count
+    }
+    
     private var trainingLogSection: some View {
         VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
+            trainingLogHeader
+            trainingLogContent
+        }
+    }
+    
+    private var trainingLogHeader: some View {
+        HStack {
+            Text("📝 훈련일지")
+                .font(.title2.bold())
+                .foregroundColor(Color.primaryText)
+            Spacer()
+        }
+    }
+    
+    private var trainingLogContent: some View {
+        VStack(spacing: DesignConstants.smallSpacing) {
+            writeLogButton
+            recentLogsSection
+        }
+    }
+    
+    private var writeLogButton: some View {
+        Button(action: {
+            showTrainingLogView = true
+        }) {
             HStack {
-                Text("📝 훈련일지")
-                    .font(.title2.bold())
-                    .foregroundColor(Color.primaryText)
+                Image(systemName: "plus.circle.fill")
+                    .foregroundColor(Color.primaryBlue)
+                Text("훈련일지 작성하기")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(Color.primaryBlue)
                 Spacer()
             }
+            .padding(DesignConstants.cardPadding)
+            .background(
+                RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                    .fill(Color.primaryBlue.opacity(0.1))
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    private var recentLogsSection: some View {
+        VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
+            Text("최근 훈련일지")
+                .font(.headline)
+                .foregroundColor(Color.primaryText)
             
-            VStack(spacing: DesignConstants.smallSpacing) {
-                // Write Log Button
-                Button(action: {
-                    showTrainingLogView = true
-                }) {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundColor(Color.primaryBlue)
-                        Text("훈련일지 작성하기")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundColor(Color.primaryBlue)
-                        Spacer()
-                    }
-                    .padding(DesignConstants.cardPadding)
-                    .background(
-                        RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                            .fill(Color.primaryBlue.opacity(0.1))
-                    )
-                }
-                .buttonStyle(PlainButtonStyle())
-                
-                // Recent Logs
-                VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
-                    Text("최근 훈련일지")
-                        .font(.headline)
-                        .foregroundColor(Color.primaryText)
-                    
-                    if recentLogs.isEmpty {
-                        VStack(spacing: DesignConstants.smallSpacing) {
-                            Image(systemName: "doc.text")
-                                .resizable()
-                                .frame(width: 40, height: 40)
-                                .foregroundColor(Color.secondaryText)
-                            
-                            Text("훈련일지를 기록하세요")
-                                .font(.subheadline)
-                                .foregroundColor(Color.secondaryText)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(DesignConstants.largePadding)
-                        .background(
-                            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                                .fill(Color.cardBackground)
-                        )
-                    } else {
-                        VStack(spacing: 0) {
-                            ForEach(recentLogs) { log in
-                                VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
-                                    HStack {
-                                        VStack(alignment: .leading, spacing: 4) {
-                                            Text(log.title)
-                                                .font(.subheadline)
-                                                .fontWeight(.medium)
-                                                .foregroundColor(Color.primaryText)
-                                            
-                                            HStack(spacing: 8) {
-                                                Image(systemName: log.category.icon)
-                                                    .font(.caption)
-                                                    .foregroundColor(Color.primaryBlue)
-                                                Text(log.category.rawValue)
-                                                    .font(.caption)
-                                                    .foregroundColor(Color.secondaryText)
-                                                Text("\(log.duration)분")
-                                                    .font(.caption)
-                                                    .foregroundColor(Color.secondaryText)
-                                                Text(log.mood.emoji)
-                                                    .font(.caption)
-                                            }
-                                        }
-                                        Spacer()
-                                        Text(log.date, style: .date)
-                                            .font(.caption)
-                                            .foregroundColor(Color.secondaryText)
-                                    }
-                                    
-                                    if log != recentLogs.last {
-                                        Divider()
-                                            .padding(.vertical, DesignConstants.smallSpacing)
-                                    }
-                                }
-                                .padding(DesignConstants.cardPadding)
-                            }
-                        }
-                        .background(
-                            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                                .fill(Color.cardBackground)
-                        )
-                        
-                        NavigationLink(destination: PersonalTrainingLogListView()) {
-                            HStack {
-                                Text("전체 보기 →")
-                                    .font(.caption)
-                                    .foregroundColor(Color.primaryBlue)
-                                Spacer()
-                            }
-                            .padding(.top, DesignConstants.smallSpacing)
-                        }
-                    }
-                }
+            if recentLogs.isEmpty {
+                emptyLogsView
+            } else {
+                logsListView
             }
         }
+    }
+    
+    private var emptyLogsView: some View {
+        VStack(spacing: DesignConstants.smallSpacing) {
+            Image(systemName: "doc.text")
+                .resizable()
+                .frame(width: 40, height: 40)
+                .foregroundColor(Color.secondaryText)
+            
+            Text("훈련일지를 기록하세요")
+                .font(.subheadline)
+                .foregroundColor(Color.secondaryText)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(DesignConstants.largePadding)
+        .background(
+            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                .fill(Color.cardBackground)
+        )
+    }
+    
+    private var logsListView: some View {
+        VStack(spacing: 0) {
+            ForEach(recentLogs) { log in
+                logItemView(log: log)
+            }
+            
+            NavigationLink(destination: PersonalTrainingLogListView()) {
+                HStack {
+                    Text("전체 보기 →")
+                        .font(.caption)
+                        .foregroundColor(Color.primaryBlue)
+                    Spacer()
+                }
+                .padding(.top, DesignConstants.smallSpacing)
+            }
+        }
+        .background(
+            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                .fill(Color.cardBackground)
+        )
+    }
+    
+    private func logItemView(log: PersonalTrainingLog) -> some View {
+        VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(log.title)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color.primaryText)
+                    
+                    HStack(spacing: 8) {
+                        Image(systemName: log.category.icon)
+                            .font(.caption)
+                            .foregroundColor(Color.primaryBlue)
+                        Text(log.category.rawValue)
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                        Text("\(log.duration)분")
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                        Text(log.mood.emoji)
+                            .font(.caption)
+                    }
+                }
+                Spacer()
+                Text(log.date, style: .date)
+                    .font(.caption)
+                    .foregroundColor(Color.secondaryText)
+            }
+            
+            let isLastLog = log.id == recentLogs.last?.id
+            if !isLastLog {
+                Divider()
+                    .padding(.vertical, DesignConstants.smallSpacing)
+            }
+        }
+        .padding(DesignConstants.cardPadding)
     }
     
     private var goalsSection: some View {
@@ -296,7 +359,8 @@ struct PersonalTrainingView: View {
                                 }
                             }
                             
-                            if goal != activeGoals.prefix(3).last {
+                            let isLastGoal = goal.id == activeGoals.prefix(3).last?.id
+                            if !isLastGoal {
                                 Divider()
                                     .padding(.vertical, DesignConstants.smallSpacing)
                             }

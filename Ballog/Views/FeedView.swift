@@ -19,7 +19,6 @@ struct FeedView: View {
                 feedContentSection
             }
             .background(Color.pageBackground)
-            .navigationTitle("피드")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -58,14 +57,15 @@ struct FeedView: View {
                     .foregroundColor(Color.primaryBlue)
                 }
             }
-            .padding(DesignConstants.cardPadding)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
             .background(
                 RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
                     .fill(Color.cardBackground)
             )
             .padding(.horizontal, DesignConstants.horizontalPadding)
         }
-        .padding(.vertical, DesignConstants.verticalPadding)
+        .padding(.vertical, 8)
     }
     
     private var tabPickerSection: some View {

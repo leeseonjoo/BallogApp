@@ -9,6 +9,8 @@ struct ProfileCardCreationView: View {
     @State private var plapLevel: String = ProfileCard.levels.first ?? ""
     @State private var athleteLevel: String = ProfileCard.athleteLevels.first ?? ""
     @AppStorage("profileCard") private var storedCard: String = ""
+    
+    var onSave: ((String) -> Void)?
 
     private let icons = [
         "fan", "football-player-2", "football-player-3", "goalkeeper",
@@ -58,6 +60,7 @@ struct ProfileCardCreationView: View {
         if let data = try? JSONEncoder().encode(card),
            let json = String(data: data, encoding: .utf8) {
             storedCard = json
+            onSave?(json)
         }
         dismiss()
     }

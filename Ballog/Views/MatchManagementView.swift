@@ -30,7 +30,6 @@ struct MatchManagementView: View {
                 }
             }
             .background(Color.pageBackground)
-            .navigationTitle("매치 관리")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

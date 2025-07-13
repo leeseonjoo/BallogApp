@@ -1,10 +1,14 @@
 import Foundation
+import CoreData
 
 struct PersonalTrainingLog: Identifiable, Codable {
+    enum EventType: String, Codable { case match, training }
+    enum MatchResult: String, Codable { case win = "승", loss = "패", draw = "무승부" }
+    
     let id = UUID()
-    let date: Date
-    let title: String
-    let content: String
+    var date: Date
+    var title: String
+    var content: String
     let duration: Int // 분 단위
     let category: TrainingCategory
     let mood: TrainingMood
@@ -67,7 +71,7 @@ struct PersonalTrainingLog: Identifiable, Codable {
     }
 }
 
-struct PersonalGoal: Identifiable, Codable {
+struct PersonalGoal: Identifiable, Codable, Equatable {
     let id = UUID()
     let title: String
     let description: String
@@ -93,46 +97,50 @@ final class PersonalTrainingStore: ObservableObject {
     @Published var goals: [PersonalGoal] = []
     @Published var attendance: [Date: Bool] = [:]
     
-    private let logsKey = "PersonalTrainingLogs"
-    private let goalsKey = "PersonalGoals"
-    private let attendanceKey = "PersonalAttendance"
+    private let coreDataStack = CoreDataStack.shared
+    private var currentUserId: String = ""
     
     init() {
         loadData()
     }
     
+    func setCurrentUser(_ userId: String) {
+        currentUserId = userId
+        loadData()
+    }
+    
     func addLog(_ log: PersonalTrainingLog) {
         logs.append(log)
-        saveLogs()
+        saveLogToCoreData(log)
     }
     
     func updateLog(_ log: PersonalTrainingLog) {
         if let index = logs.firstIndex(where: { $0.id == log.id }) {
             logs[index] = log
-            saveLogs()
+            updateLogInCoreData(log)
         }
     }
     
     func removeLog(_ log: PersonalTrainingLog) {
         logs.removeAll { $0.id == log.id }
-        saveLogs()
+        deleteLogFromCoreData(log)
     }
     
     func addGoal(_ goal: PersonalGoal) {
         goals.append(goal)
-        saveGoals()
+        saveGoalToCoreData(goal)
     }
     
     func updateGoal(_ goal: PersonalGoal) {
         if let index = goals.firstIndex(where: { $0.id == goal.id }) {
             goals[index] = goal
-            saveGoals()
+            updateGoalInCoreData(goal)
         }
     }
     
     func removeGoal(_ goal: PersonalGoal) {
         goals.removeAll { $0.id == goal.id }
-        saveGoals()
+        deleteGoalFromCoreData(goal)
     }
     
     func setAttendance(_ value: Bool, for date: Date) {
@@ -141,39 +149,167 @@ final class PersonalTrainingStore: ObservableObject {
         saveAttendance()
     }
     
-    private func saveLogs() {
-        if let data = try? JSONEncoder().encode(logs) {
-            UserDefaults.standard.set(data, forKey: logsKey)
+    // MARK: - Core Data Methods
+    
+    private func saveLogToCoreData(_ log: PersonalTrainingLog) {
+        let context = coreDataStack.container.viewContext
+        let entity = PersonalTrainingLogEntity(context: context)
+        
+        entity.id = log.id
+        entity.userId = currentUserId
+        entity.date = log.date
+        entity.title = log.title
+        entity.content = log.content
+        entity.duration = Int32(log.duration)
+        entity.category = log.category.rawValue
+        entity.mood = log.mood.rawValue
+        entity.goals = log.goals
+        entity.achievements = log.achievements
+        entity.nextGoals = log.nextGoals
+        
+        coreDataStack.save()
+    }
+    
+    private func updateLogInCoreData(_ log: PersonalTrainingLog) {
+        let context = coreDataStack.container.viewContext
+        let request: NSFetchRequest<PersonalTrainingLogEntity> = PersonalTrainingLogEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@ AND userId == %@", log.id as CVarArg, currentUserId)
+        
+        if let entity = try? context.fetch(request).first {
+            entity.date = log.date
+            entity.title = log.title
+            entity.content = log.content
+            entity.duration = Int32(log.duration)
+            entity.category = log.category.rawValue
+            entity.mood = log.mood.rawValue
+            entity.goals = log.goals
+            entity.achievements = log.achievements
+            entity.nextGoals = log.nextGoals
+            
+            coreDataStack.save()
         }
     }
     
-    private func saveGoals() {
-        if let data = try? JSONEncoder().encode(goals) {
-            UserDefaults.standard.set(data, forKey: goalsKey)
+    private func deleteLogFromCoreData(_ log: PersonalTrainingLog) {
+        let context = coreDataStack.container.viewContext
+        let request: NSFetchRequest<PersonalTrainingLogEntity> = PersonalTrainingLogEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@ AND userId == %@", log.id as CVarArg, currentUserId)
+        
+        if let entity = try? context.fetch(request).first {
+            context.delete(entity)
+            coreDataStack.save()
+        }
+    }
+    
+    private func saveGoalToCoreData(_ goal: PersonalGoal) {
+        let context = coreDataStack.container.viewContext
+        let entity = PersonalGoalEntity(context: context)
+        
+        entity.id = goal.id
+        entity.userId = currentUserId
+        entity.title = goal.title
+        entity.goalDescription = goal.description
+        entity.targetDate = goal.targetDate
+        entity.category = goal.category.rawValue
+        entity.isCompleted = goal.isCompleted
+        entity.progress = Int32(goal.progress)
+        entity.createdAt = goal.createdAt
+        
+        coreDataStack.save()
+    }
+    
+    private func updateGoalInCoreData(_ goal: PersonalGoal) {
+        let context = coreDataStack.container.viewContext
+        let request: NSFetchRequest<PersonalGoalEntity> = PersonalGoalEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@ AND userId == %@", goal.id as CVarArg, currentUserId)
+        
+        if let entity = try? context.fetch(request).first {
+            entity.title = goal.title
+            entity.goalDescription = goal.description
+            entity.targetDate = goal.targetDate
+            entity.category = goal.category.rawValue
+            entity.isCompleted = goal.isCompleted
+            entity.progress = Int32(goal.progress)
+            
+            coreDataStack.save()
+        }
+    }
+    
+    private func deleteGoalFromCoreData(_ goal: PersonalGoal) {
+        let context = coreDataStack.container.viewContext
+        let request: NSFetchRequest<PersonalGoalEntity> = PersonalGoalEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@ AND userId == %@", goal.id as CVarArg, currentUserId)
+        
+        if let entity = try? context.fetch(request).first {
+            context.delete(entity)
+            coreDataStack.save()
+        }
+    }
+    
+    private func loadData() {
+        loadLogsFromCoreData()
+        loadGoalsFromCoreData()
+        loadAttendance()
+    }
+    
+    private func loadLogsFromCoreData() {
+        let context = coreDataStack.container.viewContext
+        let request: NSFetchRequest<PersonalTrainingLogEntity> = PersonalTrainingLogEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "userId == %@", currentUserId)
+        
+        if let entities = try? context.fetch(request) {
+            logs = entities.compactMap { entity in
+                guard let category = PersonalTrainingLog.TrainingCategory(rawValue: entity.category),
+                      let mood = PersonalTrainingLog.TrainingMood(rawValue: entity.mood) else {
+                    return nil
+                }
+                
+                return PersonalTrainingLog(
+                    date: entity.date,
+                    title: entity.title,
+                    content: entity.content,
+                    duration: Int(entity.duration),
+                    category: category,
+                    mood: mood,
+                    goals: entity.goals,
+                    achievements: entity.achievements,
+                    nextGoals: entity.nextGoals
+                )
+            }
+        }
+    }
+    
+    private func loadGoalsFromCoreData() {
+        let context = coreDataStack.container.viewContext
+        let request: NSFetchRequest<PersonalGoalEntity> = PersonalGoalEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "userId == %@", currentUserId)
+        
+        if let entities = try? context.fetch(request) {
+            goals = entities.compactMap { entity in
+                guard let category = PersonalTrainingLog.TrainingCategory(rawValue: entity.category) else {
+                    return nil
+                }
+                
+                return PersonalGoal(
+                    title: entity.title,
+                    description: entity.goalDescription,
+                    targetDate: entity.targetDate,
+                    category: category,
+                    isCompleted: entity.isCompleted,
+                    progress: Int(entity.progress)
+                )
+            }
         }
     }
     
     private func saveAttendance() {
         if let data = try? JSONEncoder().encode(attendance) {
-            UserDefaults.standard.set(data, forKey: attendanceKey)
+            UserDefaults.standard.set(data, forKey: "PersonalAttendance_\(currentUserId)")
         }
     }
     
-    private func loadData() {
-        // Load logs
-        if let data = UserDefaults.standard.data(forKey: logsKey),
-           let decodedLogs = try? JSONDecoder().decode([PersonalTrainingLog].self, from: data) {
-            logs = decodedLogs
-        }
-        
-        // Load goals
-        if let data = UserDefaults.standard.data(forKey: goalsKey),
-           let decodedGoals = try? JSONDecoder().decode([PersonalGoal].self, from: data) {
-            goals = decodedGoals
-        }
-        
-        // Load attendance
-        if let data = UserDefaults.standard.data(forKey: attendanceKey),
+    private func loadAttendance() {
+        if let data = UserDefaults.standard.data(forKey: "PersonalAttendance_\(currentUserId)"),
            let decodedAttendance = try? JSONDecoder().decode([Date: Bool].self, from: data) {
             attendance = decodedAttendance
         }

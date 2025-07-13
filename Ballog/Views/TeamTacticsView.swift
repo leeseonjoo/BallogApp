@@ -30,7 +30,6 @@ struct TeamTacticsView: View {
                 }
                 .onDelete { tacticStore.remove(at: $0) }
             }
-            .navigationTitle("팀 전술")
             .toolbar {
                 Button(action: { showingForm = true }) { Image(systemName: "plus") }
             }

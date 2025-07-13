@@ -40,7 +40,30 @@ struct BallogApp: App {
     @AppStorage("isAdminUser") private var isAdminUser: Bool = false
     @State private var showProfileCreator = false
     private let persistenceController = CoreDataStack.shared
-
+    
+    // 유저별 프로필카드 키 생성
+    private func profileCardKey(for username: String) -> String {
+        "profileCard_\(username)"
+    }
+    
+    private func loadProfileCard(for username: String) {
+        let key = profileCardKey(for: username)
+        if let card = UserDefaults.standard.string(forKey: key) {
+            storedCard = card
+        } else {
+            storedCard = ""
+        }
+    }
+    
+    private func saveProfileCard(for username: String, card: String) {
+        let key = profileCardKey(for: username)
+        UserDefaults.standard.set(card, forKey: key)
+    }
+    
+    private func clearProfileCard() {
+        storedCard = ""
+    }
+    
     var body: some Scene {
         WindowGroup {
             Group {
@@ -55,14 +78,27 @@ struct BallogApp: App {
                         .environmentObject(personalTrainingStore)
                         .environmentObject(teamGoalStore)
                         .sheet(isPresented: $showProfileCreator) {
-                            ProfileCardCreationView()
+                            ProfileCardCreationView(onSave: { cardString in
+                                saveProfileCard(for: savedUsername, card: cardString)
+                                storedCard = cardString
+                            })
                         }
-                        .onAppear { if storedCard.isEmpty { showProfileCreator = true } }
+                        .onAppear {
+                            loadProfileCard(for: savedUsername)
+                            if storedCard.isEmpty { showProfileCreator = true }
+                        }
                         .onChange(of: storedCard) { newValue in
                             if newValue.isEmpty { showProfileCreator = true }
                         }
                         .onChange(of: isLoggedIn) { newValue in
-                            if !newValue { showProfileCreator = false }
+                            if !newValue {
+                                clearProfileCard()
+                                showProfileCreator = false
+                                personalTrainingStore.setCurrentUser("")
+                            } else {
+                                loadProfileCard(for: savedUsername)
+                                personalTrainingStore.setCurrentUser(savedUsername)
+                            }
                         }
                 } else {
                     LoginView()
@@ -71,23 +107,27 @@ struct BallogApp: App {
                 }
             }
             .onAppear {
-                if !isLoggedIn && autoLogin {
-                    if savedUsername == AdminCredentials.username && savedPassword == AdminCredentials.password {
-                        isAdminUser = true
-                        isLoggedIn = true
-                    } else {
-                        let req = AccountEntity.fetchRequest()
-                        req.predicate = NSPredicate(format: "username == %@", savedUsername)
-                        if let account = try? persistenceController.container.viewContext.fetch(req).first,
-                           account.password == savedPassword {
-                            isAdminUser = account.isAdmin
-                            isLoggedIn = true
-                        }
-                    }
-                }
+                handleAutoLogin()
             }
         }
         .modelContainer(sharedModelContainer)
         .environment(\.managedObjectContext, persistenceController.container.viewContext)
+    }
+
+    private func handleAutoLogin() {
+        if !isLoggedIn && autoLogin {
+            if savedUsername == AdminCredentials.username && savedPassword == AdminCredentials.password {
+                isAdminUser = true
+                isLoggedIn = true
+            } else {
+                let req = AccountEntity.fetchRequest()
+                req.predicate = NSPredicate(format: "username == %@", savedUsername)
+                if let account = try? persistenceController.container.viewContext.fetch(req).first,
+                   account.password == savedPassword {
+                    isAdminUser = account.isAdmin
+                    isLoggedIn = true
+                }
+            }
+        }
     }
 }

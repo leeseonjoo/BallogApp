@@ -23,9 +23,6 @@ struct TeamPageView: View {
         NavigationStack {
             if let team = currentTeam {
                 VStack(spacing: 0) {
-                    // Team Header
-                    teamHeader(team: team)
-                    
                     // Tab Picker
                     Picker("TeamTab", selection: $selection) {
                         ForEach(TeamTab.allCases, id: \.self) { tab in
@@ -74,49 +71,6 @@ struct TeamPageView: View {
             }
         }
         .ballogTopBar()
-    }
-    
-    private func teamHeader(team: Team) -> some View {
-        VStack(spacing: DesignConstants.smallSpacing) {
-            HStack {
-                VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
-                    Text(team.name)
-                        .font(.title2.bold())
-                        .foregroundColor(Color.primaryText)
-                    
-                    Text(team.region)
-                        .font(.subheadline)
-                        .foregroundColor(Color.secondaryText)
-                    
-                    Text(team.trainingTime)
-                        .font(.caption)
-                        .foregroundColor(Color.tertiaryText)
-                    
-                    HStack(spacing: 4) {
-                        Image(systemName: "person.circle.fill")
-                            .font(.caption)
-                            .foregroundColor(Color.primaryBlue)
-                        Text("생성자: \(team.creatorName)")
-                            .font(.caption)
-                            .foregroundColor(Color.secondaryText)
-                    }
-                }
-                
-                Spacer()
-                
-                Image(systemName: "person.3.fill")
-                    .resizable()
-                    .frame(width: 40, height: 40)
-                    .foregroundColor(Color.primaryBlue)
-            }
-            .padding(DesignConstants.cardPadding)
-            .background(
-                RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                    .fill(Color.cardBackground)
-            )
-        }
-        .padding(DesignConstants.horizontalPadding)
-        .padding(.vertical, DesignConstants.verticalPadding)
     }
     
     private var noTeamSection: some View {

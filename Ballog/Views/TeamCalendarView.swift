@@ -1,4 +1,5 @@
 import SwiftUI
+import EventKit
 
 // MARK: - 모델 구조
 struct Availability: Identifiable, Hashable {
@@ -30,6 +31,34 @@ struct MatchInfo: Identifiable {
     let isPrivate: Bool
 }
 
+struct CalendarEvent: Identifiable {
+    let id = UUID()
+    let title: String
+    let date: Date
+    let type: EventType
+    let notes: String?
+}
+
+enum EventType {
+    case match, training, personal
+    
+    var icon: String {
+        switch self {
+        case .match: return "sportscourt"
+        case .training: return "figure.walk"
+        case .personal: return "person"
+        }
+    }
+    
+    var color: Color {
+        switch self {
+        case .match: return .red
+        case .training: return .blue
+        case .personal: return .green
+        }
+    }
+}
+
 // MARK: - ViewModel
 class TeamCalendarViewModel: ObservableObject {
     @Published var myTeamAvailability: [Availability] = []
@@ -39,11 +68,28 @@ class TeamCalendarViewModel: ObservableObject {
     @Published var courts: [FutsalCourt] = []
     @Published var confirmedMatch: MatchInfo?
     @Published var publicMatches: [MatchInfo] = []
+    @Published var events: [CalendarEvent] = []
+    @Published var selectedDate: Date = Date()
+    @Published var showingEventSheet = false
+    @Published var showingCalendarIntegration = false
+    
+    private let eventStore = EKEventStore()
     
     init() {
         loadDummyData()
         calculateCommonAvailability()
         loadCourts()
+        loadEvents()
+    }
+    
+    func getCurrentWeekString() -> String {
+        let calendar = Calendar.current
+        let now = Date()
+        let month = calendar.component(.month, from: now)
+        let weekOfYear = calendar.component(.weekOfYear, from: now)
+        let weekOfMonth = calendar.component(.weekOfMonth, from: now)
+        
+        return "\(month)월 \(weekOfMonth)주차"
     }
     
     func loadDummyData() {
@@ -81,6 +127,18 @@ class TeamCalendarViewModel: ObservableObject {
         ]
     }
     
+    func loadEvents() {
+        // 샘플 이벤트들
+        events = [
+            CalendarEvent(title: "팀 훈련", date: Date().addingTimeInterval(86400), type: .training, notes: "기술 훈련"),
+            CalendarEvent(title: "친선 경기", date: Date().addingTimeInterval(172800), type: .match, notes: "OO팀과 경기")
+        ]
+    }
+    
+    func addEvent(_ event: CalendarEvent) {
+        events.append(event)
+    }
+    
     func confirmMatch(selectedDay: String, selectedTimeRange: String, selectedCourt: FutsalCourt, isPrivate: Bool) {
         confirmedMatch = MatchInfo(
             date: selectedDay,
@@ -94,6 +152,58 @@ class TeamCalendarViewModel: ObservableObject {
             publicMatches.append(confirmedMatch!)
         }
     }
+    
+    func requestCalendarAccess() async -> Bool {
+        if #available(iOS 17.0, *) {
+            return await withCheckedContinuation { continuation in
+                eventStore.requestFullAccessToEvents { granted, error in
+                    continuation.resume(returning: granted)
+                }
+            }
+        } else {
+            return await withCheckedContinuation { continuation in
+                eventStore.requestAccess(to: .event) { granted, error in
+                    continuation.resume(returning: granted)
+                }
+            }
+        }
+    }
+    
+    func addToExternalCalendar(_ event: CalendarEvent) {
+        Task {
+            let granted = await requestCalendarAccess()
+            if granted {
+                await MainActor.run {
+                    let ekEvent = EKEvent(eventStore: eventStore)
+                    ekEvent.title = event.title
+                    ekEvent.startDate = event.date
+                    ekEvent.endDate = event.date.addingTimeInterval(3600) // 1시간
+                    ekEvent.notes = event.notes
+                    ekEvent.calendar = eventStore.defaultCalendarForNewEvents
+                    
+                    do {
+                        try eventStore.save(ekEvent, span: .thisEvent)
+                        print("이벤트가 캘린더에 추가되었습니다")
+                    } catch {
+                        print("캘린더 추가 실패: \(error)")
+                    }
+                }
+            }
+        }
+    }
+    
+    func getStickerCountForMonth() -> Int {
+        let calendar = Calendar.current
+        let now = Date()
+        let month = calendar.component(.month, from: now)
+        let year = calendar.component(.year, from: now)
+        
+        return events.filter { event in
+            let eventMonth = calendar.component(.month, from: event.date)
+            let eventYear = calendar.component(.year, from: event.date)
+            return eventMonth == month && eventYear == year && event.type == .training
+        }.count
+    }
 }
 
 // MARK: - View
@@ -103,11 +213,24 @@ struct TeamCalendarView: View {
     @State private var showCourtSheet = false
     @State private var showPublicMatchList = false
     @EnvironmentObject private var eventStore: TeamEventStore
+    @State private var showEnhancedCalendar = false
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: DesignConstants.sectionSpacing) {
+                    // 캘린더 헤더
+                    calendarHeaderSection
+                    
+                    // 이번달 스티커 통계
+                    stickerStatisticsSection
+                    
+                    // 캘린더 뷰
+                    calendarViewSection
+                    
+                    // 이벤트 목록
+                    eventsListSection
+                    
                     // 우리 팀 가용 시간
                     availabilitySection(
                         title: "우리 팀 가용 시간",
@@ -132,7 +255,7 @@ struct TeamCalendarView: View {
                 .padding(DesignConstants.horizontalPadding)
             }
             .background(Color.pageBackground)
-            .navigationTitle("팀 캘린더 매칭")
+            .navigationTitle(viewModel.getCurrentWeekString())
             .sheet(isPresented: $showCourtSheet) {
                 if let availability = selectedAvailability {
                     CourtSelectionView(viewModel: viewModel, availability: availability, dismissTrigger: { showCourtSheet = false })
@@ -141,9 +264,22 @@ struct TeamCalendarView: View {
             .sheet(isPresented: $showPublicMatchList) {
                 PublicMatchListView(viewModel: viewModel)
             }
+            .sheet(isPresented: $viewModel.showingEventSheet) {
+                EventCreationView(viewModel: viewModel)
+            }
+            .sheet(isPresented: $viewModel.showingCalendarIntegration) {
+                CalendarIntegrationView(viewModel: viewModel)
+            }
             .toolbar {
-                Button("공개 매치 리스트") {
-                    showPublicMatchList = true
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("일정 추가") {
+                        viewModel.showingEventSheet = true
+                    }
+                }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("캘린더 연동") {
+                        viewModel.showingCalendarIntegration = true
+                    }
                 }
             }
             .alert(item: $viewModel.confirmedMatch) { match in
@@ -159,6 +295,166 @@ struct TeamCalendarView: View {
             }
         }
         .ballogTopBar()
+    }
+    
+    private var calendarHeaderSection: some View {
+        VStack(spacing: DesignConstants.smallSpacing) {
+            HStack {
+                Text(viewModel.getCurrentWeekString())
+                    .font(.title2.bold())
+                    .foregroundColor(Color.primaryText)
+                
+                Spacer()
+                
+                Button("오늘") {
+                    viewModel.selectedDate = Date()
+                }
+                .foregroundColor(Color.primaryBlue)
+            }
+        }
+    }
+    
+    private var stickerStatisticsSection: some View {
+        HStack {
+            Image(systemName: "star.fill")
+                .foregroundColor(.yellow)
+            Text("이번달 훈련일지: \(viewModel.getStickerCountForMonth())개")
+                .font(.subheadline)
+                .foregroundColor(Color.secondaryText)
+            Spacer()
+        }
+        .padding(DesignConstants.cardPadding)
+        .background(
+            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                .fill(Color.cardBackground)
+        )
+    }
+    
+    private var calendarViewSection: some View {
+        VStack(spacing: DesignConstants.smallSpacing) {
+            HStack {
+                Text("캘린더 뷰")
+                    .font(.headline)
+                    .foregroundColor(Color.primaryText)
+                
+                Spacer()
+                
+                Button(showEnhancedCalendar ? "기본 캘린더" : "개선된 캘린더") {
+                    showEnhancedCalendar.toggle()
+                }
+                .font(.caption)
+                .foregroundColor(Color.primaryBlue)
+            }
+            
+            if showEnhancedCalendar {
+                EnhancedCalendarView()
+            } else {
+                // 기존 간단한 캘린더 뷰
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 8) {
+                    ForEach(["일", "월", "화", "수", "목", "금", "토"], id: \.self) { day in
+                        Text(day)
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                    }
+                    ForEach(getDaysInMonth(), id: \.self) { date in
+                        Button(action: {
+                            viewModel.selectedDate = date
+                            viewModel.showingEventSheet = true
+                        }) {
+                            VStack(spacing: 2) {
+                                Text("\(Calendar.current.component(.day, from: date))")
+                                    .font(.caption)
+                                    .foregroundColor(isToday(date) ? .white : Color.primaryText)
+                                if hasTrainingEvent(on: date) {
+                                    Image(systemName: "star.fill")
+                                        .font(.caption2)
+                                        .foregroundColor(.yellow)
+                                }
+                            }
+                            .frame(width: 30, height: 30)
+                            .background(
+                                Circle()
+                                    .fill(isToday(date) ? Color.primaryBlue : Color.clear)
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                }
+                .padding(DesignConstants.cardPadding)
+                .background(
+                    RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                        .fill(Color.cardBackground)
+                )
+            }
+        }
+    }
+    
+    private var eventsListSection: some View {
+        VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
+            Text("일정 목록")
+                .font(.title2.bold())
+                .foregroundColor(Color.primaryText)
+            
+            VStack(spacing: DesignConstants.smallSpacing) {
+                ForEach(viewModel.events.sorted(by: { $0.date < $1.date })) { event in
+                    EventCard(event: event) {
+                        viewModel.addToExternalCalendar(event)
+                    }
+                }
+            }
+        }
+    }
+    
+    private func getDaysInMonth() -> [Date] {
+        let calendar = Calendar.current
+        let now = Date()
+        let month = calendar.component(.month, from: now)
+        let year = calendar.component(.year, from: now)
+        
+        guard let monthStart = calendar.date(from: DateComponents(year: year, month: month, day: 1)) else {
+            return []
+        }
+        
+        // 해당 월의 첫 주 시작일 (일요일부터 시작)
+        let firstWeekday = calendar.component(.weekday, from: monthStart)
+        let daysToSubtract = firstWeekday - 1 // 일요일이 1이므로 조정
+        
+        guard let calendarStart = calendar.date(byAdding: .day, value: -daysToSubtract, to: monthStart) else {
+            return []
+        }
+        
+        // 해당 월의 마지막 날
+        guard let monthEnd = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: monthStart) else {
+            return []
+        }
+        
+        // 마지막 주의 끝까지 포함 (토요일까지)
+        let lastWeekday = calendar.component(.weekday, from: monthEnd)
+        let daysToAdd = 7 - lastWeekday // 토요일이 7이므로 조정
+        
+        guard let calendarEnd = calendar.date(byAdding: .day, value: daysToAdd, to: monthEnd) else {
+            return []
+        }
+        
+        var dates: [Date] = []
+        var currentDate = calendarStart
+        
+        while currentDate <= calendarEnd {
+            dates.append(currentDate)
+            currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate) ?? currentDate
+        }
+        
+        return dates
+    }
+    
+    private func isToday(_ date: Date) -> Bool {
+        Calendar.current.isDate(date, inSameDayAs: Date())
+    }
+    
+    private func hasTrainingEvent(on date: Date) -> Bool {
+        viewModel.events.contains { event in
+            Calendar.current.isDate(event.date, inSameDayAs: date) && event.type == .training
+        }
     }
     
     private func availabilitySection(title: String, availabilities: [Availability], isClickable: Bool) -> some View {
@@ -198,6 +494,187 @@ struct TeamCalendarView: View {
         dateComponents.hour = hour
         dateComponents.minute = minute
         return Calendar.current.nextDate(after: Date(), matching: dateComponents, matchingPolicy: .nextTimePreservingSmallerComponents)
+    }
+}
+
+// MARK: - Event Card
+struct EventCard: View {
+    let event: CalendarEvent
+    let onAddToCalendar: () -> Void
+    
+    var body: some View {
+        HStack {
+            Image(systemName: event.type.icon)
+                .foregroundColor(event.type.color)
+                .frame(width: 30)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(event.title)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(Color.primaryText)
+                
+                Text(formatDate(event.date))
+                    .font(.caption)
+                    .foregroundColor(Color.secondaryText)
+                
+                if let notes = event.notes {
+                    Text(notes)
+                        .font(.caption)
+                        .foregroundColor(Color.tertiaryText)
+                }
+            }
+            
+            Spacer()
+            
+            Button(action: onAddToCalendar) {
+                Image(systemName: "calendar.badge.plus")
+                    .foregroundColor(Color.primaryBlue)
+            }
+        }
+        .padding(DesignConstants.cardPadding)
+        .background(
+            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                .fill(Color.cardBackground)
+        )
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM월 dd일 HH:mm"
+        return formatter.string(from: date)
+    }
+}
+
+// MARK: - Event Creation View
+struct EventCreationView: View {
+    @ObservedObject var viewModel: TeamCalendarViewModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var title = ""
+    @State private var selectedType: EventType = .training
+    @State private var notes = ""
+    @State private var selectedDate: Date
+    
+    init(viewModel: TeamCalendarViewModel) {
+        self.viewModel = viewModel
+        self._selectedDate = State(initialValue: viewModel.selectedDate)
+    }
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("일정 정보") {
+                    TextField("제목", text: $title)
+                    
+                    Picker("유형", selection: $selectedType) {
+                        Text("훈련").tag(EventType.training)
+                        Text("경기").tag(EventType.match)
+                        Text("개인").tag(EventType.personal)
+                    }
+                    .pickerStyle(.segmented)
+                    
+                    DatePicker("날짜", selection: $selectedDate, displayedComponents: [.date, .hourAndMinute])
+                    
+                    TextField("메모", text: $notes, axis: .vertical)
+                        .lineLimit(3...6)
+                }
+            }
+            .navigationTitle("일정 추가")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("취소") {
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("저장") {
+                        let event = CalendarEvent(
+                            title: title,
+                            date: selectedDate,
+                            type: selectedType,
+                            notes: notes.isEmpty ? nil : notes
+                        )
+                        viewModel.addEvent(event)
+                        dismiss()
+                    }
+                    .disabled(title.isEmpty)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Calendar Integration View
+struct CalendarIntegrationView: View {
+    @ObservedObject var viewModel: TeamCalendarViewModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var selectedEvents: Set<UUID> = []
+    
+    var body: some View {
+        NavigationStack {
+            List {
+                Section("외부 캘린더에 추가할 일정을 선택하세요") {
+                    ForEach(viewModel.events) { event in
+                        HStack {
+                            Image(systemName: event.type.icon)
+                                .foregroundColor(event.type.color)
+                            
+                            VStack(alignment: .leading) {
+                                Text(event.title)
+                                    .font(.subheadline)
+                                Text(formatDate(event.date))
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            if selectedEvents.contains(event.id) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            if selectedEvents.contains(event.id) {
+                                selectedEvents.remove(event.id)
+                            } else {
+                                selectedEvents.insert(event.id)
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("캘린더 연동")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("취소") {
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("추가") {
+                        for eventId in selectedEvents {
+                            if let event = viewModel.events.first(where: { $0.id == eventId }) {
+                                viewModel.addToExternalCalendar(event)
+                            }
+                        }
+                        dismiss()
+                    }
+                    .disabled(selectedEvents.isEmpty)
+                }
+            }
+        }
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM월 dd일 HH:mm"
+        return formatter.string(from: date)
     }
 }
 

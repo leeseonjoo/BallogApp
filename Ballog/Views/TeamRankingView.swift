@@ -13,7 +13,6 @@ struct TeamRankingView: View {
                 }
             }
         }
-        .navigationTitle("팀 랭킹")
     }
 }
 
