@@ -37,26 +37,12 @@ struct SignUpView: View {
         }
     }
 
-    private var accounts: [String: Account] {
-        get {
-            (try? JSONDecoder().decode([String: Account].self, from: storedAccountsData)) ?? [:]
-        }
-        set {
-            if let encoded = try? JSONEncoder().encode(newValue) {
-                storedAccountsData = encoded
-            }
-        }
-    }
-
-    private mutating func register() {
+    private func register() {
         guard !username.isEmpty, !password.isEmpty, !email.isEmpty else { return }
         var dict = accounts
         dict[username] = Account(username: username, password: password, email: email)
-        // 구조체 내에서 accounts = dict 호출 시 self 변경이 막히는 문제를 해결하려면 아래처럼 DispatchQueue.main.async 사용
-        DispatchQueue.main.async {
-            self.accounts = dict
-            dismiss()
-        }
+        accounts = dict
+        dismiss()
     }
 }
 
