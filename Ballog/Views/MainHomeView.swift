@@ -52,7 +52,6 @@ struct MainHomeView: View {
         return try? JSONDecoder().decode(ProfileCard.self, from: data)
     }
 
-
     private var competitionEvents: [TeamEvent] {
         eventStore.events.filter { $0.type == .match }.sorted { $0.date < $1.date }
     }
@@ -83,95 +82,130 @@ struct MainHomeView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: Layout.spacing) {
-                quoteSection
-                scheduleSection
-                thisWeekScheduleSection // 추가된 부분
-                if let card = card {
-                    ProfileCardView(card: card, showIcon: true, iconOnRight: true, showRecordButton: true)
+            ScrollView {
+                VStack(spacing: DesignConstants.sectionSpacing) {
+                    quoteSection
+                    scheduleSection
+                    thisWeekScheduleSection
+                    if let card = card {
+                        ProfileCardView(card: card, showIcon: true, iconOnRight: true, showRecordButton: true)
+                    }
                 }
-
-                Spacer()
+                .padding(DesignConstants.horizontalPadding)
             }
-            .padding(Layout.padding)
             .background(Color.pageBackground)
-            .ignoresSafeArea()
             .onAppear { quote = quotes.randomElement() ?? "" }
         }
         .ballogTopBar()
     }
 
-
     private var quoteSection: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: DesignConstants.smallSpacing) {
             Text(quote)
                 .font(.subheadline)
                 .multilineTextAlignment(.center)
-                .padding()
+                .foregroundColor(Color.secondaryText)
+                .padding(DesignConstants.cardPadding)
+                .background(
+                    RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                        .fill(Color.cardBackground)
+                )
         }
-        .padding(.horizontal)
     }
 
     private var scheduleSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
             HStack {
                 Text("대회 일정")
                     .font(.title2.bold())
+                    .foregroundColor(Color.primaryText)
                 Spacer()
             }
-            .padding(.horizontal)
 
             VStack(alignment: .leading, spacing: 0) {
                 if competitionEvents.isEmpty {
                     Text("등록된 일정이 없습니다")
-                        .padding(.vertical, 12)
-                        .padding(.horizontal)
+                        .foregroundColor(Color.secondaryText)
+                        .padding(DesignConstants.cardPadding)
+                        .frame(maxWidth: .infinity, alignment: .center)
                 } else {
                     ForEach(competitionEvents) { event in
-                        Text("- \(dateFormatter.string(from: event.date)) \(event.title) | D-day \(dDay(from: event.date))")
-                            .padding(.vertical, 12)
-                            .padding(.horizontal)
+                        VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
+                            HStack {
+                                Text("\(dateFormatter.string(from: event.date)) \(event.title)")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(Color.primaryText)
+                                Spacer()
+                                Text("D-day \(dDay(from: event.date))")
+                                    .font(.caption)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: DesignConstants.smallCornerRadius)
+                                            .fill(Color.primaryBlue.opacity(0.1))
+                                    )
+                                    .foregroundColor(Color.primaryBlue)
+                            }
+                        }
+                        .padding(DesignConstants.cardPadding)
+                        .background(
+                            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                                .fill(Color.cardBackground)
+                        )
+                        
                         if event.id != competitionEvents.last?.id {
                             Divider()
+                                .padding(.vertical, DesignConstants.smallSpacing)
                         }
                     }
                 }
             }
-            .padding(.horizontal)
         }
     }
 
     private var thisWeekScheduleSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
             HStack {
                 Text("이번주 일정")
                     .font(.title2.bold())
+                    .foregroundColor(Color.primaryText)
                 Spacer()
             }
-            .padding(.horizontal)
 
             VStack(alignment: .leading, spacing: 0) {
                 if thisWeekEvents.isEmpty {
                     Text("등록된 일정이 없습니다")
-                        .padding(.vertical, 12)
-                        .padding(.horizontal)
+                        .foregroundColor(Color.secondaryText)
+                        .padding(DesignConstants.cardPadding)
+                        .frame(maxWidth: .infinity, alignment: .center)
                 } else {
                     ForEach(thisWeekEvents) { event in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("- \(timeFormatter.string(from: event.date)) | \(event.title)")
-                            Text("  장소: \(event.place)")
+                        VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
+                            HStack {
+                                Text("\(timeFormatter.string(from: event.date)) | \(event.title)")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(Color.primaryText)
+                                Spacer()
+                            }
+                            Text("장소: \(event.place)")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(Color.secondaryText)
                         }
-                        .padding(.vertical, 12)
-                        .padding(.horizontal)
+                        .padding(DesignConstants.cardPadding)
+                        .background(
+                            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                                .fill(Color.cardBackground)
+                        )
+                        
                         if event.id != thisWeekEvents.last?.id {
                             Divider()
+                                .padding(.vertical, DesignConstants.smallSpacing)
                         }
                     }
                 }
             }
-            .padding(.horizontal)
         }
     }
 }

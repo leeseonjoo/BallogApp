@@ -9,36 +9,54 @@ struct BallogTopBar: View {
     }
 
     var body: some View {
-        HStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 2) {
+        HStack(spacing: DesignConstants.spacing) {
+            VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
                 Text("볼로그")
                     .font(.title2.bold())
+                    .foregroundColor(Color.primaryText)
                 Text(todayString)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.secondaryText)
             }
-            .padding(.leading)
+            .padding(.leading, DesignConstants.horizontalPadding)
 
             Spacer()
 
-            NavigationLink(destination: ProfileView()) {
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .frame(width: 28, height: 28)
+            HStack(spacing: DesignConstants.largeSpacing) {
+                NavigationLink(destination: ProfileView()) {
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .frame(width: 32, height: 32)
+                        .foregroundColor(Color.primaryBlue)
+                }
+                
+                NavigationLink(destination: NotificationView()) {
+                    Image(systemName: "bell")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(Color.primaryText)
+                }
+                
+                NavigationLink(destination: SettingsView()) {
+                    Image(systemName: "gearshape")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(Color.primaryText)
+                }
             }
-            NavigationLink(destination: NotificationView()) {
-                Image(systemName: "bell")
-                    .resizable()
-                    .frame(width: 24, height: 24)
-            }
-            NavigationLink(destination: SettingsView()) {
-                Image(systemName: "gearshape")
-                    .resizable()
-                    .frame(width: 24, height: 24)
-            }
+            .padding(.trailing, DesignConstants.horizontalPadding)
         }
-        .padding(.vertical, 8)
-        .background(Color.pageBackground)
+        .padding(.vertical, DesignConstants.verticalPadding)
+        .background(
+            Color.pageBackground
+                .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+        )
+        .overlay(
+            Rectangle()
+                .frame(height: 0.5)
+                .foregroundColor(Color.borderColor),
+            alignment: .bottom
+        )
     }
 }
 
@@ -46,7 +64,7 @@ struct BallogTopBarModifier: ViewModifier {
     func body(content: Content) -> some View {
         ZStack(alignment: .top) {
             content
-                .padding(.top, 50)
+                .padding(.top, DesignConstants.topBarHeight + 20)
             BallogTopBar()
         }
     }
