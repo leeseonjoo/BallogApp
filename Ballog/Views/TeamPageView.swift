@@ -4,6 +4,7 @@ private enum TeamTab: String, CaseIterable {
     case manage = "팀 관리"
     case ranking = "팀 랭킹"
     case match = "매치 관리"
+    case tactics = "전술"
 }
 
 struct TeamPageView: View {
@@ -33,6 +34,8 @@ struct TeamPageView: View {
                         TeamRankingView()
                     case .match:
                         MatchManagementView()
+                    case .tactics:
+                        TeamTacticsView()
                     }
                 }
             } else {
@@ -61,5 +64,6 @@ struct TeamPageView: View {
     TeamPageView()
         .environmentObject(AttendanceStore())
         .environmentObject(TeamTrainingLogStore())
+        .environmentObject(TeamTacticStore())
 }
 
