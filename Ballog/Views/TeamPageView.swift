@@ -17,25 +17,25 @@ struct TeamPageView: View {
     }
 
     var body: some View {
-        if let team = currentTeam {
-            VStack {
-                Picker("TeamTab", selection: $selection) {
-                    ForEach(TeamTab.allCases, id: \.self) { Text($0.rawValue).tag($0) }
-                }
-                .pickerStyle(.segmented)
-                .padding()
+        NavigationStack {
+            if let team = currentTeam {
+                VStack {
+                    Picker("TeamTab", selection: $selection) {
+                        ForEach(TeamTab.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding()
 
-                switch selection {
-                case .manage:
-                    TeamManagementView(team: team)
-                case .ranking:
-                    TeamRankingView()
-                case .match:
-                    MatchManagementView()
+                    switch selection {
+                    case .manage:
+                        TeamManagementView(team: team)
+                    case .ranking:
+                        TeamRankingView()
+                    case .match:
+                        MatchManagementView()
+                    }
                 }
-            }
-        } else {
-            NavigationStack {
+            } else {
                 VStack(spacing: 16) {
                     if !hasTeam {
                         Text("팀에 가입해보세요")
@@ -53,6 +53,7 @@ struct TeamPageView: View {
                 }
             }
         }
+        .ballogTopBar()
     }
 }
 

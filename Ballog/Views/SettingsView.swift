@@ -19,7 +19,6 @@ struct SettingsView: View {
 
     var body: some View {
         NavigationStack {
-            Spacer(minLength: 100) // 위 여백
             List {
                 Section(header: Text("계정")) {
                     NavigationLink("프로필") {
@@ -47,6 +46,7 @@ struct SettingsView: View {
         }
         .background(Color.pageBackground)
         .ignoresSafeArea()
+        .ballogTopBar()
     }
 }
 

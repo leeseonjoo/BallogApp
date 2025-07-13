@@ -6,6 +6,8 @@ struct TeamCreationView: View {
     @State private var step: Step = .name
 
     @EnvironmentObject private var teamStore: TeamStore
+    @EnvironmentObject private var eventStore: TeamEventStore
+    @EnvironmentObject private var logStore: TeamTrainingLogStore
     @AppStorage("currentTeamID") private var currentTeamID: String = ""
     @AppStorage("hasTeam") private var hasTeam: Bool = true
 
@@ -77,6 +79,8 @@ struct TeamCreationView: View {
                 teamStore.add(team)
                 currentTeamID = team.id.uuidString
                 hasTeam = true
+                eventStore.events.removeAll()
+                logStore.logs.removeAll()
             }
         }
     }
