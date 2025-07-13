@@ -15,6 +15,9 @@ struct SettingsView: View {
     @AppStorage("profileCard") private var storedCard: String = ""
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
     @AppStorage("currentTeamID") private var currentTeamID: String = ""
+    @AppStorage("autoLogin") private var autoLogin: Bool = false
+    @AppStorage("savedUsername") private var savedUsername: String = ""
+    @AppStorage("savedPassword") private var savedPassword: String = ""
     @State private var showLogoutAlert = false
 
     var body: some View {
@@ -39,6 +42,9 @@ struct SettingsView: View {
                     storedCard = ""
                     isLoggedIn = false
                     currentTeamID = ""
+                    autoLogin = false
+                    savedUsername = ""
+                    savedPassword = ""
                 }
                 Button("아니오", role: .cancel) { }
             }
