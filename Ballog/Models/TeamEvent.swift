@@ -27,25 +27,3 @@ struct TeamEvent: Identifiable, Codable {
         self.matchType = matchType
     }
 }
-
-final class TeamEventStore: ObservableObject {
-    @Published var events: [TeamEvent] = []
-
-    func addEvent(_ event: TeamEvent) {
-        events.append(event)
-    }
-    
-    func add(_ event: TeamEvent) {
-        events.append(event)
-    }
-    
-    func updateEvent(_ event: TeamEvent) {
-        if let index = events.firstIndex(where: { $0.id == event.id }) {
-            events[index] = event
-        }
-    }
-    
-    func removeEvent(_ event: TeamEvent) {
-        events.removeAll { $0.id == event.id }
-    }
-}

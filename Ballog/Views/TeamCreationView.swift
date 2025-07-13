@@ -137,7 +137,7 @@ struct TeamCreationView: View {
                     creatorId: userCard?.nickname ?? "나",
                     creatorName: userCard?.nickname ?? "나"
                 )
-                teamStore.add(team)
+                teamStore.addTeam(team)
                 currentTeamID = team.id.uuidString
                 hasTeam = true
                 eventStore.events.removeAll()

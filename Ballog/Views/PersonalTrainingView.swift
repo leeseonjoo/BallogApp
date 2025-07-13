@@ -12,18 +12,7 @@ private enum Layout {
     static let padding = DesignConstants.horizontalPadding
 }
 
-struct DiaryEntry: Identifiable {
-    let id = UUID()
-    let color: Color
-    let time: String
-    let title: String
-    let place: String
-}
 
-struct DiaryDay {
-    let date: String
-    let entries: [DiaryEntry]
-}
 
 struct PersonalTrainingView: View {
     @AppStorage("profileCard") private var storedCard: String = ""

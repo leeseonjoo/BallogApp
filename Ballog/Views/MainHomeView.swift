@@ -5,18 +5,7 @@ private enum Layout {
     static let padding = DesignConstants.horizontalPadding
 }
 
-struct DiaryEntry: Identifiable {
-    let id = UUID()
-    let color: Color
-    let time: String
-    let title: String
-    let place: String
-}
 
-struct DiaryDay {
-    let date: String
-    let entries: [DiaryEntry]
-}
 
 struct MainHomeView: View {
     @EnvironmentObject private var eventStore: TeamEventStore
@@ -230,37 +219,4 @@ struct MainHomeView: View {
     }
 }
 
-struct DiaryDayView: View {
-    let day: DiaryDay
 
-    var body: some View {
-        HStack(alignment: .top) {
-            Text(day.date)
-                .font(.headline)
-                .frame(width: 60, alignment: .leading)
-
-            VStack(alignment: .leading, spacing: 12) {
-                ForEach(Array(day.entries.enumerated()), id: \.offset) { index, entry in
-                    HStack(alignment: .top, spacing: 8) {
-                        Rectangle()
-                            .fill(entry.color)
-                            .frame(width: 10, height: 10)
-                            .cornerRadius(2)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("시간: \(entry.time)")
-                            Text("제목: \(entry.title)")
-                            if !entry.place.isEmpty {
-                                Text("장소: \(entry.place)")
-                            }
-                        }
-                        Spacer()
-                    }
-                    if index != day.entries.count - 1 {
-                        Divider()
-                    }
-                }
-            }
-        }
-        .padding(Layout.padding)
-    }
-}

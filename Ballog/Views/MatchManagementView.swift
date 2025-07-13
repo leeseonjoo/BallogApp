@@ -46,7 +46,7 @@ struct MatchManagementView: View {
                 }
             }
             .sheet(item: $selectedMatch) { matchEvent in
-                MatchDetailView(match: matchEvent)
+                MatchDetailView(matchEvent: matchEvent)
             }
         }
         .ballogTopBar()
@@ -80,7 +80,7 @@ struct MatchManagementView: View {
             } else {
                 VStack(spacing: DesignConstants.smallSpacing) {
                     ForEach(upcomingMatches) { matchEvent in
-                        MatchCard(match: matchEvent) {
+                        MatchCard(matchEvent: matchEvent) {
                             selectedMatch = matchEvent
                         }
                     }
@@ -106,7 +106,7 @@ struct MatchManagementView: View {
             } else {
                 VStack(spacing: DesignConstants.smallSpacing) {
                     ForEach(pastMatches) { matchEvent in
-                        PastMatchCard(match: matchEvent) {
+                        PastMatchCard(matchEvent: matchEvent) {
                             selectedMatch = matchEvent
                         }
                     }
@@ -163,7 +163,7 @@ struct MatchManagementView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: DesignConstants.spacing) {
                         ForEach(recentMatches.prefix(5), id: \.id) { matchEvent in
-                            PerformanceCard(match: matchEvent)
+                            PerformanceCard(matchEvent: matchEvent)
                         }
                     }
                     .padding(.horizontal, DesignConstants.horizontalPadding)
@@ -239,7 +239,7 @@ enum MatchTab: String, CaseIterable {
 }
 
 struct MatchCard: View {
-    let match: TeamEvent
+    let matchEvent: TeamEvent
     let onTap: () -> Void
     @State private var isPressed = false
     
@@ -258,12 +258,12 @@ struct MatchCard: View {
             VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(match.title)
+                        Text(matchEvent.title)
                             .font(.headline)
                             .fontWeight(.semibold)
                             .foregroundColor(Color.primaryText)
                         
-                        Text(match.place)
+                        Text(matchEvent.place)
                             .font(.subheadline)
                             .foregroundColor(Color.secondaryText)
                     }
@@ -271,11 +271,11 @@ struct MatchCard: View {
                     Spacer()
                     
                     VStack(alignment: .trailing, spacing: 4) {
-                        Text(match.date, style: .date)
+                        Text(matchEvent.date, style: .date)
                             .font(.caption)
                             .foregroundColor(Color.secondaryText)
                         
-                        Text(match.date, style: .time)
+                        Text(matchEvent.date, style: .time)
                             .font(.caption)
                             .foregroundColor(Color.secondaryText)
                     }
@@ -324,32 +324,32 @@ struct MatchCard: View {
     
     private var daysUntilMatch: Int {
         let calendar = Calendar.current
-        let components = calendar.dateComponents([.day], from: Date(), to: match.date)
+        let components = calendar.dateComponents([.day], from: Date(), to: matchEvent.date)
         return components.day ?? 0
     }
 }
 
 struct PastMatchCard: View {
-    let match: TeamEvent
+    let matchEvent: TeamEvent
     let onTap: () -> Void
     
     var body: some View {
         Button(action: onTap) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(match.title)
+                    Text(matchEvent.title)
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(Color.primaryText)
                     
-                    Text(match.date, style: .date)
+                    Text(matchEvent.date, style: .date)
                         .font(.caption)
                         .foregroundColor(Color.secondaryText)
                 }
                 
                 Spacer()
                 
-                if let ourScore = match.ourScore, let opponentScore = match.opponentScore {
+                if let ourScore = matchEvent.ourScore, let opponentScore = matchEvent.opponentScore {
                     HStack(spacing: 4) {
                         Text("\(ourScore)")
                             .font(.headline)
@@ -369,8 +369,8 @@ struct PastMatchCard: View {
                     .padding(.vertical, 4)
                     .background(
                         RoundedRectangle(cornerRadius: DesignConstants.smallCornerRadius)
-                            .fill(match.result == .win ? Color.successColor.opacity(0.1) : 
-                                  match.result == .loss ? Color.errorColor.opacity(0.1) : Color.secondaryText.opacity(0.1))
+                            .fill(matchEvent.result == .win ? Color.successColor.opacity(0.1) : 
+                                  matchEvent.result == .loss ? Color.errorColor.opacity(0.1) : Color.secondaryText.opacity(0.1))
                     )
                 }
             }
@@ -417,15 +417,15 @@ struct MatchStatCard: View {
 }
 
 struct PerformanceCard: View {
-    let match: TeamEvent
+    let matchEvent: TeamEvent
     
     var body: some View {
         VStack(spacing: DesignConstants.smallSpacing) {
-            Text(match.date, style: .date)
+            Text(matchEvent.date, style: .date)
                 .font(.caption)
                 .foregroundColor(Color.secondaryText)
             
-            if let ourScore = match.ourScore, let opponentScore = match.opponentScore {
+            if let ourScore = matchEvent.ourScore, let opponentScore = matchEvent.opponentScore {
                 HStack(spacing: 4) {
                     Text("\(ourScore)")
                         .font(.headline)
@@ -447,7 +447,7 @@ struct PerformanceCard: View {
                     .foregroundColor(Color.secondaryText)
             }
             
-            if let result = match.result {
+            if let result = matchEvent.result {
                 Text(result.rawValue)
                     .font(.caption)
                     .foregroundColor(result == .win ? Color.successColor : 
@@ -548,7 +548,7 @@ struct CreateMatchView: View {
 }
 
 struct MatchDetailView: View {
-    let match: TeamEvent
+    let matchEvent: TeamEvent
     @Environment(\.dismiss) private var dismiss
     @State private var ourScore: Int = 0
     @State private var opponentScore: Int = 0
@@ -590,11 +590,11 @@ struct MatchDetailView: View {
                 .foregroundColor(Color.primaryText)
             
             VStack(spacing: DesignConstants.smallSpacing) {
-                MatchInfoRow(title: "제목", value: match.title)
-                MatchInfoRow(title: "장소", value: match.place)
-                MatchInfoRow(title: "날짜", value: match.date, dateStyle: .date)
-                MatchInfoRow(title: "시간", value: match.date, dateStyle: .time)
-                if let opponent = match.opponent {
+                MatchInfoRow(title: "제목", value: matchEvent.title)
+                MatchInfoRow(title: "장소", value: matchEvent.place)
+                MatchInfoRow(title: "날짜", value: matchEvent.date, dateStyle: .date)
+                MatchInfoRow(title: "시간", value: matchEvent.date, dateStyle: .time)
+                if let opponent = matchEvent.opponent {
                     MatchInfoRow(title: "상대팀", value: opponent)
                 }
             }
@@ -624,7 +624,7 @@ struct MatchDetailView: View {
                     Text("우리팀")
                         .font(.caption)
                         .foregroundColor(Color.secondaryText)
-                    Text("\(match.ourScore ?? 0)")
+                    Text("\(matchEvent.ourScore ?? 0)")
                         .font(.title.bold())
                         .foregroundColor(Color.primaryText)
                 }
@@ -637,7 +637,7 @@ struct MatchDetailView: View {
                     Text("상대팀")
                         .font(.caption)
                         .foregroundColor(Color.secondaryText)
-                    Text("\(match.opponentScore ?? 0)")
+                    Text("\(matchEvent.opponentScore ?? 0)")
                         .font(.title.bold())
                         .foregroundColor(Color.primaryText)
                 }
