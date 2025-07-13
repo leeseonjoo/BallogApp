@@ -7,6 +7,17 @@ struct SignUpView: View {
     @State private var email = ""
     @AppStorage("accounts") private var storedAccountsData: Data = Data()
 
+
+    private var accounts: [String: Account] {
+        get {
+            (try? JSONDecoder().decode([String: Account].self,
+                                        from: storedAccountsData)) ?? [:]
+        }
+        nonmutating set {
+            storedAccountsData = (try? JSONEncoder().encode(newValue)) ?? Data()
+        }
+    }
+
     var body: some View {
         NavigationStack {
             Form {
