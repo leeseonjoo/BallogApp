@@ -51,6 +51,7 @@ struct TeamManagementView: View {
     @State private var showAttendance = false
     @EnvironmentObject private var attendanceStore: AttendanceStore
     @EnvironmentObject private var logStore: TeamTrainingLogStore
+    @EnvironmentObject private var eventStore: TeamEventStore
     @State private var trainingWeather: WeatherCondition = .clear
     
     private var tuesdayDates: [Date] {
@@ -127,6 +128,12 @@ struct TeamManagementView: View {
         .onAppear {
             if let next = tuesdayDates.first {
                 trainingWeather = WeatherService.weather(for: next)
+            }
+            if eventStore.events.isEmpty {
+                let events = tuesdayDates.map { date in
+                    TeamEvent(date: date, title: "정기 훈련", place: "누누 풋살장", type: .training)
+                }
+                eventStore.events.append(contentsOf: events)
             }
         }
         .sheet(item: $selectedLog) { data in
