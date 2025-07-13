@@ -10,4 +10,9 @@ final class TeamStore: ObservableObject {
     func team(id: UUID) -> Team? {
         teams.first { $0.id == id }
     }
+
+    func addMember(_ member: TeamCharacter, to id: UUID) {
+        guard let index = teams.firstIndex(where: { $0.id == id }) else { return }
+        teams[index].members.append(member)
+    }
 }

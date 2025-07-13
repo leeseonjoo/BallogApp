@@ -49,7 +49,15 @@ struct TeamPageView: View {
                         Text("추천 팀")
                             .font(.headline)
                         ForEach(teamStore.teams) { team in
-                            Text(team.name)
+                            NavigationLink(destination: TeamPreviewView(team: team)) {
+                                VStack(alignment: .leading) {
+                                    Text(team.name)
+                                        .fontWeight(.bold)
+                                    Text(team.region)
+                                    Text(team.trainingTime)
+                                        .font(.caption)
+                                }
+                            }
                         }
                     }
                     Spacer()
