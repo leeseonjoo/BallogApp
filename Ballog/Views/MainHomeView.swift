@@ -19,6 +19,8 @@ struct DiaryDay {
 }
 
 struct MainHomeView: View {
+    @EnvironmentObject private var eventStore: TeamEventStore
+    private let calendar = Calendar.current
     @State private var selectedDate: String?
     private let quotes = [
         "노력은 배신하지 않는다. – 일본 야구선수 이치로",
