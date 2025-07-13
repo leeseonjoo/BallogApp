@@ -26,17 +26,32 @@ struct BallogApp: App {
     @StateObject private var attendanceStore = AttendanceStore()
     @StateObject private var logStore = TeamTrainingLogStore()
     @StateObject private var teamStore = TeamStore()
+    @StateObject private var eventStore = TeamEventStore()
     @AppStorage("profileCard") private var storedCard: String = ""
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
+    @AppStorage("autoLogin") private var autoLogin: Bool = false
+    @AppStorage("savedUsername") private var savedUsername: String = ""
+    @AppStorage("savedPassword") private var savedPassword: String = ""
+    @AppStorage("accounts") private var storedAccountsData: Data = Data()
     @State private var showProfileCreator = false
+
+    private var accounts: [String: Account] {
+        (try? JSONDecoder().decode([String: Account].self, from: storedAccountsData)) ?? [:]
+    }
 
     var body: some Scene {
         WindowGroup {
+            if !isLoggedIn && autoLogin {
+                if let account = accounts[savedUsername], account.password == savedPassword {
+                    isLoggedIn = true
+                }
+            }
             if isLoggedIn {
                 ContentView()
                     .environmentObject(attendanceStore)
                     .environmentObject(logStore)
                     .environmentObject(teamStore)
+                    .environmentObject(eventStore)
                     .sheet(isPresented: $showProfileCreator) {
                         ProfileCardCreationView()
                     }
@@ -46,6 +61,7 @@ struct BallogApp: App {
                     }
             } else {
                 LoginView()
+                    .environmentObject(eventStore)
             }
         }
         .modelContainer(sharedModelContainer)
