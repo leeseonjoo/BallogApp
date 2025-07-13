@@ -1,4 +1,5 @@
 import SwiftUI
+import CoreData
 
 struct LoginView: View {
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
@@ -7,7 +8,7 @@ struct LoginView: View {
     @AppStorage("savedPassword") private var savedPassword: String = ""
     @AppStorage("rememberID") private var rememberID: Bool = false
     @AppStorage("autoLogin") private var autoLogin: Bool = false
-    @AppStorage("accounts") private var storedAccountsData: Data = Data()
+    @Environment(\.managedObjectContext) private var context
 
     @State private var username: String = ""
     @State private var password: String = ""
@@ -15,10 +16,6 @@ struct LoginView: View {
     @State private var alertMessage = ""
     @State private var showAlert = false
 
-    private var accounts: [String: Account] {
-        get { (try? JSONDecoder().decode([String: Account].self, from: storedAccountsData)) ?? [:] }
-        set { storedAccountsData = (try? JSONEncoder().encode(newValue)) ?? Data() }
-    }
 
     var body: some View {
         VStack(spacing: 20) {
@@ -52,7 +49,9 @@ struct LoginView: View {
         if autoLogin {
             username = savedUsername
             password = savedPassword
-            if let account = accounts[username], account.password == password {
+            let req = AccountEntity.fetchRequest()
+            req.predicate = NSPredicate(format: "username == %@", username)
+            if let account = try? context.fetch(req).first, account.password == password {
                 isLoggedIn = true
             }
         }
@@ -65,7 +64,9 @@ struct LoginView: View {
             return
         }
 
-        guard let account = accounts[username] else {
+        let req = AccountEntity.fetchRequest()
+        req.predicate = NSPredicate(format: "username == %@", username)
+        guard let account = try? context.fetch(req).first else {
             alertMessage = "아이디가 존재하지 않습니다 회원가입 하시겠습니까?"
             showAlert = true
             showSignup = true
@@ -86,4 +87,5 @@ struct LoginView: View {
 
 #Preview {
     LoginView()
+        .environment(\.managedObjectContext, CoreDataStack.shared.container.viewContext)
 }
