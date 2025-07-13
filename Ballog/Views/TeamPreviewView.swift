@@ -2,6 +2,8 @@ import SwiftUI
 
 struct TeamPreviewView: View {
     let team: Team
+    @State private var showJoinRequest = false
+    
     var body: some View {
         VStack(spacing: 16) {
             VStack(spacing: DesignConstants.smallSpacing) {
@@ -20,10 +22,28 @@ struct TeamPreviewView: View {
             }
             
             TeamCharacterBoardView(members: team.members)
+            
+            // Join Request Button
+            Button(action: { showJoinRequest = true }) {
+                HStack {
+                    Image(systemName: "person.badge.plus")
+                    Text("팀 가입 신청")
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.primaryBlue)
+                .foregroundColor(.white)
+                .cornerRadius(DesignConstants.cornerRadius)
+            }
+            .padding(.horizontal)
+            
             Spacer()
         }
         .navigationTitle("팀 미리보기")
         .padding()
+        .sheet(isPresented: $showJoinRequest) {
+            TeamJoinRequestView(team: team)
+        }
     }
 }
 

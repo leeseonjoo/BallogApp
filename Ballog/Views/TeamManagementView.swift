@@ -129,6 +129,8 @@ struct TeamManagementView: View {
     
     private struct TeamHeaderView: View {
         let teamName: String
+        @State private var showJoinRequestManagement = false
+        
         var body: some View {
             HStack {
                 Image("pitch")
@@ -141,8 +143,16 @@ struct TeamManagementView: View {
                 }
                 .buttonStyle(.plain)
                 Spacer()
+                
+                Button(action: { showJoinRequestManagement = true }) {
+                    Image(systemName: "person.badge.plus")
+                        .foregroundColor(Color.primaryBlue)
+                }
             }
             .padding(.horizontal, Layout.padding)
+            .sheet(isPresented: $showJoinRequestManagement) {
+                TeamJoinRequestManagementView(team: Team(name: teamName, region: "서울", creatorName: "홍길동"))
+            }
         }
     }
     
