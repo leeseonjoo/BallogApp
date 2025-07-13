@@ -112,11 +112,6 @@ struct CalendarGrid: View {
                     }
                     
                     // 정기 훈련 표시
-                    if calendar.component(.weekday, from: date) == 3 {
-                        Text("정기 훈련")
-                            .font(.caption2)
-                            .foregroundColor(.blue)
-                    }
                     
                     // 출석 표시
                     if let result = attendance[calendar.startOfDay(for: date)] {

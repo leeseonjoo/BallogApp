@@ -301,6 +301,9 @@ struct TeamCalendarView: View {
                 // 일정이 추가되면 캘린더 업데이트
                 eventUpdateTrigger.toggle()
             }
+            .onChange(of: eventUpdateTrigger) { _ in
+                // 캘린더 강제 업데이트
+            }
         }
         .ballogTopBar()
     }
@@ -365,6 +368,7 @@ struct TeamCalendarView: View {
                             .foregroundColor(Color.secondaryText)
                     }
                     ForEach(getDaysInMonth(), id: \.self) { date in
+                        let _ = eventUpdateTrigger // 캐시 무효화를 위한 트리거
                         Button(action: {
                             viewModel.selectedDate = date
                             viewModel.showingEventSheet = true
@@ -373,10 +377,10 @@ struct TeamCalendarView: View {
                                 Text("\(Calendar.current.component(.day, from: date))")
                                     .font(.caption)
                                     .foregroundColor(isToday(date) ? .white : Color.primaryText)
-                                if hasTrainingEvent(on: date) {
-                                    Image(systemName: "star.fill")
+                                if let event = hasEvent(on: date) {
+                                    Image(systemName: getEventIcon(for: event))
                                         .font(.caption2)
-                                        .foregroundColor(.yellow)
+                                        .foregroundColor(getEventColor(for: event))
                                 }
                             }
                             .frame(width: 30, height: 30)
@@ -405,7 +409,7 @@ struct TeamCalendarView: View {
             
             VStack(spacing: DesignConstants.smallSpacing) {
                 ForEach(eventStore.events.sorted(by: { $0.date < $1.date })) { event in
-                    TeamEventCard(event: event) {
+                    TeamEventCardWithActions(event: event, eventStore: eventStore) {
                         // 외부 캘린더에 추가
                         let calendarEvent = CalendarEvent(
                             title: event.title,
@@ -472,9 +476,32 @@ struct TeamCalendarView: View {
         Calendar.current.isDate(date, inSameDayAs: Date())
     }
     
-    private func hasTrainingEvent(on date: Date) -> Bool {
-        eventStore.events.contains { event in
-            Calendar.current.isDate(event.date, inSameDayAs: date) && (event.type == .training || event.type == .regularTraining)
+    private func hasEvent(on date: Date) -> TeamEvent? {
+        let events = eventStore.events
+        print("총 일정 개수: \(events.count)")
+        for event in events {
+            print("일정: \(event.title), 날짜: \(event.date)")
+        }
+        return events.first { event in
+            Calendar.current.isDate(event.date, inSameDayAs: date)
+        }
+    }
+    
+    private func getEventIcon(for event: TeamEvent) -> String {
+        switch event.type {
+        case .match: return "sportscourt"
+        case .training: return "figure.walk"
+        case .tournament: return "trophy"
+        case .regularTraining: return "repeat"
+        }
+    }
+    
+    private func getEventColor(for event: TeamEvent) -> Color {
+        switch event.type {
+        case .match: return .red
+        case .training: return .blue
+        case .tournament: return .orange
+        case .regularTraining: return .green
         }
     }
     
