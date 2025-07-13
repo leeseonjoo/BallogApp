@@ -1,6 +1,10 @@
 import SwiftUI
 
 struct BallogTopBar: View {
+    @State private var showProfile = false
+    @State private var showNotifications = false
+    @State private var showSettings = false
+    
     private var todayString: String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
@@ -23,25 +27,34 @@ struct BallogTopBar: View {
             Spacer()
 
             HStack(spacing: DesignConstants.largeSpacing) {
-                NavigationLink(destination: ProfileView()) {
+                Button(action: { showProfile = true }) {
                     Image(systemName: "person.circle.fill")
                         .resizable()
                         .frame(width: 32, height: 32)
                         .foregroundColor(Color.primaryBlue)
                 }
+                .sheet(isPresented: $showProfile) {
+                    ProfileView()
+                }
                 
-                NavigationLink(destination: NotificationView()) {
+                Button(action: { showNotifications = true }) {
                     Image(systemName: "bell")
                         .resizable()
                         .frame(width: 24, height: 24)
                         .foregroundColor(Color.primaryText)
                 }
+                .sheet(isPresented: $showNotifications) {
+                    NotificationView()
+                }
                 
-                NavigationLink(destination: SettingsView()) {
+                Button(action: { showSettings = true }) {
                     Image(systemName: "gearshape")
                         .resizable()
                         .frame(width: 24, height: 24)
                         .foregroundColor(Color.primaryText)
+                }
+                .sheet(isPresented: $showSettings) {
+                    SettingsView()
                 }
             }
             .padding(.trailing, DesignConstants.horizontalPadding)

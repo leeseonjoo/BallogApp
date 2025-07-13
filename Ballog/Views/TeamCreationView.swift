@@ -4,6 +4,7 @@ import UIKit
 struct TeamCreationView: View {
     private enum Step: Int { case name, sport, gender, type, source, region, done }
     @State private var step: Step = .name
+    @Environment(\.dismiss) private var dismiss
 
     @EnvironmentObject private var teamStore: TeamStore
     @EnvironmentObject private var eventStore: TeamEventStore
@@ -64,13 +65,48 @@ struct TeamCreationView: View {
                 TextField("지역", text: $region)
                     .textFieldStyle(.roundedBorder)
             case .done:
-                Text("축하합니다 팀 생성이 완료 되었어요!")
-                    .font(.headline)
-                Text("환영합니다 \(teamName) 팀!")
-                NavigationLink("멤버 추가하기") {
-                    TeamLinkShareView(teamName: teamName)
+                VStack(spacing: DesignConstants.largeSpacing) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .resizable()
+                        .frame(width: 80, height: 80)
+                        .foregroundColor(Color.successColor)
+                    
+                    VStack(spacing: DesignConstants.smallSpacing) {
+                        Text("축하합니다 팀 생성이 완료되었어요!")
+                            .font(.title2.bold())
+                            .foregroundColor(Color.primaryText)
+                        
+                        Text("환영합니다 \(teamName) 팀!")
+                            .font(.headline)
+                            .foregroundColor(Color.secondaryText)
+                    }
+                    
+                    VStack(spacing: DesignConstants.spacing) {
+                        Button(action: { dismiss() }) {
+                            HStack {
+                                Image(systemName: "person.3.fill")
+                                Text("팀 화면으로 가기")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.primaryBlue)
+                            .foregroundColor(.white)
+                            .cornerRadius(DesignConstants.cornerRadius)
+                        }
+                        
+                        NavigationLink(destination: TeamLinkShareView(teamName: teamName)) {
+                            HStack {
+                                Image(systemName: "person.badge.plus")
+                                Text("멤버 추가하기")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.primaryGreen)
+                            .foregroundColor(.white)
+                            .cornerRadius(DesignConstants.cornerRadius)
+                        }
+                    }
                 }
-                .buttonStyle(.borderedProminent)
             }
             Spacer()
             if step != .done {
