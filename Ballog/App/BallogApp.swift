@@ -41,27 +41,31 @@ struct BallogApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if !isLoggedIn && autoLogin {
-                if let account = accounts[savedUsername], account.password == savedPassword {
-                    isLoggedIn = true
+            Group {
+                if isLoggedIn {
+                    ContentView()
+                        .environmentObject(attendanceStore)
+                        .environmentObject(logStore)
+                        .environmentObject(teamStore)
+                        .environmentObject(eventStore)
+                        .sheet(isPresented: $showProfileCreator) {
+                            ProfileCardCreationView()
+                        }
+                        .onAppear { if storedCard.isEmpty { showProfileCreator = true } }
+                        .onChange(of: storedCard) { newValue in
+                            if newValue.isEmpty { showProfileCreator = true }
+                        }
+                } else {
+                    LoginView()
+                        .environmentObject(eventStore)
                 }
             }
-            if isLoggedIn {
-                ContentView()
-                    .environmentObject(attendanceStore)
-                    .environmentObject(logStore)
-                    .environmentObject(teamStore)
-                    .environmentObject(eventStore)
-                    .sheet(isPresented: $showProfileCreator) {
-                        ProfileCardCreationView()
+            .onAppear {
+                if !isLoggedIn && autoLogin {
+                    if let account = accounts[savedUsername], account.password == savedPassword {
+                        isLoggedIn = true
                     }
-                    .onAppear { if storedCard.isEmpty { showProfileCreator = true } }
-                    .onChange(of: storedCard) { newValue in
-                        if newValue.isEmpty { showProfileCreator = true }
-                    }
-            } else {
-                LoginView()
-                    .environmentObject(eventStore)
+                }
             }
         }
         .modelContainer(sharedModelContainer)
