@@ -45,7 +45,13 @@ final class CoreDataStack {
         email.attributeType = .stringAttributeType
         email.isOptional = false
 
-        entity.properties = [username, password, email]
+        let isAdmin = NSAttributeDescription()
+        isAdmin.name = "isAdmin"
+        isAdmin.attributeType = .booleanAttributeType
+        isAdmin.isOptional = false
+        isAdmin.defaultValue = false
+
+        entity.properties = [username, password, email, isAdmin]
         model.entities = [entity]
 
         return model

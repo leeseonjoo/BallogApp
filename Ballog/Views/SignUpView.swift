@@ -40,6 +40,7 @@ struct SignUpView: View {
         newAccount.username = username
         newAccount.password = password
         newAccount.email = email
+        newAccount.isAdmin = false
 
         try? context.save()
         dismiss()

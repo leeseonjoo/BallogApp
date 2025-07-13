@@ -7,6 +7,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @AppStorage("isAdminUser") private var isAdminUser: Bool = false
+
     var body: some View {
         TabView {
             MainHomeView()
@@ -38,6 +40,14 @@ struct ContentView: View {
                     Image(systemName: "gearshape")
                     Text("설정")
                 }
+
+            if isAdminUser {
+                AdminView()
+                    .tabItem {
+                        Image(systemName: "lock.shield")
+                        Text("관리자")
+                    }
+            }
         }
         .background(Color.pageBackground)
         .ignoresSafeArea()
