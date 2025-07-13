@@ -49,7 +49,6 @@ struct BallogTopBarModifier: ViewModifier {
                 .padding(.top, 100)
             BallogTopBar()
         }
-        .ignoresSafeArea(edges: .top)
     }
 }
 
