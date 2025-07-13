@@ -8,8 +8,13 @@ struct SignUpView: View {
     @AppStorage("accounts") private var storedAccountsData: Data = Data()
 
     private var accounts: [String: Account] {
-        get { (try? JSONDecoder().decode([String: Account].self, from: storedAccountsData)) ?? [:] }
-        set { storedAccountsData = (try? JSONEncoder().encode(newValue)) ?? Data() }
+        get {
+            (try? JSONDecoder().decode([String: Account].self,
+                                        from: storedAccountsData)) ?? [:]
+        }
+        nonmutating set {
+            storedAccountsData = (try? JSONEncoder().encode(newValue)) ?? Data()
+        }
     }
 
     var body: some View {
