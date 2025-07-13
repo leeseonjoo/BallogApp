@@ -8,49 +8,37 @@ import SwiftUI
 
 struct ContentView: View {
     @AppStorage("isAdminUser") private var isAdminUser: Bool = false
+    @State private var selectedTab: Int = 0
 
     var body: some View {
-        TabView {
-            MainHomeView()
-                .tabItem {
-                    Image(systemName: "house.fill")
-                    Text("홈")
+        ZStack(alignment: .bottom) {
+            TabView(selection: $selectedTab) {
+                MainHomeView()
+                    .tag(0)
+                
+                PersonalTrainingView()
+                    .tag(1)
+                
+                TeamPageView()
+                    .tag(2)
+                
+                FeedView()
+                    .tag(3)
+                
+                SettingsView()
+                    .tag(4)
+                
+                if isAdminUser {
+                    AdminView()
+                        .tag(5)
                 }
-
-            PersonalTrainingView()
-                .tabItem {
-                    Image(systemName: "figure.walk")
-                    Text("개인")
-                }
-
-            TeamPageView()
-                .tabItem {
-                    Image(systemName: "person.3.fill")
-                    Text("팀")
-                }
-
-            FeedView()
-                .tabItem {
-                    Image(systemName: "square.stack")
-                    Text("피드")
-                }
-
-            SettingsView()
-                .tabItem {
-                    Image(systemName: "gearshape")
-                    Text("설정")
-                }
-
-            if isAdminUser {
-                AdminView()
-                    .tabItem {
-                        Image(systemName: "lock.shield")
-                        Text("관리자")
-                    }
             }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            
+            TabBarView(selectedTab: $selectedTab)
         }
         .background(Color.pageBackground)
-        .ignoresSafeArea()
+        .ignoresSafeArea(.all, edges: .bottom)
     }
 }
 
