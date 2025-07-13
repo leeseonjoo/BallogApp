@@ -80,7 +80,7 @@ struct TeamCreationView: View {
                 currentTeamID = team.id.uuidString
                 hasTeam = true
                 eventStore.events.removeAll()
-                logStore.logs.removeAll()
+                logStore.removeAll()
             }
         }
     }
