@@ -1,6 +1,12 @@
 import SwiftUI
 import CoreData
 
+/// Hard-coded credentials for the administrator account.
+private enum Admin {
+    static let username = AdminCredentials.username
+    static let password = AdminCredentials.password
+}
+
 struct LoginView: View {
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
     @AppStorage("hasTeam") private var hasTeam: Bool = false
@@ -50,11 +56,16 @@ struct LoginView: View {
         if autoLogin {
             username = savedUsername
             password = savedPassword
-            let req = AccountEntity.fetchRequest()
-            req.predicate = NSPredicate(format: "username == %@", username)
-            if let account = try? context.fetch(req).first, account.password == password {
-                isAdminUser = account.isAdmin
+            if username == Admin.username && password == Admin.password {
+                isAdminUser = true
                 isLoggedIn = true
+            } else {
+                let req = AccountEntity.fetchRequest()
+                req.predicate = NSPredicate(format: "username == %@", username)
+                if let account = try? context.fetch(req).first, account.password == password {
+                    isAdminUser = account.isAdmin
+                    isLoggedIn = true
+                }
             }
         }
     }
@@ -63,6 +74,14 @@ struct LoginView: View {
         guard !username.isEmpty, !password.isEmpty else {
             alertMessage = "아이디와 비밀번호를 입력해주세요"
             showAlert = true
+            return
+        }
+
+        if username == Admin.username && password == Admin.password {
+            if rememberID { savedUsername = username } else { savedUsername = "" }
+            if autoLogin { savedPassword = password } else { savedPassword = "" }
+            isAdminUser = true
+            isLoggedIn = true
             return
         }
 
