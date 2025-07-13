@@ -1,25 +1,16 @@
 import SwiftUI
 
 struct TeamJoinView: View {
-    @State private var code: String = ""
-
+    @EnvironmentObject private var teamStore: TeamStore
+    @AppStorage("currentTeamID") private var currentTeamID: String = ""
+    
     var body: some View {
-        VStack(spacing: 20) {
-            Spacer()
-            Text("팀 조인하기")
-                .font(.title2.bold())
-            TextField("팀 코드 입력", text: $code)
-                .textFieldStyle(.roundedBorder)
-                .textInputAutocapitalization(.never)
-                .disableAutocorrection(true)
-            NavigationLink("조인") {
-                TeamManagementView_hae()
+        List(teamStore.teams) { team in
+            Button(team.name) {
+                currentTeamID = team.id.uuidString
             }
-            .buttonStyle(.borderedProminent)
-            Spacer()
         }
-        .padding()
-        .navigationTitle("팀 조인")
+        .navigationTitle("추천 팀")
     }
 }
 

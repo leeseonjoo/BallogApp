@@ -40,7 +40,8 @@ struct SelectedTeamLog: Identifiable {
 }
 
 // MARK: - 메인 팀 관리 뷰
-struct TeamManagementView_hae: View {
+struct TeamManagementView: View {
+    let team: Team
     // 선택된 팀원 정보 (팝업용)
     @State private var selectedMember: TeamCharacter? = nil
     @State private var selectedDate: Date? = nil
@@ -100,7 +101,7 @@ struct TeamManagementView_hae: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: Layout.spacing) {
-                    TeamHeaderView()
+                    TeamHeaderView(teamName: team.name)
                     TeamQuoteView()
                     TeamCharacterBoardView(members: teamMembers, backgroundImage: backgroundImage) { member in
                         selectedMember = member
@@ -139,13 +140,14 @@ struct TeamManagementView_hae: View {
     // MARK: - Subviews
     
     private struct TeamHeaderView: View {
+        let teamName: String
         var body: some View {
             HStack {
                 Image("pitch")
                     .resizable()
                     .frame(width: 30, height: 30)
                 NavigationLink(destination: TeamListView()) {
-                    Text("해그래 FS")
+                    Text(teamName)
                         .font(.title)
                         .fontWeight(.bold)
                 }

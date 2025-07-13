@@ -13,6 +13,8 @@ private enum Layout {
 
 struct SettingsView: View {
     @AppStorage("profileCard") private var storedCard: String = ""
+    @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
+    @AppStorage("currentTeamID") private var currentTeamID: String = ""
     @State private var showLogoutAlert = false
 
     var body: some View {
@@ -34,7 +36,11 @@ struct SettingsView: View {
             .padding(.horizontal, Layout.padding)
             .navigationTitle("설정")
             .alert("로그아웃 하시겠습니까?", isPresented: $showLogoutAlert) {
-                Button("예", role: .destructive) { storedCard = "" }
+                Button("예", role: .destructive) {
+                    storedCard = ""
+                    isLoggedIn = false
+                    currentTeamID = ""
+                }
                 Button("아니오", role: .cancel) { }
             }
             .scrollContentBackground(.hidden)
