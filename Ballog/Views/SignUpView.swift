@@ -1,22 +1,12 @@
 import SwiftUI
+import CoreData
 
 struct SignUpView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var username = ""
     @State private var password = ""
     @State private var email = ""
-    @AppStorage("accounts") private var storedAccountsData: Data = Data()
-
-
-    private var accounts: [String: Account] {
-        get {
-            (try? JSONDecoder().decode([String: Account].self,
-                                        from: storedAccountsData)) ?? [:]
-        }
-        nonmutating set {
-            storedAccountsData = (try? JSONEncoder().encode(newValue)) ?? Data()
-        }
-    }
+    @Environment(\.managedObjectContext) private var context
 
     var body: some View {
         NavigationStack {
@@ -39,19 +29,24 @@ struct SignUpView: View {
 
     private func register() {
         guard !username.isEmpty, !password.isEmpty, !email.isEmpty else { return }
-        var dict = accounts
-        dict[username] = Account(username: username, password: password, email: email)
-        accounts = dict
+
+        let request = AccountEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "username == %@", username)
+
+        let existing = (try? context.fetch(request)) ?? []
+        guard existing.isEmpty else { return }
+
+        let newAccount = AccountEntity(context: context)
+        newAccount.username = username
+        newAccount.password = password
+        newAccount.email = email
+
+        try? context.save()
         dismiss()
     }
 }
 
-struct Account: Codable, Hashable {
-    var username: String
-    var password: String
-    var email: String
-}
-
 #Preview {
     SignUpView()
+        .environment(\.managedObjectContext, CoreDataStack.shared.container.viewContext)
 }

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import CoreData
 
 @main
 struct BallogApp: App {
@@ -32,12 +33,8 @@ struct BallogApp: App {
     @AppStorage("autoLogin") private var autoLogin: Bool = false
     @AppStorage("savedUsername") private var savedUsername: String = ""
     @AppStorage("savedPassword") private var savedPassword: String = ""
-    @AppStorage("accounts") private var storedAccountsData: Data = Data()
     @State private var showProfileCreator = false
-
-    private var accounts: [String: Account] {
-        (try? JSONDecoder().decode([String: Account].self, from: storedAccountsData)) ?? [:]
-    }
+    private let persistenceController = CoreDataStack.shared
 
     var body: some Scene {
         WindowGroup {
@@ -62,12 +59,16 @@ struct BallogApp: App {
             }
             .onAppear {
                 if !isLoggedIn && autoLogin {
-                    if let account = accounts[savedUsername], account.password == savedPassword {
+                    let req = AccountEntity.fetchRequest()
+                    req.predicate = NSPredicate(format: "username == %@", savedUsername)
+                    if let account = try? persistenceController.container.viewContext.fetch(req).first,
+                       account.password == savedPassword {
                         isLoggedIn = true
                     }
                 }
             }
         }
         .modelContainer(sharedModelContainer)
+        .environment(\.managedObjectContext, persistenceController.container.viewContext)
     }
 }
