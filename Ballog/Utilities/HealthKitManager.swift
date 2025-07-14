@@ -8,6 +8,15 @@ struct HealthKitStatistics {
     let workouts: Int
 }
 
+struct WorkoutSession: Identifiable {
+    let id = UUID()
+    let activityType: HKWorkoutActivityType
+    let startDate: Date
+    let endDate: Date
+    let calories: Double
+    let distance: Double
+}
+
 final class HealthKitManager {
     static let shared = HealthKitManager()
     private let healthStore = HKHealthStore()
@@ -74,7 +83,19 @@ final class HealthKitManager {
         }
         let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: .strictStartDate)
         let query = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, _ in
-            let sum = result?.sumQuantity()?.doubleValue(for: .count()) ?? 0
+            var sum = 0.0
+            if let quantity = result?.sumQuantity() {
+                switch identifier {
+                case .stepCount:
+                    sum = quantity.doubleValue(for: .count())
+                case .distanceWalkingRunning:
+                    sum = quantity.doubleValue(for: .meter()) / 1000.0 // m → km
+                case .activeEnergyBurned:
+                    sum = quantity.doubleValue(for: .kilocalorie())
+                default:
+                    sum = 0.0
+                }
+            }
             completion(sum)
         }
         healthStore.execute(query)
@@ -84,6 +105,26 @@ final class HealthKitManager {
         let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: .strictStartDate)
         let query = HKSampleQuery(sampleType: .workoutType(), predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, samples, _ in
             completion(samples?.count ?? 0)
+        }
+        healthStore.execute(query)
+    }
+}
+
+extension HealthKitManager {
+    func fetchRecentWorkouts(limit: Int = 10, completion: @escaping ([WorkoutSession]) -> Void) {
+        let workoutType = HKObjectType.workoutType()
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+        let query = HKSampleQuery(sampleType: workoutType, predicate: nil, limit: limit, sortDescriptors: [sortDescriptor]) { _, samples, _ in
+            let workouts = (samples as? [HKWorkout])?.map { workout in
+                WorkoutSession(
+                    activityType: workout.workoutActivityType,
+                    startDate: workout.startDate,
+                    endDate: workout.endDate,
+                    calories: workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0,
+                    distance: workout.totalDistance?.doubleValue(for: .meter()) ?? 0
+                )
+            } ?? []
+            completion(workouts)
         }
         healthStore.execute(query)
     }

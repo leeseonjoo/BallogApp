@@ -2,136 +2,106 @@ import SwiftUI
 import HealthKit
 
 struct TrainingStatisticsView: View {
-    @State private var totalSteps: Int = 0
-    @State private var totalDistance: Double = 0.0
-    @State private var totalCalories: Double = 0.0
-    @State private var totalWorkouts: Int = 0
+    @State private var sessions: [WorkoutSession] = []
+    @State private var isLoading = false
     @State private var showHealthKitAlert = false
     @State private var healthKitAuthorized = false
-    @State private var isLoading = false
     
     var body: some View {
-        VStack(spacing: 24) {
-            // Activity Rings (Steps, Distance, Calories)
-            HStack(spacing: 24) {
-                ActivityRingView(value: totalSteps, goal: 10000, label: "걸음수", color: .blue, unit: "걸음")
-                ActivityRingView(value: Int(totalDistance), goal: 8, label: "거리", color: .green, unit: "km")
-                ActivityRingView(value: Int(totalCalories), goal: 500, label: "칼로리", color: .red, unit: "kcal")
-            }
-            .frame(height: 120)
-            // Summary Cards
-            HStack(spacing: 16) {
-                StatSummaryCard(title: "총 운동 세션", value: "\(totalWorkouts)", icon: "figure.walk")
-                StatSummaryCard(title: "총 거리", value: String(format: "%.2f km", totalDistance), icon: "map")
-            }
-            // HealthKit 연동 버튼
-            Button(action: {
-                requestHealthKitAccess(force: true)
-            }) {
-                Text(healthKitAuthorized ? "HealthKit 동기화됨 (다시 동기화)" : "HealthKit 연동하기")
-                    .font(.headline)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(healthKitAuthorized ? Color.green : Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
-            }
-            .padding(.top, 8)
-            .alert("HealthKit 접근 권한이 필요합니다.", isPresented: $showHealthKitAlert) {
-                Button("확인", role: .cancel) {}
-            }
-            // Loading indicator
+        VStack(alignment: .leading, spacing: 24) {
+            Text("최근 운동 세션")
+                .font(.title2.bold())
+                .padding(.top, 8)
             if isLoading {
-                ProgressView("데이터 불러오는 중...")
-                    .padding()
+                ProgressView()
+            } else if sessions.isEmpty {
+                Text("운동 세션 기록이 없습니다.")
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(sessions) { session in
+                    SessionCard(session: session)
+                }
             }
+            Button(healthKitAuthorized ? "다시 동기화" : "피트니스 연동하기") {
+                requestHealthKitAccess(force: true)
+            }
+            .buttonStyle(.borderedProminent)
+            .padding(.top, 8)
         }
-        .padding(.vertical, 8)
         .onAppear {
             requestHealthKitAccess(force: false)
+        }
+        .alert("HealthKit 권한이 필요합니다.", isPresented: $showHealthKitAlert) {
+            Button("확인", role: .cancel) {}
         }
     }
     
     private func requestHealthKitAccess(force: Bool) {
+        isLoading = true
         HealthKitManager.shared.requestAuthorization { success in
             DispatchQueue.main.async {
                 healthKitAuthorized = success
-                if success || force { fetchHealthKitData() }
-                else { showHealthKitAlert = true }
+                fetchSessions()
+                if !success {
+                    showHealthKitAlert = true
+                }
             }
         }
     }
     
-    private func fetchHealthKitData() {
-        isLoading = true
-        HealthKitManager.shared.fetchStatistics { stats in
+    private func fetchSessions() {
+        HealthKitManager.shared.fetchRecentWorkouts(limit: 10) { result in
             DispatchQueue.main.async {
-                self.totalSteps = stats.steps
-                self.totalDistance = stats.distance
-                self.totalCalories = stats.calories
-                self.totalWorkouts = stats.workouts
+                self.sessions = result
                 self.isLoading = false
             }
         }
     }
 }
 
-// Activity Ring View
-struct ActivityRingView: View {
-    let value: Int
-    let goal: Int
-    let label: String
-    let color: Color
-    let unit: String
-    
-    var progress: Double { min(Double(value) / Double(goal), 1.0) }
-    
+struct SessionCard: View {
+    let session: WorkoutSession
     var body: some View {
-        VStack {
-            ZStack {
-                Circle()
-                    .stroke(Color.gray.opacity(0.2), lineWidth: 12)
-                Circle()
-                    .trim(from: 0, to: progress)
-                    .stroke(color, style: StrokeStyle(lineWidth: 12, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-                    .animation(.easeOut, value: progress)
-                Text("\(Int(progress * 100))%")
-                    .font(.caption)
-                    .bold()
-            }
-            .frame(width: 70, height: 70)
-            Text(label)
-                .font(.subheadline)
-            Text("\(value) \(unit)")
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-    }
-}
-
-// Stat Summary Card
-struct StatSummaryCard: View {
-    let title: String
-    let value: String
-    let icon: String
-    var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .foregroundColor(.blue)
-                .frame(width: 32, height: 32)
-            VStack(alignment: .leading) {
-                Text(title)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                Text(value)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(activityTypeName(session.activityType))
                     .font(.headline)
+                Spacer()
+                Text(session.startDate, style: .date)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
             }
-            Spacer()
+            HStack(spacing: 16) {
+                Label("\(Int(session.calories)) kcal", systemImage: "flame")
+                Label(String(format: "%.2f km", session.distance/1000), systemImage: "figure.walk")
+                Label(durationString(), systemImage: "clock")
+            }
+            .font(.subheadline)
+            .foregroundColor(.secondary)
         }
         .padding()
         .background(Color(.systemGray6))
         .cornerRadius(12)
+    }
+    private func activityTypeName(_ type: HKWorkoutActivityType) -> String {
+        switch type {
+        case .running: return "러닝"
+        case .walking: return "걷기"
+        case .cycling: return "사이클링"
+        case .soccer: return "축구"
+        case .traditionalStrengthTraining: return "근력운동"
+        case .functionalStrengthTraining: return "코어/서킷"
+        case .yoga: return "요가"
+        case .swimming: return "수영"
+        case .other: return "기타"
+        default: return String(describing: type)
+        }
+    }
+    private func durationString() -> String {
+        let interval = session.endDate.timeIntervalSince(session.startDate)
+        let minutes = Int(interval/60)
+        let seconds = Int(interval) % 60
+        return String(format: "%d:%02d", minutes, seconds)
     }
 }
 
