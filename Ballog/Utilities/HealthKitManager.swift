@@ -114,9 +114,14 @@ extension HealthKitManager {
     func fetchRecentWorkouts(limit: Int = 10, completion: @escaping ([WorkoutSession]) -> Void) {
         let workoutType = HKObjectType.workoutType()
         let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
-        let query = HKSampleQuery(sampleType: workoutType, predicate: nil, limit: limit, sortDescriptors: [sortDescriptor]) { _, samples, _ in
+        let query = HKSampleQuery(sampleType: workoutType, predicate: nil, limit: limit, sortDescriptors: [sortDescriptor]) { _, samples, error in
+            if let error = error {
+                print("[HealthKitManager] fetchRecentWorkouts error: \(error.localizedDescription)")
+            }
+            print("[HealthKitManager] fetchRecentWorkouts samples count: \(samples?.count ?? 0)")
             let workouts = (samples as? [HKWorkout])?.map { workout in
-                WorkoutSession(
+                print("[HealthKitManager] workout: activityType=\(workout.workoutActivityType.rawValue), start=\(workout.startDate), end=\(workout.endDate), calories=\(workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0), distance=\(workout.totalDistance?.doubleValue(for: .meter()) ?? 0)")
+                return WorkoutSession(
                     activityType: workout.workoutActivityType,
                     startDate: workout.startDate,
                     endDate: workout.endDate,

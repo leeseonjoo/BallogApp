@@ -110,6 +110,7 @@ struct BallogApp: App {
             }
             .onAppear {
                 handleAutoLogin()
+                HealthKitManager.shared.requestAuthorization { _ in }
             }
         }
         .modelContainer(sharedModelContainer)
