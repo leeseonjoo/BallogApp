@@ -23,6 +23,14 @@ struct WorkoutSummary {
     let mostFrequentType: HKWorkoutActivityType?
 }
 
+struct WorkoutStats {
+    let count: Int
+    let totalDuration: TimeInterval
+    let averageDuration: TimeInterval
+    let totalCalories: Double
+    let totalDistance: Double
+}
+
 final class HealthKitManager {
     static let shared = HealthKitManager()
     private let healthStore = HKHealthStore()
@@ -254,5 +262,20 @@ extension HealthKitManager {
             }
         }
         healthStore.execute(query)
+    }
+
+    func fetchWorkouts(forYear year: Int, month: Int, activityType: HKWorkoutActivityType, completion: @escaping ([WorkoutSession]) -> Void) {
+        fetchWorkouts(forYear: year, month: month) { sessions in
+            let filtered = sessions.filter { $0.activityType == activityType }
+            completion(filtered)
+        }
+    }
+    func calculateStats(for sessions: [WorkoutSession]) -> WorkoutStats {
+        let count = sessions.count
+        let totalDuration = sessions.reduce(0) { $0 + $1.endDate.timeIntervalSince($1.startDate) }
+        let averageDuration = count > 0 ? totalDuration / Double(count) : 0
+        let totalCalories = sessions.reduce(0) { $0 + $1.calories }
+        let totalDistance = sessions.reduce(0) { $0 + $1.distance }
+        return WorkoutStats(count: count, totalDuration: totalDuration, averageDuration: averageDuration, totalCalories: totalCalories, totalDistance: totalDistance)
     }
 } 

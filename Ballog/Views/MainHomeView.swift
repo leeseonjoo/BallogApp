@@ -396,13 +396,13 @@ struct MonthSelectorView: View {
             VStack(spacing: 16) {
                 HStack {
                     Picker("연도", selection: $year) {
-                        ForEach((2020...Calendar.current.component(.year, from: Date())), id: \.  ) { y in
+                        ForEach((2020...Calendar.current.component(.year, from: Date())), id: \.self) { y in
                             Text("\(y)년").tag(y)
                         }
                     }
                     .pickerStyle(MenuPickerStyle())
                     Picker("월", selection: $month) {
-                        ForEach(1...12, id: \.  ) { m in
+                        ForEach(1...12, id: \.self) { m in
                             Text("\(m)월").tag(m)
                         }
                     }

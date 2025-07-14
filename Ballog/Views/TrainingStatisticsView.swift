@@ -7,18 +7,47 @@ struct TrainingStatisticsView: View {
     @State private var showHealthKitAlert = false
     @State private var healthKitAuthorized = false
     @State private var summary: WorkoutSummary? = nil
-    
+    @State private var soccerStats: WorkoutStats? = nil
+    @State private var isLoadingSoccerStats = false
+    @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
+    @State private var selectedMonth: Int = Calendar.current.component(.month, from: Date())
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("최근 운동 세션")
-                .font(.title2.bold())
-                .padding(.top, 8)
-            // 요약 뷰 추가
+            // 실외 축구 월별 통계 요약
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("실외 축구 \(selectedYear)년 \(selectedMonth)월 통계 요약")
+                        .font(.title3.bold())
+                    Spacer()
+                    Picker("월", selection: $selectedMonth) {
+                        ForEach(1...12, id: \.self) { m in
+                            Text("\(m)월").tag(m)
+                        }
+                    }
+                    .frame(width: 80)
+                    .onChange(of: selectedMonth) { _ in
+                        fetchSoccerStats()
+                    }
+                }
+                if isLoadingSoccerStats {
+                    ProgressView()
+                } else if let stats = soccerStats {
+                    SoccerStatsView(stats: stats)
+                } else {
+                    Text("해당 월에 실외 축구 세션이 없습니다.")
+                        .foregroundColor(.secondary)
+                }
+            }
+            // 세션 요약 통계
             if let summary = summary {
                 WorkoutSummaryView(summary: summary)
             } else {
                 ProgressView("운동 요약 불러오는 중...")
             }
+            Text("최근 운동 세션")
+                .font(.title2.bold())
+                .padding(.top, 8)
             if isLoading {
                 ProgressView()
             } else if sessions.isEmpty {
@@ -38,6 +67,7 @@ struct TrainingStatisticsView: View {
         .onAppear {
             requestHealthKitAccess(force: false)
             fetchSummary()
+            fetchSoccerStats()
         }
         .alert("HealthKit 권한이 필요합니다.", isPresented: $showHealthKitAlert) {
             Button("확인", role: .cancel) {}
@@ -69,6 +99,14 @@ struct TrainingStatisticsView: View {
     private func fetchSummary() {
         HealthKitManager.shared.fetchWorkoutSummary { result in
             self.summary = result
+        }
+    }
+
+    private func fetchSoccerStats() {
+        isLoadingSoccerStats = true
+        HealthKitManager.shared.fetchWorkouts(forYear: selectedYear, month: selectedMonth, activityType: .soccer) { sessions in
+            self.soccerStats = HealthKitManager.shared.calculateStats(for: sessions)
+            self.isLoadingSoccerStats = false
         }
     }
 }
@@ -150,6 +188,36 @@ struct WorkoutSummaryView: View {
         case .other: return "기타"
         default: return String(describing: type)
         }
+    }
+}
+
+struct SoccerStatsView: View {
+    let stats: WorkoutStats
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text("총 세션: \(stats.count)회")
+                Spacer()
+                Text("평균 시간: \(formatTime(stats.averageDuration))")
+            }
+            HStack {
+                Text("총 시간: \(formatTime(stats.totalDuration))")
+                Spacer()
+                Text("총 칼로리: \(Int(stats.totalCalories)) kcal")
+            }
+            HStack {
+                Text("총 거리: \(String(format: "%.2f km", stats.totalDistance/1000))")
+            }
+        }
+        .font(.subheadline)
+        .padding(8)
+        .background(Color(.systemGray6))
+        .cornerRadius(8)
+    }
+    private func formatTime(_ interval: TimeInterval) -> String {
+        let hours = Int(interval) / 3600
+        let minutes = (Int(interval) % 3600) / 60
+        return "\(hours)시간 \(minutes)분"
     }
 }
 
