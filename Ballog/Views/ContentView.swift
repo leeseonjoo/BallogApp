@@ -7,45 +7,33 @@
 import SwiftUI
 
 struct ContentView: View {
-    @AppStorage("isAdminUser") private var isAdminUser: Bool = false
-    @State private var selectedTab: Int = 0
-    @EnvironmentObject private var eventStore: TeamEventStore
+    @StateObject private var teamStore = TeamStore() // 팀 목록 관리
+    @State private var selectedTeam: Team? = nil
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            TabView(selection: $selectedTab) {
-                MainHomeView()
-                    .tag(0)
-                
-                PersonalTrainingView()
-                    .tag(1)
-                
-                TeamPageView()
-                    .tag(2)
-                
-                FeedView()
-                    .tag(3)
-                
-                SettingsView()
-                    .tag(4)
-                
-                if isAdminUser {
-                    AdminView()
-                        .tag(5)
-                }
+        TabView {
+            // 개인 섹션
+            NavigationStack {
+                PersonalSectionView()
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            
-            TabBarView(selectedTab: $selectedTab)
+            .tabItem {
+                Image(systemName: "person.crop.circle")
+                Text("풋살 기록장")
+            }
+
+            // 팀 섹션
+            NavigationStack {
+                TeamSectionView(selectedTeam: $selectedTeam)
+            }
+            .tabItem {
+                Image(systemName: "person.3.fill")
+                Text("우리 팀 매칭룸")
+            }
         }
-        .background(Color.pageBackground)
-        .ignoresSafeArea(.all, edges: .bottom)
+        .environmentObject(teamStore)
     }
 }
 
 #Preview {
     ContentView()
-        .environmentObject(AttendanceStore())
-        .environmentObject(TeamTrainingLogStore())
-        .environmentObject(TeamTacticStore())
 }
