@@ -477,12 +477,7 @@ struct TeamCalendarView: View {
     }
     
     private func hasEvent(on date: Date) -> TeamEvent? {
-        let events = eventStore.events
-        print("총 일정 개수: \(events.count)")
-        for event in events {
-            print("일정: \(event.title), 날짜: \(event.date)")
-        }
-        return events.first { event in
+        return eventStore.events.first { event in
             Calendar.current.isDate(event.date, inSameDayAs: date)
         }
     }
@@ -1076,6 +1071,336 @@ struct TeamEventCard: View {
                 .fill(Color.cardBackground)
                 .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
         )
+    }
+}
+
+// MARK: - TeamEventCardWithActions
+struct TeamEventCardWithActions: View {
+    let event: TeamEvent
+    let eventStore: TeamEventStore
+    let onAddToCalendar: () -> Void
+    @State private var showingEditSheet = false
+    @State private var showingDeleteAlert = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
+            HStack {
+                Image(systemName: getEventIcon(for: event))
+                    .foregroundColor(getEventColor(for: event))
+                    .font(.title3)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(event.title)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color.primaryText)
+                    
+                    HStack(spacing: 4) {
+                        Text(event.date, style: .date)
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                        
+                        Text("•")
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                        
+                        Text(event.place)
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                    }
+                }
+                
+                Spacer()
+                
+                HStack(spacing: 8) {
+                    Button(action: onAddToCalendar) {
+                        Image(systemName: "calendar.badge.plus")
+                            .foregroundColor(Color.primaryBlue)
+                            .font(.caption)
+                    }
+                    
+                    Button(action: { showingEditSheet = true }) {
+                        Image(systemName: "pencil")
+                            .foregroundColor(Color.primaryBlue)
+                            .font(.caption)
+                    }
+                    
+                    Button(action: { showingDeleteAlert = true }) {
+                        Image(systemName: "trash")
+                            .foregroundColor(.red)
+                            .font(.caption)
+                    }
+                }
+            }
+            
+            if let notes = event.notes, !notes.isEmpty {
+                Text(notes)
+                    .font(.caption)
+                    .foregroundColor(Color.secondaryText)
+                    .padding(.leading, 24)
+            }
+            
+            // 매치 정보
+            if event.type == .match, let opponent = event.opponent {
+                HStack {
+                    Text("상대팀: \(opponent)")
+                        .font(.caption)
+                        .foregroundColor(Color.secondaryText)
+                    
+                    if let matchType = event.matchType {
+                        Text("• \(matchType)")
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                    }
+                }
+                .padding(.leading, 24)
+            }
+            
+            // 대회 정보
+            if event.type == .tournament, let tournamentName = event.tournamentName {
+                HStack {
+                    Text("대회: \(tournamentName)")
+                        .font(.caption)
+                        .foregroundColor(Color.secondaryText)
+                    
+                    if let round = event.tournamentRound {
+                        Text("• \(round)")
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                    }
+                }
+                .padding(.leading, 24)
+            }
+            
+            // 훈련 정보
+            if (event.type == .training || event.type == .regularTraining), let trainingType = event.trainingType {
+                HStack {
+                    Text("훈련 종류: \(trainingType.rawValue)")
+                        .font(.caption)
+                        .foregroundColor(Color.secondaryText)
+                    
+                    if event.isRecurring {
+                        Text("• 반복")
+                            .font(.caption)
+                            .foregroundColor(Color.secondaryText)
+                    }
+                }
+                .padding(.leading, 24)
+            }
+        }
+        .padding(DesignConstants.cardPadding)
+        .background(
+            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                .fill(Color.cardBackground)
+                .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+        )
+        .sheet(isPresented: $showingEditSheet) {
+            TeamEventEditView(event: event, eventStore: eventStore)
+        }
+        .alert("일정 삭제", isPresented: $showingDeleteAlert) {
+            Button("취소", role: .cancel) { }
+            Button("삭제", role: .destructive) {
+                eventStore.removeEvent(event)
+            }
+        } message: {
+            Text("이 일정을 삭제하시겠습니까?")
+        }
+    }
+    
+    private func getEventIcon(for event: TeamEvent) -> String {
+        switch event.type {
+        case .match: return "sportscourt"
+        case .training: return "figure.walk"
+        case .tournament: return "trophy"
+        case .regularTraining: return "repeat"
+        }
+    }
+    
+    private func getEventColor(for event: TeamEvent) -> Color {
+        switch event.type {
+        case .match: return .red
+        case .training: return .blue
+        case .tournament: return .orange
+        case .regularTraining: return .green
+        }
+    }
+}
+
+// MARK: - TeamEventEditView
+struct TeamEventEditView: View {
+    let event: TeamEvent
+    let eventStore: TeamEventStore
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var title: String
+    @State private var selectedDate: Date
+    @State private var place: String
+    @State private var selectedEventType: TeamEvent.EventType
+    @State private var selectedTrainingType: TeamEvent.TrainingType
+    @State private var isRecurring: Bool
+    @State private var selectedWeekday: Int
+    @State private var endDate: Date
+    @State private var opponent: String
+    @State private var matchType: String
+    @State private var tournamentName: String
+    @State private var tournamentRound: String
+    @State private var notes: String
+    
+    private let weekdays = [
+        (1, "일요일"), (2, "월요일"), (3, "화요일"), (4, "수요일"),
+        (5, "목요일"), (6, "금요일"), (7, "토요일")
+    ]
+    
+    init(event: TeamEvent, eventStore: TeamEventStore) {
+        self.event = event
+        self.eventStore = eventStore
+        
+        // 초기값 설정
+        self._title = State(initialValue: event.title)
+        self._selectedDate = State(initialValue: event.date)
+        self._place = State(initialValue: event.place)
+        self._selectedEventType = State(initialValue: event.type)
+        self._selectedTrainingType = State(initialValue: event.trainingType ?? .technical)
+        self._isRecurring = State(initialValue: event.isRecurring)
+        self._selectedWeekday = State(initialValue: event.recurringWeekday ?? 2)
+        self._endDate = State(initialValue: event.endDate ?? Calendar.current.date(byAdding: .month, value: 3, to: Date()) ?? Date())
+        self._opponent = State(initialValue: event.opponent ?? "")
+        self._matchType = State(initialValue: event.matchType ?? "")
+        self._tournamentName = State(initialValue: event.tournamentName ?? "")
+        self._tournamentRound = State(initialValue: event.tournamentRound ?? "")
+        self._notes = State(initialValue: event.notes ?? "")
+    }
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                // 기본 정보
+                Section("기본 정보") {
+                    TextField("일정 제목", text: $title)
+                    
+                    DatePicker("날짜", selection: $selectedDate, displayedComponents: [.date, .hourAndMinute])
+                    
+                    TextField("장소 (풋살장 이름)", text: $place)
+                }
+                
+                // 일정 타입
+                Section("일정 타입") {
+                    Picker("타입", selection: $selectedEventType) {
+                        ForEach(TeamEvent.EventType.allCases, id: \.self) { type in
+                            Text(type.rawValue).tag(type)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+                
+                // 훈련 타입 (훈련이나 정기훈련일 때만)
+                if selectedEventType == .training || selectedEventType == .regularTraining {
+                    Section("훈련 종류") {
+                        Picker("훈련 종류", selection: $selectedTrainingType) {
+                            ForEach(TeamEvent.TrainingType.allCases, id: \.self) { type in
+                                Text(type.rawValue).tag(type)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
+                }
+                
+                // 정기 훈련 설정
+                if selectedEventType == .regularTraining {
+                    Section("반복 설정") {
+                        Toggle("매주 반복", isOn: $isRecurring)
+                        
+                        if isRecurring {
+                            Picker("요일", selection: $selectedWeekday) {
+                                ForEach(weekdays, id: \.0) { weekday in
+                                    Text(weekday.1).tag(weekday.0)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            
+                            DatePicker("종료일", selection: $endDate, displayedComponents: .date)
+                        }
+                    }
+                }
+                
+                // 매치 정보
+                if selectedEventType == .match {
+                    Section("매치 정보") {
+                        TextField("상대팀", text: $opponent)
+                        TextField("경기 종류", text: $matchType)
+                    }
+                }
+                
+                // 대회 정보
+                if selectedEventType == .tournament {
+                    Section("대회 정보") {
+                        TextField("대회명", text: $tournamentName)
+                        TextField("라운드", text: $tournamentRound)
+                    }
+                }
+                
+                // 메모
+                Section("메모") {
+                    TextEditor(text: $notes)
+                        .frame(minHeight: 100)
+                }
+            }
+            .navigationTitle("일정 수정")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("취소") {
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("저장") {
+                        updateEvent()
+                        dismiss()
+                    }
+                    .disabled(title.isEmpty || place.isEmpty)
+                }
+            }
+        }
+    }
+    
+    private func updateEvent() {
+        var updatedEvent = event
+        
+        // 기본 정보 업데이트
+        updatedEvent.title = title
+        updatedEvent.date = selectedDate
+        updatedEvent.place = place
+        updatedEvent.type = selectedEventType
+        updatedEvent.notes = notes
+        
+        // 타입별 정보 업데이트
+        switch selectedEventType {
+        case .training:
+            updatedEvent.trainingType = selectedTrainingType
+            
+        case .regularTraining:
+            if isRecurring {
+                updatedEvent.trainingType = selectedTrainingType
+                updatedEvent.isRecurring = true
+                updatedEvent.recurringWeekday = selectedWeekday
+                updatedEvent.endDate = endDate
+            } else {
+                updatedEvent.trainingType = selectedTrainingType
+                updatedEvent.isRecurring = false
+            }
+            
+        case .match:
+            updatedEvent.opponent = opponent.isEmpty ? nil : opponent
+            updatedEvent.matchType = matchType.isEmpty ? nil : matchType
+            
+        case .tournament:
+            updatedEvent.tournamentName = tournamentName.isEmpty ? nil : tournamentName
+            updatedEvent.tournamentRound = tournamentRound.isEmpty ? nil : tournamentRound
+        }
+        
+        eventStore.updateEvent(updatedEvent)
     }
 }
 
