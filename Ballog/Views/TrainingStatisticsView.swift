@@ -11,52 +11,52 @@ struct TrainingStatisticsView: View {
     @State private var isLoading = false
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // Activity Rings (Steps, Distance, Calories)
-                HStack(spacing: 24) {
-                    ActivityRingView(value: totalSteps, goal: 10000, label: "걸음수", color: .blue, unit: "걸음")
-                    ActivityRingView(value: Int(totalDistance), goal: 8, label: "거리", color: .green, unit: "km")
-                    ActivityRingView(value: Int(totalCalories), goal: 500, label: "칼로리", color: .red, unit: "kcal")
-                }
-                .frame(height: 120)
-                // Summary Cards
-                HStack(spacing: 16) {
-                    StatSummaryCard(title: "총 운동 세션", value: "\(totalWorkouts)", icon: "figure.walk")
-                    StatSummaryCard(title: "총 거리", value: String(format: "%.2f km", totalDistance), icon: "map")
-                }
-                // HealthKit 연동 버튼
-                Button(action: requestHealthKitAccess) {
-                    Text(healthKitAuthorized ? "HealthKit 동기화됨" : "HealthKit 연동하기")
-                        .font(.headline)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(healthKitAuthorized ? Color.green : Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
-                }
-                .padding(.top, 8)
-                .alert("HealthKit 접근 권한이 필요합니다.", isPresented: $showHealthKitAlert) {
-                    Button("확인", role: .cancel) {}
-                }
-                // Loading indicator
-                if isLoading {
-                    ProgressView("데이터 불러오는 중...")
-                        .padding()
-                }
+        VStack(spacing: 24) {
+            // Activity Rings (Steps, Distance, Calories)
+            HStack(spacing: 24) {
+                ActivityRingView(value: totalSteps, goal: 10000, label: "걸음수", color: .blue, unit: "걸음")
+                ActivityRingView(value: Int(totalDistance), goal: 8, label: "거리", color: .green, unit: "km")
+                ActivityRingView(value: Int(totalCalories), goal: 500, label: "칼로리", color: .red, unit: "kcal")
             }
-            .padding()
+            .frame(height: 120)
+            // Summary Cards
+            HStack(spacing: 16) {
+                StatSummaryCard(title: "총 운동 세션", value: "\(totalWorkouts)", icon: "figure.walk")
+                StatSummaryCard(title: "총 거리", value: String(format: "%.2f km", totalDistance), icon: "map")
+            }
+            // HealthKit 연동 버튼
+            Button(action: {
+                requestHealthKitAccess(force: true)
+            }) {
+                Text(healthKitAuthorized ? "HealthKit 동기화됨 (다시 동기화)" : "HealthKit 연동하기")
+                    .font(.headline)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(healthKitAuthorized ? Color.green : Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
+            }
+            .padding(.top, 8)
+            .alert("HealthKit 접근 권한이 필요합니다.", isPresented: $showHealthKitAlert) {
+                Button("확인", role: .cancel) {}
+            }
+            // Loading indicator
+            if isLoading {
+                ProgressView("데이터 불러오는 중...")
+                    .padding()
+            }
         }
+        .padding(.vertical, 8)
         .onAppear {
-            fetchHealthKitData()
+            requestHealthKitAccess(force: false)
         }
     }
     
-    private func requestHealthKitAccess() {
+    private func requestHealthKitAccess(force: Bool) {
         HealthKitManager.shared.requestAuthorization { success in
             DispatchQueue.main.async {
                 healthKitAuthorized = success
-                if success { fetchHealthKitData() }
+                if success || force { fetchHealthKitData() }
                 else { showHealthKitAlert = true }
             }
         }
@@ -132,31 +132,6 @@ struct StatSummaryCard: View {
         .padding()
         .background(Color(.systemGray6))
         .cornerRadius(12)
-    }
-}
-
-struct FitnessStatCard: View {
-    let title: String
-    let value: String
-    let unit: String
-    let color: Color
-    var body: some View {
-        VStack(spacing: 8) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondaryText)
-            Text(value)
-                .font(.title.bold())
-                .foregroundColor(color)
-            Text(unit)
-                .font(.caption2)
-                .foregroundColor(.secondaryText)
-        }
-        .frame(width: 90, height: 90)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(color.opacity(0.08))
-        )
     }
 }
 
