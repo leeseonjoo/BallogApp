@@ -1,4 +1,5 @@
 import SwiftUI
+import HealthKit
 
 private enum Layout {
     static let spacing = DesignConstants.spacing
@@ -14,6 +15,14 @@ struct MainHomeView: View {
     @State private var showAllCompetitionEvents = false
     @State private var showAllWeekEvents = false
     @AppStorage("profileCard") private var storedCard: String = ""
+    @State private var todayWorkouts: [WorkoutSession] = []
+    @State private var isLoadingTodayWorkouts = false
+    @State private var julyWorkouts: [WorkoutSession] = []
+    @State private var isLoadingJulyWorkouts = false
+    @State private var showMonthSheet = false
+    @State private var selectedMonth: (year: Int, month: Int)? = nil
+    @State private var monthWorkouts: [WorkoutSession] = []
+    @State private var isLoadingMonthWorkouts = false
 
     private var card: ProfileCard? {
         guard let data = storedCard.data(using: .utf8) else { return nil }
@@ -65,8 +74,33 @@ struct MainHomeView: View {
                     thisWeekEventsSection
                     // 4. 통계(피트니스 스타일) 섹션 (실제 통계 뷰로 대체)
                     fitnessStatisticsSection
+                    // 7월 세션 하단에 추가
+                    MonthWorkoutSection(
+                        title: "7월 세션 요약",
+                        workouts: julyWorkouts,
+                        isLoading: isLoadingJulyWorkouts,
+                        showMore: {
+                            showMonthSheet = true
+                        },
+                        showMoreText: "더보기"
+                    )
+                    // 오늘의 세션 하단에 추가
+                    TodayWorkoutSection(workouts: todayWorkouts, isLoading: isLoadingTodayWorkouts)
                 }
                 .padding(DesignConstants.horizontalPadding)
+                .onAppear {
+                    loadTodayWorkouts()
+                    loadJulyWorkouts()
+                }
+                .sheet(isPresented: $showMonthSheet) {
+                    MonthSelectorView(onSelect: { year, month in
+                        selectedMonth = (year, month)
+                        loadMonthWorkouts(year: year, month: month)
+                    },
+                    monthWorkouts: monthWorkouts,
+                    isLoading: isLoadingMonthWorkouts,
+                    selectedMonth: selectedMonth)
+                }
             }
             .background(Color.pageBackground)
         }
@@ -220,6 +254,180 @@ struct MainHomeView: View {
             }
             TrainingStatisticsView()
                 .padding(.top, 8)
+        }
+    }
+
+    private func loadTodayWorkouts() {
+        isLoadingTodayWorkouts = true
+        HealthKitManager.shared.fetchTodayWorkouts { result in
+            self.todayWorkouts = result
+            self.isLoadingTodayWorkouts = false
+        }
+    }
+    private func loadJulyWorkouts() {
+        isLoadingJulyWorkouts = true
+        let year = Calendar.current.component(.year, from: Date())
+        HealthKitManager.shared.fetchWorkouts(forYear: year, month: 7) { result in
+            self.julyWorkouts = result
+            self.isLoadingJulyWorkouts = false
+        }
+    }
+    private func loadMonthWorkouts(year: Int, month: Int) {
+        isLoadingMonthWorkouts = true
+        HealthKitManager.shared.fetchWorkouts(forYear: year, month: month) { result in
+            self.monthWorkouts = result
+            self.isLoadingMonthWorkouts = false
+        }
+    }
+}
+
+struct TodayWorkoutSection: View {
+    let workouts: [WorkoutSession]
+    let isLoading: Bool
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("오늘의 세션")
+                .font(.title3.bold())
+            if isLoading {
+                ProgressView()
+            } else if workouts.isEmpty {
+                Text("오늘 기록된 운동 세션이 없습니다.")
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(workouts) { session in
+                    HStack {
+                        Text(activityTypeName(session.activityType))
+                            .font(.headline)
+                        Spacer()
+                        Text(String(format: "%.2f km", session.distance/1000))
+                            .foregroundColor(.primaryBlue)
+                        Text("\(Int(session.calories)) kcal")
+                            .foregroundColor(.orange)
+                    }
+                    .padding(8)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(8)
+                }
+            }
+        }
+        .padding(.vertical, 12)
+    }
+    private func activityTypeName(_ type: HKWorkoutActivityType) -> String {
+        switch type {
+        case .running: return "러닝"
+        case .walking: return "걷기"
+        case .cycling: return "사이클링"
+        case .soccer: return "축구"
+        case .traditionalStrengthTraining: return "근력운동"
+        case .functionalStrengthTraining: return "코어/서킷"
+        case .yoga: return "요가"
+        case .swimming: return "수영"
+        case .other: return "기타"
+        default: return String(describing: type)
+        }
+    }
+}
+
+struct MonthWorkoutSection: View {
+    let title: String
+    let workouts: [WorkoutSession]
+    let isLoading: Bool
+    let showMore: () -> Void
+    let showMoreText: String
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text(title)
+                    .font(.title3.bold())
+                Spacer()
+                Button(showMoreText, action: showMore)
+                    .font(.subheadline)
+            }
+            if isLoading {
+                ProgressView()
+            } else if workouts.isEmpty {
+                Text("해당 월에 기록된 운동 세션이 없습니다.")
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(workouts) { session in
+                    HStack {
+                        Text(activityTypeName(session.activityType))
+                            .font(.headline)
+                        Spacer()
+                        Text(String(format: "%.2f km", session.distance/1000))
+                            .foregroundColor(.primaryBlue)
+                        Text("\(Int(session.calories)) kcal")
+                            .foregroundColor(.orange)
+                    }
+                    .padding(8)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(8)
+                }
+            }
+        }
+        .padding(.vertical, 12)
+    }
+    private func activityTypeName(_ type: HKWorkoutActivityType) -> String {
+        switch type {
+        case .running: return "러닝"
+        case .walking: return "걷기"
+        case .cycling: return "사이클링"
+        case .soccer: return "축구"
+        case .traditionalStrengthTraining: return "근력운동"
+        case .functionalStrengthTraining: return "코어/서킷"
+        case .yoga: return "요가"
+        case .swimming: return "수영"
+        case .other: return "기타"
+        default: return String(describing: type)
+        }
+    }
+}
+
+struct MonthSelectorView: View {
+    let onSelect: (Int, Int) -> Void
+    let monthWorkouts: [WorkoutSession]
+    let isLoading: Bool
+    let selectedMonth: (year: Int, month: Int)?
+    @Environment(\.dismiss) private var dismiss
+    @State private var year: Int = Calendar.current.component(.year, from: Date())
+    @State private var month: Int = Calendar.current.component(.month, from: Date())
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 16) {
+                HStack {
+                    Picker("연도", selection: $year) {
+                        ForEach((2020...Calendar.current.component(.year, from: Date())), id: \.  ) { y in
+                            Text("\(y)년").tag(y)
+                        }
+                    }
+                    .pickerStyle(MenuPickerStyle())
+                    Picker("월", selection: $month) {
+                        ForEach(1...12, id: \.  ) { m in
+                            Text("\(m)월").tag(m)
+                        }
+                    }
+                    .pickerStyle(MenuPickerStyle())
+                    Button("조회") {
+                        onSelect(year, month)
+                    }
+                }
+                .padding(.top, 16)
+                Divider()
+                MonthWorkoutSection(
+                    title: selectedMonth != nil ? "\(selectedMonth!.month)월 세션 요약" : "월별 세션 요약",
+                    workouts: monthWorkouts,
+                    isLoading: isLoading,
+                    showMore: {},
+                    showMoreText: ""
+                )
+                Spacer()
+            }
+            .navigationTitle("월별 세션 조회")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("닫기") { dismiss() }
+                }
+            }
         }
     }
 }

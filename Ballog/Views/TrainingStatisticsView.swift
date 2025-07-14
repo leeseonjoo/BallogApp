@@ -6,12 +6,19 @@ struct TrainingStatisticsView: View {
     @State private var isLoading = false
     @State private var showHealthKitAlert = false
     @State private var healthKitAuthorized = false
+    @State private var summary: WorkoutSummary? = nil
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Text("최근 운동 세션")
                 .font(.title2.bold())
                 .padding(.top, 8)
+            // 요약 뷰 추가
+            if let summary = summary {
+                WorkoutSummaryView(summary: summary)
+            } else {
+                ProgressView("운동 요약 불러오는 중...")
+            }
             if isLoading {
                 ProgressView()
             } else if sessions.isEmpty {
@@ -30,6 +37,7 @@ struct TrainingStatisticsView: View {
         }
         .onAppear {
             requestHealthKitAccess(force: false)
+            fetchSummary()
         }
         .alert("HealthKit 권한이 필요합니다.", isPresented: $showHealthKitAlert) {
             Button("확인", role: .cancel) {}
@@ -55,6 +63,12 @@ struct TrainingStatisticsView: View {
                 self.sessions = result
                 self.isLoading = false
             }
+        }
+    }
+
+    private func fetchSummary() {
+        HealthKitManager.shared.fetchWorkoutSummary { result in
+            self.summary = result
         }
     }
 }
@@ -102,6 +116,40 @@ struct SessionCard: View {
         let minutes = Int(interval/60)
         let seconds = Int(interval) % 60
         return String(format: "%d:%02d", minutes, seconds)
+    }
+}
+
+struct WorkoutSummaryView: View {
+    let summary: WorkoutSummary
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("총 운동 횟수: \(summary.totalCount)회")
+                Spacer()
+                Text("총 운동 시간: \(Int(summary.totalDuration/60))분")
+            }
+            if let type = summary.mostFrequentType {
+                Text("가장 많이 한 운동: \(activityTypeName(type))")
+            }
+        }
+        .font(.subheadline)
+        .padding(8)
+        .background(Color(.systemGray6))
+        .cornerRadius(8)
+    }
+    private func activityTypeName(_ type: HKWorkoutActivityType) -> String {
+        switch type {
+        case .running: return "러닝"
+        case .walking: return "걷기"
+        case .cycling: return "사이클링"
+        case .soccer: return "축구"
+        case .traditionalStrengthTraining: return "근력운동"
+        case .functionalStrengthTraining: return "코어/서킷"
+        case .yoga: return "요가"
+        case .swimming: return "수영"
+        case .other: return "기타"
+        default: return String(describing: type)
+        }
     }
 }
 

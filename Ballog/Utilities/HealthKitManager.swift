@@ -17,6 +17,12 @@ struct WorkoutSession: Identifiable {
     let distance: Double
 }
 
+struct WorkoutSummary {
+    let totalCount: Int
+    let totalDuration: TimeInterval // seconds
+    let mostFrequentType: HKWorkoutActivityType?
+}
+
 final class HealthKitManager {
     static let shared = HealthKitManager()
     private let healthStore = HKHealthStore()
@@ -119,17 +125,133 @@ extension HealthKitManager {
                 print("[HealthKitManager] fetchRecentWorkouts error: \(error.localizedDescription)")
             }
             print("[HealthKitManager] fetchRecentWorkouts samples count: \(samples?.count ?? 0)")
-            let workouts = (samples as? [HKWorkout])?.map { workout in
-                print("[HealthKitManager] workout: activityType=\(workout.workoutActivityType.rawValue), start=\(workout.startDate), end=\(workout.endDate), calories=\(workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0), distance=\(workout.totalDistance?.doubleValue(for: .meter()) ?? 0)")
+            let workouts: [WorkoutSession] = (samples as? [HKWorkout])?.map { workout in
+                print("[HealthKitManager] workout: activityType=\(workout.workoutActivityType.rawValue), start=\(workout.startDate), end=\(workout.endDate)")
+                let calories: Double
+                if #available(iOS 18.0, *) {
+                    if let stat = workout.statistics(for: HKQuantityType(.activeEnergyBurned)),
+                       let quantity = stat.sumQuantity() {
+                        calories = quantity.doubleValue(for: .kilocalorie())
+                    } else {
+                        calories = 0
+                    }
+                } else {
+                    calories = workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0
+                }
                 return WorkoutSession(
                     activityType: workout.workoutActivityType,
                     startDate: workout.startDate,
                     endDate: workout.endDate,
-                    calories: workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0,
+                    calories: calories,
                     distance: workout.totalDistance?.doubleValue(for: .meter()) ?? 0
                 )
             } ?? []
             completion(workouts)
+        }
+        healthStore.execute(query)
+    }
+
+    func fetchWorkoutSummary(completion: @escaping (WorkoutSummary) -> Void) {
+        let workoutType = HKObjectType.workoutType()
+        let query = HKSampleQuery(sampleType: workoutType, predicate: nil, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, samples, error in
+            var totalCount = 0
+            var totalDuration: TimeInterval = 0
+            var typeCount: [HKWorkoutActivityType: Int] = [:]
+            if let workouts = samples as? [HKWorkout] {
+                totalCount = workouts.count
+                for workout in workouts {
+                    let duration = workout.endDate.timeIntervalSince(workout.startDate)
+                    totalDuration += duration
+                    typeCount[workout.workoutActivityType, default: 0] += 1
+                }
+            }
+            let mostFrequentType = typeCount.max(by: { $0.value < $1.value })?.key
+            let summary = WorkoutSummary(totalCount: totalCount, totalDuration: totalDuration, mostFrequentType: mostFrequentType)
+            DispatchQueue.main.async {
+                completion(summary)
+            }
+        }
+        healthStore.execute(query)
+    }
+
+    func fetchTodayWorkouts(completion: @escaping ([WorkoutSession]) -> Void) {
+        let workoutType = HKObjectType.workoutType()
+        let now = Date()
+        let startOfDay = Calendar.current.startOfDay(for: now)
+        let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: now, options: .strictStartDate)
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+        let query = HKSampleQuery(sampleType: workoutType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { _, samples, error in
+            let workouts: [WorkoutSession] = (samples as? [HKWorkout])?.map { workout in
+                let calories: Double
+                if #available(iOS 18.0, *) {
+                    if let stat = workout.statistics(for: HKQuantityType(.activeEnergyBurned)),
+                       let quantity = stat.sumQuantity() {
+                        calories = quantity.doubleValue(for: .kilocalorie())
+                    } else {
+                        calories = 0
+                    }
+                } else {
+                    calories = workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0
+                }
+                return WorkoutSession(
+                    activityType: workout.workoutActivityType,
+                    startDate: workout.startDate,
+                    endDate: workout.endDate,
+                    calories: calories,
+                    distance: workout.totalDistance?.doubleValue(for: .meter()) ?? 0
+                )
+            } ?? []
+            DispatchQueue.main.async {
+                completion(workouts)
+            }
+        }
+        healthStore.execute(query)
+    }
+
+    func fetchWorkouts(forYear year: Int, month: Int, completion: @escaping ([WorkoutSession]) -> Void) {
+        let calendar = Calendar.current
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = 1
+        guard let startOfMonth = calendar.date(from: components) else {
+            completion([])
+            return
+        }
+        var comps = DateComponents()
+        comps.month = 1
+        comps.day = -1
+        guard let endOfMonth = calendar.date(byAdding: comps, to: startOfMonth) else {
+            completion([])
+            return
+        }
+        let workoutType = HKObjectType.workoutType()
+        let predicate = HKQuery.predicateForSamples(withStart: startOfMonth, end: endOfMonth, options: .strictStartDate)
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+        let query = HKSampleQuery(sampleType: workoutType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { _, samples, error in
+            let workouts: [WorkoutSession] = (samples as? [HKWorkout])?.map { workout in
+                let calories: Double
+                if #available(iOS 18.0, *) {
+                    if let stat = workout.statistics(for: HKQuantityType(.activeEnergyBurned)),
+                       let quantity = stat.sumQuantity() {
+                        calories = quantity.doubleValue(for: .kilocalorie())
+                    } else {
+                        calories = 0
+                    }
+                } else {
+                    calories = workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0
+                }
+                return WorkoutSession(
+                    activityType: workout.workoutActivityType,
+                    startDate: workout.startDate,
+                    endDate: workout.endDate,
+                    calories: calories,
+                    distance: workout.totalDistance?.doubleValue(for: .meter()) ?? 0
+                )
+            } ?? []
+            DispatchQueue.main.async {
+                completion(workouts)
+            }
         }
         healthStore.execute(query)
     }
