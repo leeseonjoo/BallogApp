@@ -11,32 +11,60 @@ struct TrainingStatisticsView: View {
     @State private var isLoadingSoccerStats = false
     @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
     @State private var selectedMonth: Int = Calendar.current.component(.month, from: Date())
+    @State private var prevMonthStats: WorkoutStats? = nil
+    @State private var showMoreSessions = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            // 실외 축구 월별 통계 요약
+            // 실외 축구 월별 통계 요약 (UI 개선)
             VStack(alignment: .leading, spacing: 8) {
-                HStack {
+                HStack(spacing: 8) {
+                    Image(systemName: "soccerball")
+                        .resizable()
+                        .frame(width: 28, height: 28)
+                        .foregroundColor(.primaryBlue)
                     Text("실외 축구 \(selectedYear)년 \(selectedMonth)월 통계 요약")
-                        .font(.title3.bold())
+                        .font(.title2.bold())
                     Spacer()
+                    Picker("연도", selection: $selectedYear) {
+                        ForEach((2020...Calendar.current.component(.year, from: Date())), id: \.self) { y in
+                            Text("\(y)년").tag(y)
+                        }
+                    }
+                    .pickerStyle(MenuPickerStyle())
                     Picker("월", selection: $selectedMonth) {
                         ForEach(1...12, id: \.self) { m in
                             Text("\(m)월").tag(m)
                         }
                     }
-                    .frame(width: 80)
-                    .onChange(of: selectedMonth) { _ in
-                        fetchSoccerStats()
-                    }
+                    .pickerStyle(MenuPickerStyle())
+                }
+                .padding(.bottom, 4)
+                .onChange(of: selectedYear) { _ in
+                    fetchSoccerStats()
+                    fetchPrevMonthStats()
+                }
+                .onChange(of: selectedMonth) { _ in
+                    fetchSoccerStats()
+                    fetchPrevMonthStats()
                 }
                 if isLoadingSoccerStats {
                     ProgressView()
                 } else if let stats = soccerStats {
-                    SoccerStatsView(stats: stats)
+                    SoccerStatsCard(stats: stats)
                 } else {
                     Text("해당 월에 실외 축구 세션이 없습니다.")
                         .foregroundColor(.secondary)
+                }
+                // 전월 대비 안내 메시지
+                if let stats = soccerStats, let prev = prevMonthStats {
+                    let diff = (stats.totalDuration - prev.totalDuration) / 3600.0
+                    if diff < 0 {
+                        Text("전월 대비 \(String(format: "%.1f", -diff))시간 부족합니다.")
+                            .font(.subheadline)
+                            .foregroundColor(.red)
+                            .padding(.top, 4)
+                    }
                 }
             }
             // 세션 요약 통계
@@ -54,8 +82,11 @@ struct TrainingStatisticsView: View {
                 Text("운동 세션 기록이 없습니다.")
                     .foregroundColor(.secondary)
             } else {
-                ForEach(sessions) { session in
-                    SessionCard(session: session)
+                SessionCard(session: sessions[0])
+                if sessions.count > 1 {
+                    Button("더보기") { showMoreSessions = true }
+                        .font(.subheadline)
+                        .padding(.top, 4)
                 }
             }
             Button(healthKitAuthorized ? "다시 동기화" : "피트니스 연동하기") {
@@ -68,9 +99,13 @@ struct TrainingStatisticsView: View {
             requestHealthKitAccess(force: false)
             fetchSummary()
             fetchSoccerStats()
+            fetchPrevMonthStats()
         }
         .alert("HealthKit 권한이 필요합니다.", isPresented: $showHealthKitAlert) {
             Button("확인", role: .cancel) {}
+        }
+        .sheet(isPresented: $showMoreSessions) {
+            MoreSessionsSheet(sessions: Array(sessions.dropFirst()))
         }
     }
     
@@ -107,6 +142,13 @@ struct TrainingStatisticsView: View {
         HealthKitManager.shared.fetchWorkouts(forYear: selectedYear, month: selectedMonth, activityType: .soccer) { sessions in
             self.soccerStats = HealthKitManager.shared.calculateStats(for: sessions)
             self.isLoadingSoccerStats = false
+        }
+    }
+    private func fetchPrevMonthStats() {
+        let prevMonth = selectedMonth == 1 ? 12 : selectedMonth - 1
+        let prevYear = selectedMonth == 1 ? selectedYear - 1 : selectedYear
+        HealthKitManager.shared.fetchWorkouts(forYear: prevYear, month: prevMonth, activityType: .soccer) { sessions in
+            self.prevMonthStats = HealthKitManager.shared.calculateStats(for: sessions)
         }
     }
 }
@@ -191,33 +233,67 @@ struct WorkoutSummaryView: View {
     }
 }
 
-struct SoccerStatsView: View {
+struct SoccerStatsCard: View {
     let stats: WorkoutStats
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("총 세션: \(stats.count)회")
+                Label("총 세션", systemImage: "number.circle")
                 Spacer()
-                Text("평균 시간: \(formatTime(stats.averageDuration))")
+                Text("\(stats.count)회")
             }
             HStack {
-                Text("총 시간: \(formatTime(stats.totalDuration))")
+                Label("평균 시간", systemImage: "clock")
                 Spacer()
-                Text("총 칼로리: \(Int(stats.totalCalories)) kcal")
+                Text(formatTime(stats.averageDuration))
             }
             HStack {
-                Text("총 거리: \(String(format: "%.2f km", stats.totalDistance/1000))")
+                Label("총 시간", systemImage: "timer")
+                Spacer()
+                Text(formatTime(stats.totalDuration))
+            }
+            HStack {
+                Label("총 칼로리", systemImage: "flame")
+                Spacer()
+                Text("\(Int(stats.totalCalories)) kcal")
+            }
+            HStack {
+                Label("총 거리", systemImage: "figure.walk")
+                Spacer()
+                Text("\(String(format: "%.2f km", stats.totalDistance/1000))")
             }
         }
         .font(.subheadline)
-        .padding(8)
-        .background(Color(.systemGray6))
-        .cornerRadius(8)
+        .padding()
+        .background(RoundedRectangle(cornerRadius: 16).fill(Color.primaryBlue.opacity(0.08)))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.primaryBlue, lineWidth: 1)
+        )
+        .shadow(color: Color.primaryBlue.opacity(0.08), radius: 4, x: 0, y: 2)
     }
     private func formatTime(_ interval: TimeInterval) -> String {
         let hours = Int(interval) / 3600
         let minutes = (Int(interval) % 3600) / 60
         return "\(hours)시간 \(minutes)분"
+    }
+}
+
+struct MoreSessionsSheet: View {
+    let sessions: [WorkoutSession]
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationView {
+            List(sessions) { session in
+                SessionCard(session: session)
+            }
+            .navigationTitle("운동 세션 전체보기")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("닫기") { dismiss() }
+                }
+            }
+        }
     }
 }
 

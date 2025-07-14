@@ -74,22 +74,10 @@ struct MainHomeView: View {
                     thisWeekEventsSection
                     // 4. 통계(피트니스 스타일) 섹션 (실제 통계 뷰로 대체)
                     fitnessStatisticsSection
-                    // 7월 세션 하단에 추가
-                    MonthWorkoutSection(
-                        title: "7월 세션 요약",
-                        workouts: julyWorkouts,
-                        isLoading: isLoadingJulyWorkouts,
-                        showMore: {
-                            showMonthSheet = true
-                        },
-                        showMoreText: "더보기"
-                    )
-                    // 오늘의 세션 하단에 추가
-                    TodayWorkoutSection(workouts: todayWorkouts, isLoading: isLoadingTodayWorkouts)
+                    // 최근 운동 세션(불모양 이모티콘) 삭제됨
                 }
                 .padding(DesignConstants.horizontalPadding)
                 .onAppear {
-                    loadTodayWorkouts()
                     loadJulyWorkouts()
                 }
                 .sheet(isPresented: $showMonthSheet) {
@@ -281,49 +269,49 @@ struct MainHomeView: View {
     }
 }
 
-struct TodayWorkoutSection: View {
-    let workouts: [WorkoutSession]
-    let isLoading: Bool
+// 최근 운동 세션 카드 (예쁘게 개선)
+struct RecentWorkoutSection: View {
+    @State private var sessions: [WorkoutSession] = []
+    @State private var isLoading = false
+    @State private var showMoreSessions = false
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("오늘의 세션")
-                .font(.title3.bold())
+            HStack {
+                Image(systemName: "flame.fill")
+                    .foregroundColor(.orange)
+                Text("최근 운동 세션")
+                    .font(.title3.bold())
+                Spacer()
+            }
             if isLoading {
                 ProgressView()
-            } else if workouts.isEmpty {
-                Text("오늘 기록된 운동 세션이 없습니다.")
+            } else if sessions.isEmpty {
+                Text("운동 세션 기록이 없습니다.")
                     .foregroundColor(.secondary)
             } else {
-                ForEach(workouts) { session in
-                    HStack {
-                        Text(activityTypeName(session.activityType))
-                            .font(.headline)
-                        Spacer()
-                        Text(String(format: "%.2f km", session.distance/1000))
-                            .foregroundColor(.primaryBlue)
-                        Text("\(Int(session.calories)) kcal")
-                            .foregroundColor(.orange)
-                    }
-                    .padding(8)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
+                SessionCard(session: sessions[0])
+                if sessions.count > 1 {
+                    Button("더보기") { showMoreSessions = true }
+                        .font(.subheadline)
+                        .padding(.top, 4)
                 }
             }
         }
-        .padding(.vertical, 12)
-    }
-    private func activityTypeName(_ type: HKWorkoutActivityType) -> String {
-        switch type {
-        case .running: return "러닝"
-        case .walking: return "걷기"
-        case .cycling: return "사이클링"
-        case .soccer: return "축구"
-        case .traditionalStrengthTraining: return "근력운동"
-        case .functionalStrengthTraining: return "코어/서킷"
-        case .yoga: return "요가"
-        case .swimming: return "수영"
-        case .other: return "기타"
-        default: return String(describing: type)
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.systemGray6))
+                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
+        )
+        .sheet(isPresented: $showMoreSessions) {
+            MoreSessionsSheet(sessions: Array(sessions.dropFirst()))
+        }
+        .onAppear {
+            isLoading = true
+            HealthKitManager.shared.fetchRecentWorkouts(limit: 10) { result in
+                self.sessions = result
+                self.isLoading = false
+            }
         }
     }
 }
