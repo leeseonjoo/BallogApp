@@ -64,17 +64,61 @@ struct MainHomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: DesignConstants.sectionSpacing) {
-                    // 1. 개인 캘린더 최상단 배치
-                    InteractiveCalendarView(selectedDate: $selectedDate, attendance: $personalTrainingStore.attendance, title: "개인 캘린더")
-                        .environmentObject(personalTrainingStore)
-                        .padding(.bottom, 8)
-                    // 2. 대회/매치 일정 섹션
-                    competitionEventsSection
-                    // 3. 이번주 일정 섹션
-                    thisWeekEventsSection
+                    // 1. 캘린더 + 이번주 일정 알림 한 줄
+                    HStack(alignment: .top, spacing: 12) {
+                        InteractiveCalendarView(selectedDate: $selectedDate, attendance: $personalTrainingStore.attendance, title: "캘린더")
+                            .environmentObject(personalTrainingStore)
+                            .padding(.bottom, 8)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("이번주 일정")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            if let event = thisWeekEvents.first {
+                                Text("이번 주 \(event.title) \(dateFormatter.string(from: event.date)) \(event.place)입니다")
+                                    .font(.caption2)
+                                    .foregroundColor(.primaryBlue)
+                                    .lineLimit(1)
+                            } else {
+                                Text("예정된 일정 없음")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.top, 8)
+                    }
+                    // 2. 훈련일지 작성 프레임(카드)
+                    TrainingLogQuickWriteCard()
+                    // 3. 대회/매치 일정(가장 가까운 1개만)
+                    if let nearestEvent = competitionEvents.first {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("가장 가까운 대회/매치 일정")
+                                .font(.title3.bold())
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("\(dateFormatter.string(from: nearestEvent.date))  \(nearestEvent.title)")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(Color.primaryText)
+                                HStack(spacing: 4) {
+                                    Text(nearestEvent.type.rawValue)
+                                        .font(.caption)
+                                        .foregroundColor(nearestEvent.type == .match ? .red : .orange)
+                                    Text("•")
+                                        .font(.caption)
+                                        .foregroundColor(Color.secondaryText)
+                                    Text(nearestEvent.place)
+                                        .font(.caption)
+                                        .foregroundColor(Color.secondaryText)
+                                }
+                            }
+                            .padding(DesignConstants.cardPadding)
+                            .background(
+                                RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                                    .fill(Color.cardBackground)
+                            )
+                        }
+                    }
                     // 4. 통계(피트니스 스타일) 섹션 (실제 통계 뷰로 대체)
                     fitnessStatisticsSection
-                    // 최근 운동 세션(불모양 이모티콘) 삭제됨
                 }
                 .padding(DesignConstants.horizontalPadding)
                 .onAppear {
@@ -411,6 +455,59 @@ struct MonthSelectorView: View {
                 Spacer()
             }
             .navigationTitle("월별 세션 조회")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("닫기") { dismiss() }
+                }
+            }
+        }
+    }
+}
+
+// 훈련일지 작성 프레임(카드)
+struct TrainingLogQuickWriteCard: View {
+    @State private var showWriteSheet = false
+    var body: some View {
+        Button(action: { showWriteSheet = true }) {
+            HStack {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("오늘 훈련일지 작성")
+                        .font(.title3.bold())
+                        .foregroundColor(.primaryText)
+                    Text("한 번의 클릭으로 오늘의 훈련을 기록하세요!")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+                Image(systemName: "pencil.and.outline")
+                    .resizable()
+                    .frame(width: 32, height: 32)
+                    .foregroundColor(.primaryBlue)
+            }
+            .padding()
+            .background(RoundedRectangle(cornerRadius: 18).fill(Color.primaryBlue.opacity(0.08)))
+            .overlay(
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(Color.primaryBlue, lineWidth: 1)
+            )
+        }
+        .sheet(isPresented: $showWriteSheet) {
+            PersonalTrainingLogView() // 실제 훈련일지 작성 뷰로 연결
+        }
+        .padding(.vertical, 8)
+    }
+}
+
+// 파일 하단에 MoreSessionsSheet 추가
+struct MoreSessionsSheet: View {
+    let sessions: [WorkoutSession]
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationView {
+            List(sessions) { session in
+                SessionCard(session: session)
+            }
+            .navigationTitle("운동 세션 전체보기")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("닫기") { dismiss() }

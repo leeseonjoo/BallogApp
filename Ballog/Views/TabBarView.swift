@@ -20,7 +20,6 @@ struct TabBarView: View {
             ) {
                 selectedTab = 0
             }
-            
             TabBarItem(
                 icon: "figure.walk",
                 selectedIcon: "figure.walk",
@@ -29,25 +28,22 @@ struct TabBarView: View {
             ) {
                 selectedTab = 1
             }
-            
             TabBarItem(
-                icon: "person.3",
-                selectedIcon: "person.3.fill",
-                label: "팀",
+                icon: "target",
+                selectedIcon: "target",
+                label: "목표",
                 isSelected: selectedTab == 2
             ) {
                 selectedTab = 2
             }
-            
             TabBarItem(
-                icon: "square.stack",
-                selectedIcon: "square.stack.fill",
-                label: "피드",
+                icon: "person.3",
+                selectedIcon: "person.3.fill",
+                label: "팀",
                 isSelected: selectedTab == 3
             ) {
                 selectedTab = 3
             }
-            
             TabBarItem(
                 icon: "gearshape",
                 selectedIcon: "gearshape.fill",
