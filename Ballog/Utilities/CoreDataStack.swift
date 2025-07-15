@@ -240,31 +240,26 @@ final class CoreDataStack {
         logTitle.attributeType = .stringAttributeType
         logTitle.isOptional = false
 
-        let logContent = NSAttributeDescription()
-        logContent.name = "content"
-        logContent.attributeType = .stringAttributeType
-        logContent.isOptional = false
+        let logCoachingNotes = NSAttributeDescription()
+        logCoachingNotes.name = "coachingNotes"
+        logCoachingNotes.attributeType = .stringAttributeType
+        logCoachingNotes.isOptional = false
 
         let logDuration = NSAttributeDescription()
         logDuration.name = "duration"
         logDuration.attributeType = .integer32AttributeType
         logDuration.isOptional = false
 
-        let logCategory = NSAttributeDescription()
-        logCategory.name = "category"
-        logCategory.attributeType = .stringAttributeType
-        logCategory.isOptional = false
+        let logCategories = NSAttributeDescription()
+        logCategories.name = "categories"
+        logCategories.attributeType = .transformableAttributeType
+        logCategories.valueTransformerName = "NSSecureUnarchiveFromData"
+        logCategories.isOptional = false
 
-        let logMood = NSAttributeDescription()
-        logMood.name = "mood"
-        logMood.attributeType = .stringAttributeType
-        logMood.isOptional = false
-
-        let logGoals = NSAttributeDescription()
-        logGoals.name = "goals"
-        logGoals.attributeType = .transformableAttributeType
-        logGoals.valueTransformerName = "NSSecureUnarchiveFromData"
-        logGoals.isOptional = false
+        let logCondition = NSAttributeDescription()
+        logCondition.name = "condition"
+        logCondition.attributeType = .stringAttributeType
+        logCondition.isOptional = false
 
         let logAchievements = NSAttributeDescription()
         logAchievements.name = "achievements"
@@ -272,13 +267,30 @@ final class CoreDataStack {
         logAchievements.valueTransformerName = "NSSecureUnarchiveFromData"
         logAchievements.isOptional = false
 
+        let logShortcomings = NSAttributeDescription()
+        logShortcomings.name = "shortcomings"
+        logShortcomings.attributeType = .transformableAttributeType
+        logShortcomings.valueTransformerName = "NSSecureUnarchiveFromData"
+        logShortcomings.isOptional = false
+
         let logNextGoals = NSAttributeDescription()
         logNextGoals.name = "nextGoals"
         logNextGoals.attributeType = .transformableAttributeType
         logNextGoals.valueTransformerName = "NSSecureUnarchiveFromData"
         logNextGoals.isOptional = false
 
-        personalTrainingLogEntity.properties = [logId, logUserId, logDate, logTitle, logContent, logDuration, logCategory, logMood, logGoals, logAchievements, logNextGoals]
+        let logIsTeam = NSAttributeDescription()
+        logIsTeam.name = "isTeam"
+        logIsTeam.attributeType = .booleanAttributeType
+        logIsTeam.isOptional = false
+        logIsTeam.defaultValue = false
+
+        personalTrainingLogEntity.properties = [
+            logId, logUserId, logDate, logTitle,
+            logCoachingNotes, logDuration, logCategories,
+            logCondition, logAchievements, logShortcomings,
+            logNextGoals, logIsTeam
+        ]
 
         // PersonalGoal Entity
         let personalGoalEntity = NSEntityDescription()
