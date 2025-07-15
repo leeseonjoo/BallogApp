@@ -1,9 +1,6 @@
 {
   "images" : [
-    {
-      "filename" : "reading.png",
-      "idiom" : "universal"
-    }
+
   ],
   "info" : {
     "author" : "xcode",

@@ -15,6 +15,12 @@ struct PersonalPageView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: DesignConstants.sectionSpacing) {
+                    // noteb 이미지
+                    Image("noteb")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 160)
+                        .padding(.top, 8)
                     // 훈련일지 빠른 작성
                     TrainingLogQuickWriteCard()
                         .onTapGesture { showTrainingLogView = true }
