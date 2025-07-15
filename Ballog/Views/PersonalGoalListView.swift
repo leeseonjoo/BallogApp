@@ -56,7 +56,7 @@ struct PersonalGoalListView: View {
                 }
             }
         }
-        .ballogTopBar()
+        .ballogTopBar(selectedTab: .constant(0))
         .sheet(isPresented: $showGoalSettingView) {
             PersonalGoalSettingView()
                 .environmentObject(personalTrainingStore)

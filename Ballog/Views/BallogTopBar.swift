@@ -1,10 +1,11 @@
 import SwiftUI
 
 struct BallogTopBar: View {
+    @Binding var selectedTab: Int
     @State private var showProfile = false
     @State private var showNotifications = false
     @State private var showSettings = false
-    @State private var selectedTopTab: Int = 0 // 0: 풋살기록장, 1: 팀 매칭룸
+    // selectedTopTab은 selectedTab과 연동
     
     private var todayString: String {
         let formatter = DateFormatter()
@@ -14,35 +15,37 @@ struct BallogTopBar: View {
     }
 
     var body: some View {
-        HStack(spacing: DesignConstants.spacing) {
+        HStack(alignment: .center, spacing: 0) {
+            // 왼쪽: 볼로그 + 날짜/요일
             VStack(alignment: .leading, spacing: 2) {
                 Text("볼로그")
-                    .font(.caption)
+                    .font(.caption2)
                     .fontWeight(.semibold)
                     .foregroundColor(Color.primaryBlue)
-            }
-            .padding(.leading, DesignConstants.horizontalPadding)
-            Spacer()
-            VStack(spacing: 4) {
-                HStack(spacing: 24) {
-                    TopTabButton(title: "풋살기록장", isSelected: selectedTopTab == 0) {
-                        selectedTopTab = 0
-                    }
-                    TopTabButton(title: "팀 매칭룸", isSelected: selectedTopTab == 1) {
-                        selectedTopTab = 1
-                    }
-                }
-                .frame(maxWidth: .infinity)
                 Text(todayString)
                     .font(.caption2)
                     .foregroundColor(Color.secondaryText)
             }
+            .frame(minWidth: 80, alignment: .leading)
+            .padding(.leading, DesignConstants.horizontalPadding)
             Spacer()
-            HStack(spacing: DesignConstants.largeSpacing) {
+            // 중앙: 풋살기록장/팀 매칭룸 탭
+            HStack(spacing: 16) {
+                TopTabButton(title: "풋살기록장", isSelected: selectedTab == 0) {
+                    selectedTab = 0
+                }
+                TopTabButton(title: "팀 매칭룸", isSelected: selectedTab == 1) {
+                    selectedTab = 1
+                }
+            }
+            .frame(maxWidth: 220)
+            Spacer()
+            // 오른쪽: 프로필/알림/설정 아이콘 (더 작게)
+            HStack(spacing: 16) {
                 Button(action: { showProfile = true }) {
                     Image(systemName: "person.circle.fill")
                         .resizable()
-                        .frame(width: 32, height: 32)
+                        .frame(width: 24, height: 24)
                         .foregroundColor(Color.primaryBlue)
                 }
                 .sheet(isPresented: $showProfile) {
@@ -51,7 +54,7 @@ struct BallogTopBar: View {
                 Button(action: { showNotifications = true }) {
                     Image(systemName: "bell")
                         .resizable()
-                        .frame(width: 24, height: 24)
+                        .frame(width: 18, height: 18)
                         .foregroundColor(Color.primaryText)
                 }
                 .sheet(isPresented: $showNotifications) {
@@ -60,7 +63,7 @@ struct BallogTopBar: View {
                 Button(action: { showSettings = true }) {
                     Image(systemName: "gearshape")
                         .resizable()
-                        .frame(width: 24, height: 24)
+                        .frame(width: 18, height: 18)
                         .foregroundColor(Color.primaryText)
                 }
                 .sheet(isPresented: $showSettings) {
@@ -69,7 +72,7 @@ struct BallogTopBar: View {
             }
             .padding(.trailing, DesignConstants.horizontalPadding)
         }
-        .padding(.vertical, DesignConstants.verticalPadding)
+        .padding(.vertical, 8)
         .background(
             Color.pageBackground
                 .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
@@ -90,36 +93,37 @@ struct TopTabButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.headline)
+                .font(.subheadline)
                 .fontWeight(isSelected ? .bold : .regular)
                 .foregroundColor(isSelected ? Color.primaryBlue : Color.secondaryText)
-                .padding(.vertical, 6)
-                .padding(.horizontal, 16)
+                .padding(.vertical, 4)
+                .padding(.horizontal, 12)
                 .background(isSelected ? Color.primaryBlue.opacity(0.12) : Color.clear)
-                .cornerRadius(12)
+                .cornerRadius(10)
         }
     }
 }
 
 struct BallogTopBarModifier: ViewModifier {
+    @Binding var selectedTab: Int
     func body(content: Content) -> some View {
         ZStack(alignment: .top) {
             content
                 .padding(.top, DesignConstants.topBarHeight + 20)
-            BallogTopBar()
+            BallogTopBar(selectedTab: $selectedTab)
         }
     }
 }
 
 extension View {
-    func ballogTopBar() -> some View {
-        modifier(BallogTopBarModifier())
+    func ballogTopBar(selectedTab: Binding<Int>) -> some View {
+        modifier(BallogTopBarModifier(selectedTab: selectedTab))
     }
 }
 
 #Preview {
     NavigationStack {
         Text("Preview")
-            .ballogTopBar()
+            .ballogTopBar(selectedTab: .constant(0))
     }
 }

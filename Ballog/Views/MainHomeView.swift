@@ -23,6 +23,7 @@ struct MainHomeView: View {
     @State private var selectedMonth: (year: Int, month: Int)? = nil
     @State private var monthWorkouts: [WorkoutSession] = []
     @State private var isLoadingMonthWorkouts = false
+    @Binding var selectedTab: Int
 
     private var card: ProfileCard? {
         guard let data = storedCard.data(using: .utf8) else { return nil }
@@ -136,7 +137,11 @@ struct MainHomeView: View {
             }
             .background(Color.pageBackground)
         }
-        .ballogTopBar()
+        .overlay(
+            BallogTopBar(selectedTab: $selectedTab)
+                .frame(maxHeight: 56)
+            , alignment: .top
+        )
     }
     
     private func characterCardSection(card: ProfileCard) -> some View {

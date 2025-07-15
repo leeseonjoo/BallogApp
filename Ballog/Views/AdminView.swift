@@ -40,7 +40,7 @@ struct AdminView: View {
         }
         .background(Color.pageBackground)
         .ignoresSafeArea()
-        .ballogTopBar()
+        .ballogTopBar(selectedTab: .constant(0))
     }
 
     private func delete(at offsets: IndexSet) {

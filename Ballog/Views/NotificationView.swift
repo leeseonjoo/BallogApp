@@ -64,7 +64,7 @@ struct NotificationView: View {
                 }
             }
         }
-        .ballogTopBar()
+        .ballogTopBar(selectedTab: .constant(0))
     }
     
     private var notificationStatsSection: some View {

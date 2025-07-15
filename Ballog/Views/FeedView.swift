@@ -84,7 +84,7 @@ struct FeedView: View {
                 loadSamplePosts()
             }
         }
-        .ballogTopBar()
+        .ballogTopBar(selectedTab: $selectedTab)
     }
     
     // 일반 피드 탭

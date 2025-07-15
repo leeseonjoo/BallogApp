@@ -33,6 +33,7 @@ struct MatchManagementView: View {
                 MatchDetailView(matchEvent: matchEvent)
             }
         }
+        .ballogTopBar(selectedTab: .constant(0))
     }
     
 
@@ -572,7 +573,7 @@ struct MatchDetailView: View {
                 }
             }
         }
-        .ballogTopBar()
+        .ballogTopBar(selectedTab: .constant(0))
     }
     
     private var matchInfoSection: some View {

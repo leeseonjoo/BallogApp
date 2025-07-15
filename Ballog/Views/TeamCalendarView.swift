@@ -305,7 +305,7 @@ struct TeamCalendarView: View {
                 // 캘린더 강제 업데이트
             }
         }
-        .ballogTopBar()
+        .ballogTopBar(selectedTab: .constant(0))
     }
     
     private var calendarHeaderSection: some View {

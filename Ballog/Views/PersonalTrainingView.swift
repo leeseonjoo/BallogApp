@@ -70,7 +70,7 @@ struct PersonalTrainingView: View {
             }
             .background(Color.pageBackground)
         }
-        .ballogTopBar()
+        .ballogTopBar(selectedTab: .constant(0))
         .sheet(isPresented: $showTrainingLogView) {
             PersonalTrainingLogView()
                 .environmentObject(personalTrainingStore)

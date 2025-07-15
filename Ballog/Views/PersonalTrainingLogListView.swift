@@ -29,7 +29,7 @@ struct PersonalTrainingLogListView: View {
             .navigationTitle("훈련일지")
             .navigationBarTitleDisplayMode(.large)
         }
-        .ballogTopBar()
+        .ballogTopBar(selectedTab: .constant(0))
     }
     
     private var filterSection: some View {

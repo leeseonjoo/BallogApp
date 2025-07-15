@@ -2,148 +2,60 @@ import SwiftUI
 
 private enum TeamTab: String, CaseIterable {
     case manage = "팀 관리"
-    case goals = "목표 관리"
-    case ranking = "팀 랭킹"
+    case training = "훈련일지/전술"
     case match = "매치 관리"
-    case tactics = "전술"
-    
-    static let orderedCases: [TeamTab] = [.manage, .goals, .ranking, .match, .tactics]
 }
 
 struct TeamPageView: View {
     @State private var selection: TeamTab = .manage
     @EnvironmentObject private var teamStore: TeamStore
-    @EnvironmentObject private var teamGoalStore: TeamGoalStore
     @AppStorage("currentTeamID") private var currentTeamID: String = ""
-    @AppStorage("hasTeam") private var hasTeam: Bool = true
+    @Binding var selectedTeam: Team?
 
     private var currentTeam: Team? {
-        teamStore.teams.first { $0.id.uuidString == currentTeamID }
+        teamStore.teams.first { $0.id.uuidString == currentTeamID } ?? selectedTeam
     }
 
     var body: some View {
         NavigationStack {
-            if let team = currentTeam {
-                VStack(spacing: 0) {
-                    // Tab Picker
-                    Picker("TeamTab", selection: $selection) {
-                        ForEach(TeamTab.orderedCases, id: \.self) { tab in
-                            Text(tab.rawValue).tag(tab)
-                        }
+            VStack(spacing: 0) {
+                // 상단 세그먼트
+                Picker("TeamTab", selection: $selection) {
+                    ForEach(TeamTab.allCases, id: \.self) { tab in
+                        Text(tab.rawValue).tag(tab)
                     }
-                    .pickerStyle(.segmented)
-                    .padding(DesignConstants.horizontalPadding)
-                    .padding(.vertical, DesignConstants.verticalPadding)
-                    .background(Color.pageBackground)
+                }
+                .pickerStyle(.segmented)
+                .padding(DesignConstants.horizontalPadding)
+                .padding(.vertical, DesignConstants.verticalPadding)
+                .background(Color.pageBackground)
 
-                    // Tab Content
-                    TabView(selection: $selection) {
+                // 탭별 내용
+                if let team = currentTeam {
+                    switch selection {
+                    case .manage:
                         TeamManagementView(team: team)
-                            .tag(TeamTab.manage)
-                        
-                        TeamGoalManagementView(team: team)
-                            .tag(TeamTab.goals)
-                        
-                        TeamRankingView()
-                            .tag(TeamTab.ranking)
-                        
-                        MatchManagementView()
-                            .tag(TeamTab.match)
-                        
+                    case .training:
                         TeamTacticsView()
-                            .tag(TeamTab.tactics)
+                        // 팀 훈련일지 작성/전술 (필요시 TeamTrainingLogView 등 추가)
+                    case .match:
+                        MatchManagementView()
+                        // 매치 관리(매치 잡기, 라인업, 통계, 팀 랭킹, 매너 평가, 스코어 동의 등)
+                        // 필요시 TeamRankingView 등 추가
                     }
-                    .tabViewStyle(.page(indexDisplayMode: .never))
-                }
-            } else {
-                ScrollView {
-                    VStack(spacing: DesignConstants.sectionSpacing) {
-                        if !hasTeam {
-                            noTeamSection
-                        }
-                        
-                        TeamActionSelectionView()
-                        
-                        if !teamStore.teams.isEmpty {
-                            recommendedTeamsSection
-                        }
-                    }
-                    .padding(DesignConstants.horizontalPadding)
+                } else {
+                    Text("팀을 선택하거나 생성하세요.")
+                        .foregroundColor(.secondary)
+                        .padding()
                 }
             }
-        }
-        .ballogTopBar()
-    }
-    
-    private var noTeamSection: some View {
-        VStack(spacing: DesignConstants.smallSpacing) {
-            Image(systemName: "person.3")
-                .resizable()
-                .frame(width: 60, height: 60)
-                .foregroundColor(Color.secondaryText)
-            
-            Text("팀에 가입해보세요")
-                .font(.headline)
-                .foregroundColor(Color.primaryText)
-            
-            Text("팀에 가입하여 함께 성장하세요")
-                .font(.subheadline)
-                .foregroundColor(Color.secondaryText)
-                .multilineTextAlignment(.center)
-        }
-        .padding(DesignConstants.largePadding)
-        .background(
-            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                .fill(Color.cardBackground)
-        )
-    }
-    
-    private var recommendedTeamsSection: some View {
-        VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
-            Text("추천 팀")
-                .font(.title2.bold())
-                .foregroundColor(Color.primaryText)
-            
-            VStack(spacing: DesignConstants.smallSpacing) {
-                ForEach(teamStore.teams) { team in
-                    NavigationLink(destination: TeamPreviewView(team: team)) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
-                                Text(team.name)
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(Color.primaryText)
-                                
-                                Text(team.region)
-                                    .font(.caption)
-                                    .foregroundColor(Color.secondaryText)
-                                
-                                Text(team.trainingTime)
-                                    .font(.caption)
-                                    .foregroundColor(Color.tertiaryText)
-                            }
-                            
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundColor(Color.secondaryText)
-                        }
-                        .padding(DesignConstants.cardPadding)
-                        .background(
-                            RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                                .fill(Color.cardBackground)
-                        )
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                }
-            }
+            .background(Color.pageBackground)
         }
     }
 }
 
 #Preview {
-    TeamPageView()
+    TeamPageView(selectedTeam: .constant(nil))
         .environmentObject(AttendanceStore())
         .environmentObject(TeamTrainingLogStore())
         .environmentObject(TeamTacticStore())
