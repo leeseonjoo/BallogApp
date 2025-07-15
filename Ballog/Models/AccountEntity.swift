@@ -61,25 +61,6 @@ public class TeamEventEntity: NSManagedObject {
     }
 }
 
-@objc(PersonalTrainingLogEntity)
-public class PersonalTrainingLogEntity: NSManagedObject {
-    @NSManaged public var id: UUID
-    @NSManaged public var userId: String
-    @NSManaged public var date: Date
-    @NSManaged public var title: String
-    @NSManaged public var content: String
-    @NSManaged public var duration: Int32
-    @NSManaged public var category: String
-    @NSManaged public var mood: String
-    @NSManaged public var goals: [String]
-    @NSManaged public var achievements: [String]
-    @NSManaged public var nextGoals: [String]
-    
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<PersonalTrainingLogEntity> {
-        return NSFetchRequest<PersonalTrainingLogEntity>(entityName: "PersonalTrainingLogEntity")
-    }
-}
-
 @objc(PersonalGoalEntity)
 public class PersonalGoalEntity: NSManagedObject {
     @NSManaged public var id: UUID

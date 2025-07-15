@@ -11,21 +11,17 @@ struct PersonalTrainingLogDetailView: View {
             VStack(spacing: DesignConstants.sectionSpacing) {
                 // Header Section
                 headerSection
-                
                 // Content Section
                 contentSection
-                
-                // Goals Section
-                if !log.goals.isEmpty {
-                    goalsSection
-                }
-                
-                // Achievements Section
+                // 오늘 훈련 중 잘한 것들
                 if !log.achievements.isEmpty {
                     achievementsSection
                 }
-                
-                // Next Goals Section
+                // 부족한 것들
+                if !log.shortcomings.isEmpty {
+                    shortcomingsSection
+                }
+                // 다음 훈련 목표
                 if !log.nextGoals.isEmpty {
                     nextGoalsSection
                 }
@@ -54,7 +50,6 @@ struct PersonalTrainingLogDetailView: View {
             Text("훈련 정보")
                 .font(.title2.bold())
                 .foregroundColor(Color.primaryText)
-            
             VStack(spacing: DesignConstants.smallSpacing) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
@@ -62,39 +57,46 @@ struct PersonalTrainingLogDetailView: View {
                             .font(.headline)
                             .fontWeight(.medium)
                             .foregroundColor(Color.primaryText)
-                        
                         Text(log.date, style: .date)
                             .font(.subheadline)
                             .foregroundColor(Color.secondaryText)
+                        HStack(spacing: 4) {
+                            ForEach(log.categories, id: \.self) { category in
+                                HStack(spacing: 2) {
+                                    Image(systemName: category.icon)
+                                        .font(.caption)
+                                        .foregroundColor(Color.primaryBlue)
+                                    Text(category.rawValue)
+                                        .font(.caption2)
+                                        .foregroundColor(Color.secondaryText)
+                                }
+                            }
+                            if log.isTeam {
+                                Text("팀")
+                                    .font(.caption2)
+                                    .foregroundColor(.green)
+                            } else {
+                                Text("개인")
+                                    .font(.caption2)
+                                    .foregroundColor(.blue)
+                            }
+                        }
                     }
                     Spacer()
-                    
                     VStack(alignment: .trailing, spacing: 4) {
-                        Text(log.mood.emoji)
+                        Text(log.condition.emoji)
                             .font(.title2)
-                        Text(log.mood.rawValue)
+                        Text(log.condition.rawValue)
                             .font(.caption)
                             .foregroundColor(Color.secondaryText)
-                    }
-                }
-                
-                HStack(spacing: DesignConstants.largeSpacing) {
-                    VStack(spacing: 4) {
-                        Image(systemName: log.category.icon)
-                            .font(.title2)
-                            .foregroundColor(Color.primaryBlue)
-                        Text(log.category.rawValue)
-                            .font(.caption)
-                            .foregroundColor(Color.secondaryText)
-                    }
-                    
-                    VStack(spacing: 4) {
-                        Image(systemName: "clock")
-                            .font(.title2)
-                            .foregroundColor(Color.primaryBlue)
-                        Text("\(log.duration)분")
-                            .font(.caption)
-                            .foregroundColor(Color.secondaryText)
+                        HStack(spacing: 4) {
+                            Image(systemName: "clock")
+                                .font(.caption)
+                                .foregroundColor(Color.primaryBlue)
+                            Text("\(log.duration)분")
+                                .font(.caption2)
+                                .foregroundColor(Color.secondaryText)
+                        }
                     }
                 }
             }
@@ -108,12 +110,11 @@ struct PersonalTrainingLogDetailView: View {
     
     private var contentSection: some View {
         VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
-            Text("훈련 내용")
+            Text("훈련 중 코칭 받은 내용")
                 .font(.title2.bold())
                 .foregroundColor(Color.primaryText)
-            
             VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
-                Text(log.content)
+                Text(log.coachingNotes)
                     .font(.subheadline)
                     .foregroundColor(Color.primaryText)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -126,21 +127,19 @@ struct PersonalTrainingLogDetailView: View {
         }
     }
     
-    private var goalsSection: some View {
+    private var achievementsSection: some View {
         VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
-            Text("이번 훈련 목표")
+            Text("오늘 훈련 중 잘한 것들")
                 .font(.title2.bold())
                 .foregroundColor(Color.primaryText)
-            
             VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
-                ForEach(log.goals, id: \.self) { goal in
+                ForEach(log.achievements, id: \.self) { achievement in
                     HStack(alignment: .top, spacing: DesignConstants.smallSpacing) {
-                        Image(systemName: "target")
+                        Image(systemName: "checkmark.circle.fill")
                             .font(.caption)
-                            .foregroundColor(Color.primaryBlue)
+                            .foregroundColor(Color.successColor)
                             .padding(.top, 2)
-                        
-                        Text(goal)
+                        Text(achievement)
                             .font(.subheadline)
                             .foregroundColor(Color.primaryText)
                     }
@@ -154,21 +153,19 @@ struct PersonalTrainingLogDetailView: View {
         }
     }
     
-    private var achievementsSection: some View {
+    private var shortcomingsSection: some View {
         VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
-            Text("달성한 것들")
+            Text("부족한 것들")
                 .font(.title2.bold())
                 .foregroundColor(Color.primaryText)
-            
             VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
-                ForEach(log.achievements, id: \.self) { achievement in
+                ForEach(log.shortcomings, id: \.self) { shortcoming in
                     HStack(alignment: .top, spacing: DesignConstants.smallSpacing) {
-                        Image(systemName: "checkmark.circle.fill")
+                        Image(systemName: "exclamationmark.triangle.fill")
                             .font(.caption)
-                            .foregroundColor(Color.successColor)
+                            .foregroundColor(.orange)
                             .padding(.top, 2)
-                        
-                        Text(achievement)
+                        Text(shortcoming)
                             .font(.subheadline)
                             .foregroundColor(Color.primaryText)
                     }
@@ -187,7 +184,6 @@ struct PersonalTrainingLogDetailView: View {
             Text("다음 훈련 목표")
                 .font(.title2.bold())
                 .foregroundColor(Color.primaryText)
-            
             VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
                 ForEach(log.nextGoals, id: \.self) { goal in
                     HStack(alignment: .top, spacing: DesignConstants.smallSpacing) {
@@ -195,7 +191,6 @@ struct PersonalTrainingLogDetailView: View {
                             .font(.caption)
                             .foregroundColor(Color.primaryBlue)
                             .padding(.top, 2)
-                        
                         Text(goal)
                             .font(.subheadline)
                             .foregroundColor(Color.primaryText)
@@ -217,48 +212,39 @@ struct PersonalTrainingLogEditView: View {
     @EnvironmentObject private var personalTrainingStore: PersonalTrainingStore
     
     @State private var title: String
-    @State private var content: String
+    @State private var coachingNotes: String
     @State private var duration: Int
-    @State private var selectedCategory: PersonalTrainingLog.TrainingCategory
-    @State private var selectedMood: PersonalTrainingLog.TrainingMood
-    @State private var goals: [String]
+    @State private var selectedCategories: [PersonalTrainingLog.TrainingCategory]
+    @State private var selectedCondition: PersonalTrainingLog.TrainingCondition
     @State private var achievements: [String]
+    @State private var shortcomings: [String]
     @State private var nextGoals: [String]
     @State private var selectedDate: Date
+    @State private var isTeam: Bool
     
     init(log: PersonalTrainingLog) {
         self.log = log
         _title = State(initialValue: log.title)
-        _content = State(initialValue: log.content)
+        _coachingNotes = State(initialValue: log.coachingNotes)
         _duration = State(initialValue: log.duration)
-        _selectedCategory = State(initialValue: log.category)
-        _selectedMood = State(initialValue: log.mood)
-        _goals = State(initialValue: log.goals)
+        _selectedCategories = State(initialValue: log.categories)
+        _selectedCondition = State(initialValue: log.condition)
         _achievements = State(initialValue: log.achievements)
+        _shortcomings = State(initialValue: log.shortcomings)
         _nextGoals = State(initialValue: log.nextGoals)
         _selectedDate = State(initialValue: log.date)
+        _isTeam = State(initialValue: log.isTeam)
     }
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: DesignConstants.sectionSpacing) {
-                    // Date Selection
                     dateSelectionSection
-                    
-                    // Basic Info Section
                     basicInfoSection
-                    
-                    // Training Details Section
                     trainingDetailsSection
-                    
-                    // Goals Section
-                    goalsSection
-                    
-                    // Achievements Section
                     achievementsSection
-                    
-                    // Next Goals Section
+                    shortcomingsSection
                     nextGoalsSection
                 }
                 .padding(DesignConstants.horizontalPadding)
@@ -268,16 +254,11 @@ struct PersonalTrainingLogEditView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("취소") {
-                        dismiss()
-                    }
+                    Button("취소") { dismiss() }
                 }
-                
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("저장") {
-                        saveLog()
-                    }
-                    .disabled(title.isEmpty || content.isEmpty)
+                    Button("저장") { saveLog() }
+                        .disabled(title.isEmpty || coachingNotes.isEmpty || selectedCategories.isEmpty)
                 }
             }
         }
@@ -285,42 +266,31 @@ struct PersonalTrainingLogEditView: View {
     
     private var dateSelectionSection: some View {
         VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
-            Text("훈련 날짜")
+            Text("훈련 정보")
                 .font(.title2.bold())
                 .foregroundColor(Color.primaryText)
-            
             DatePicker("날짜 선택", selection: $selectedDate, displayedComponents: .date)
                 .datePickerStyle(.compact)
+                .labelsHidden()
+                .environment(\.locale, Locale(identifier: "ko_KR"))
+        }
+    }
+    
+    private var basicInfoSection: some View {
+        VStack(spacing: DesignConstants.smallSpacing) {
+            TextField("훈련 제목", text: $title)
+                .textFieldStyle(.roundedBorder)
+            TextEditor(text: $coachingNotes)
+                .frame(minHeight: 100)
                 .padding(DesignConstants.cardPadding)
                 .background(
                     RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
                         .fill(Color.cardBackground)
                 )
-        }
-    }
-    
-    private var basicInfoSection: some View {
-        VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
-            Text("기본 정보")
-                .font(.title2.bold())
-                .foregroundColor(Color.primaryText)
-            
-            VStack(spacing: DesignConstants.smallSpacing) {
-                TextField("훈련 제목", text: $title)
-                    .textFieldStyle(.roundedBorder)
-                
-                TextEditor(text: $content)
-                    .frame(minHeight: 100)
-                    .padding(DesignConstants.cardPadding)
-                    .background(
-                        RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                            .fill(Color.cardBackground)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                            .stroke(Color.borderColor, lineWidth: 1)
-                    )
-            }
+                .overlay(
+                    RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
+                        .stroke(Color.borderColor, lineWidth: 1)
+                )
         }
     }
     
@@ -329,114 +299,64 @@ struct PersonalTrainingLogEditView: View {
             Text("훈련 세부사항")
                 .font(.title2.bold())
                 .foregroundColor(Color.primaryText)
-            
             VStack(spacing: DesignConstants.smallSpacing) {
-                // Duration
-                HStack {
-                    Text("훈련 시간")
-                        .font(.subheadline)
-                        .foregroundColor(Color.secondaryText)
-                    Spacer()
-                    Stepper("\(duration)분", value: $duration, in: 10...300, step: 10)
-                        .font(.subheadline)
-                        .foregroundColor(Color.primaryText)
-                }
-                
-                // Category
+                // Category (multi-select)
                 VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
-                    Text("훈련 카테고리")
+                    Text("훈련 카테고리 (복수 선택)")
                         .font(.subheadline)
                         .foregroundColor(Color.secondaryText)
-                    
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: DesignConstants.smallSpacing) {
                         ForEach(PersonalTrainingLog.TrainingCategory.allCases, id: \.self) { category in
                             Button(action: {
-                                selectedCategory = category
+                                if selectedCategories.contains(category) {
+                                    selectedCategories.removeAll { $0 == category }
+                                } else {
+                                    selectedCategories.append(category)
+                                }
                             }) {
                                 HStack {
                                     Image(systemName: category.icon)
-                                        .foregroundColor(selectedCategory == category ? .white : Color.primaryBlue)
+                                        .foregroundColor(selectedCategories.contains(category) ? .white : Color.primaryBlue)
                                     Text(category.rawValue)
                                         .font(.caption)
-                                        .foregroundColor(selectedCategory == category ? .white : Color.primaryBlue)
+                                        .foregroundColor(selectedCategories.contains(category) ? .white : Color.primaryBlue)
                                 }
                                 .padding(.horizontal, DesignConstants.cardPadding)
                                 .padding(.vertical, DesignConstants.smallSpacing)
                                 .background(
                                     RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                                        .fill(selectedCategory == category ? Color.primaryBlue : Color.primaryBlue.opacity(0.1))
+                                        .fill(selectedCategories.contains(category) ? Color.primaryBlue : Color.primaryBlue.opacity(0.1))
                                 )
                             }
                             .buttonStyle(PlainButtonStyle())
                         }
                     }
                 }
-                
-                // Mood
+                // Condition (emoji)
                 VStack(alignment: .leading, spacing: DesignConstants.smallSpacing) {
-                    Text("훈련 후 기분")
+                    Text("훈련 컨디션")
                         .font(.subheadline)
                         .foregroundColor(Color.secondaryText)
-                    
                     HStack(spacing: DesignConstants.smallSpacing) {
-                        ForEach(PersonalTrainingLog.TrainingMood.allCases, id: \.self) { mood in
+                        ForEach(PersonalTrainingLog.TrainingCondition.allCases, id: \.self) { condition in
                             Button(action: {
-                                selectedMood = mood
+                                selectedCondition = condition
                             }) {
                                 VStack(spacing: 4) {
-                                    Text(mood.emoji)
+                                    Text(condition.emoji)
                                         .font(.title2)
-                                    Text(mood.rawValue)
+                                    Text(condition.rawValue)
                                         .font(.caption2)
-                                        .foregroundColor(selectedMood == mood ? .white : Color.primaryText)
+                                        .foregroundColor(selectedCondition == condition ? .white : Color.primaryText)
                                 }
                                 .padding(.horizontal, DesignConstants.cardPadding)
                                 .padding(.vertical, DesignConstants.smallSpacing)
                                 .background(
                                     RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                                        .fill(selectedMood == mood ? Color.primaryBlue : Color.cardBackground)
+                                        .fill(selectedCondition == condition ? Color.primaryBlue : Color.cardBackground)
                                 )
                             }
                             .buttonStyle(PlainButtonStyle())
-                        }
-                    }
-                }
-            }
-            .padding(DesignConstants.cardPadding)
-            .background(
-                RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                    .fill(Color.cardBackground)
-            )
-        }
-    }
-    
-    private var goalsSection: some View {
-        VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
-            HStack {
-                Text("이번 훈련 목표")
-                    .font(.title2.bold())
-                    .foregroundColor(Color.primaryText)
-                Spacer()
-                Button("추가") {
-                    goals.append("")
-                }
-                .font(.caption)
-                .foregroundColor(Color.primaryBlue)
-            }
-            
-            VStack(spacing: DesignConstants.smallSpacing) {
-                ForEach(goals.indices, id: \.self) { index in
-                    HStack {
-                        TextField("목표 \(index + 1)", text: $goals[index])
-                            .textFieldStyle(.roundedBorder)
-                        
-                        if goals.count > 1 {
-                            Button(action: {
-                                goals.remove(at: index)
-                            }) {
-                                Image(systemName: "minus.circle.fill")
-                                    .foregroundColor(Color.primaryRed)
-                            }
                         }
                     }
                 }
@@ -452,39 +372,50 @@ struct PersonalTrainingLogEditView: View {
     private var achievementsSection: some View {
         VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
             HStack {
-                Text("달성한 것들")
+                Text("오늘 훈련 중 잘한 것들")
                     .font(.title2.bold())
                     .foregroundColor(Color.primaryText)
                 Spacer()
-                Button("추가") {
-                    achievements.append("")
-                }
-                .font(.caption)
-                .foregroundColor(Color.primaryBlue)
+                Button("추가") { achievements.append("") }
+                    .font(.caption)
+                    .foregroundColor(Color.primaryBlue)
             }
-            
-            VStack(spacing: DesignConstants.smallSpacing) {
-                ForEach(achievements.indices, id: \.self) { index in
-                    HStack {
-                        TextField("달성 \(index + 1)", text: $achievements[index])
-                            .textFieldStyle(.roundedBorder)
-                        
-                        if achievements.count > 1 {
-                            Button(action: {
-                                achievements.remove(at: index)
-                            }) {
-                                Image(systemName: "minus.circle.fill")
-                                    .foregroundColor(Color.primaryRed)
-                            }
+            ForEach(achievements.indices, id: \.self) { idx in
+                HStack {
+                    TextField("잘한 점 입력", text: $achievements[idx])
+                        .textFieldStyle(.roundedBorder)
+                    if achievements.count > 1 {
+                        Button(action: { achievements.remove(at: idx) }) {
+                            Image(systemName: "minus.circle.fill").foregroundColor(.red)
                         }
                     }
                 }
             }
-            .padding(DesignConstants.cardPadding)
-            .background(
-                RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                    .fill(Color.cardBackground)
-            )
+        }
+    }
+    
+    private var shortcomingsSection: some View {
+        VStack(alignment: .leading, spacing: DesignConstants.sectionHeaderSpacing) {
+            HStack {
+                Text("부족한 것들")
+                    .font(.title2.bold())
+                    .foregroundColor(Color.primaryText)
+                Spacer()
+                Button("추가") { shortcomings.append("") }
+                    .font(.caption)
+                    .foregroundColor(Color.primaryBlue)
+            }
+            ForEach(shortcomings.indices, id: \.self) { idx in
+                HStack {
+                    TextField("부족한 점 입력", text: $shortcomings[idx])
+                        .textFieldStyle(.roundedBorder)
+                    if shortcomings.count > 1 {
+                        Button(action: { shortcomings.remove(at: idx) }) {
+                            Image(systemName: "minus.circle.fill").foregroundColor(.red)
+                        }
+                    }
+                }
+            }
         }
     }
     
@@ -495,35 +426,21 @@ struct PersonalTrainingLogEditView: View {
                     .font(.title2.bold())
                     .foregroundColor(Color.primaryText)
                 Spacer()
-                Button("추가") {
-                    nextGoals.append("")
-                }
-                .font(.caption)
-                .foregroundColor(Color.primaryBlue)
+                Button("추가") { nextGoals.append("") }
+                    .font(.caption)
+                    .foregroundColor(Color.primaryBlue)
             }
-            
-            VStack(spacing: DesignConstants.smallSpacing) {
-                ForEach(nextGoals.indices, id: \.self) { index in
-                    HStack {
-                        TextField("다음 목표 \(index + 1)", text: $nextGoals[index])
-                            .textFieldStyle(.roundedBorder)
-                        
-                        if nextGoals.count > 1 {
-                            Button(action: {
-                                nextGoals.remove(at: index)
-                            }) {
-                                Image(systemName: "minus.circle.fill")
-                                    .foregroundColor(Color.primaryRed)
-                            }
+            ForEach(nextGoals.indices, id: \.self) { idx in
+                HStack {
+                    TextField("목표 입력", text: $nextGoals[idx])
+                        .textFieldStyle(.roundedBorder)
+                    if nextGoals.count > 1 {
+                        Button(action: { nextGoals.remove(at: idx) }) {
+                            Image(systemName: "minus.circle.fill").foregroundColor(.red)
                         }
                     }
                 }
             }
-            .padding(DesignConstants.cardPadding)
-            .background(
-                RoundedRectangle(cornerRadius: DesignConstants.cornerRadius)
-                    .fill(Color.cardBackground)
-            )
         }
     }
     
@@ -531,15 +448,15 @@ struct PersonalTrainingLogEditView: View {
         let updatedLog = PersonalTrainingLog(
             date: selectedDate,
             title: title,
-            content: content,
+            coachingNotes: coachingNotes,
             duration: duration,
-            category: selectedCategory,
-            mood: selectedMood,
-            goals: goals.filter { !$0.isEmpty },
+            categories: selectedCategories,
+            condition: selectedCondition,
             achievements: achievements.filter { !$0.isEmpty },
-            nextGoals: nextGoals.filter { !$0.isEmpty }
+            shortcomings: shortcomings.filter { !$0.isEmpty },
+            nextGoals: nextGoals.filter { !$0.isEmpty },
+            isTeam: isTeam
         )
-        
         personalTrainingStore.updateLog(updatedLog)
         dismiss()
     }
@@ -549,10 +466,14 @@ struct PersonalTrainingLogEditView: View {
     PersonalTrainingLogDetailView(
         log: PersonalTrainingLog(
             title: "개인 훈련",
-            content: "오늘은 드리블 연습을 했습니다.",
+            coachingNotes: "오늘은 드리블 연습을 했습니다.",
             duration: 60,
-            category: .dribbling,
-            mood: .good
+            categories: [.dribbling],
+            condition: .good,
+            achievements: ["드리블 성공률 향상"],
+            shortcomings: ["체력 부족"],
+            nextGoals: ["슈팅 연습"],
+            isTeam: false
         )
     )
     .environmentObject(PersonalTrainingStore())

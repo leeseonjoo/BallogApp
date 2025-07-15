@@ -7,7 +7,7 @@ struct PersonalTrainingLogListView: View {
     private var filteredLogs: [PersonalTrainingLog] {
         let sortedLogs = personalTrainingStore.logs.sorted { $0.date > $1.date }
         if let category = selectedCategory {
-            return sortedLogs.filter { $0.category == category }
+            return sortedLogs.filter { $0.categories.contains(category) }
         }
         return sortedLogs
     }
@@ -17,7 +17,6 @@ struct PersonalTrainingLogListView: View {
             VStack(spacing: 0) {
                 // Filter Section
                 filterSection
-                
                 // Logs List
                 if filteredLogs.isEmpty {
                     emptyStateView
@@ -48,7 +47,6 @@ struct PersonalTrainingLogListView: View {
                         )
                         .foregroundColor(selectedCategory == nil ? .white : Color.primaryText)
                 }
-                
                 ForEach(PersonalTrainingLog.TrainingCategory.allCases, id: \.self) { category in
                     Button(action: {
                         selectedCategory = selectedCategory == category ? nil : category
@@ -77,21 +75,17 @@ struct PersonalTrainingLogListView: View {
     private var emptyStateView: some View {
         VStack(spacing: DesignConstants.largeSpacing) {
             Spacer()
-            
             Image(systemName: "doc.text")
                 .resizable()
                 .frame(width: 60, height: 60)
                 .foregroundColor(Color.secondaryText)
-            
             Text("훈련일지가 없습니다")
                 .font(.title3.bold())
                 .foregroundColor(Color.primaryText)
-            
             Text("첫 번째 훈련일지를 작성해보세요")
                 .font(.subheadline)
                 .foregroundColor(Color.secondaryText)
                 .multilineTextAlignment(.center)
-            
             Spacer()
         }
         .padding(DesignConstants.horizontalPadding)
@@ -119,63 +113,62 @@ struct PersonalTrainingLogListView: View {
                         .font(.headline)
                         .fontWeight(.medium)
                         .foregroundColor(Color.primaryText)
-                    
                     HStack(spacing: 8) {
-                        Image(systemName: log.category.icon)
-                            .font(.caption)
-                            .foregroundColor(Color.primaryBlue)
-                        Text(log.category.rawValue)
-                            .font(.caption)
-                            .foregroundColor(Color.secondaryText)
+                        // 대표 카테고리(첫 번째)만 표시, 여러 개면 +N
+                        if let firstCategory = log.categories.first {
+                            Image(systemName: firstCategory.icon)
+                                .font(.caption)
+                                .foregroundColor(Color.primaryBlue)
+                            Text(firstCategory.rawValue)
+                                .font(.caption)
+                                .foregroundColor(Color.secondaryText)
+                            if log.categories.count > 1 {
+                                Text("+\(log.categories.count - 1)")
+                                    .font(.caption2)
+                                    .foregroundColor(Color.secondaryText)
+                            }
+                        }
                         Text("\(log.duration)분")
                             .font(.caption)
                             .foregroundColor(Color.secondaryText)
-                        Text(log.mood.emoji)
+                        Text(log.condition.emoji)
                             .font(.caption)
+                        if log.isTeam {
+                            Text("팀")
+                                .font(.caption2)
+                                .foregroundColor(.green)
+                        } else {
+                            Text("개인")
+                                .font(.caption2)
+                                .foregroundColor(.blue)
+                        }
                     }
                 }
                 Spacer()
-                
                 VStack(alignment: .trailing, spacing: 4) {
                     Text(log.date, style: .date)
                         .font(.caption)
                         .foregroundColor(Color.secondaryText)
-                    
                     Text(log.date, style: .time)
                         .font(.caption)
                         .foregroundColor(Color.secondaryText)
                 }
             }
-            
-            if !log.content.isEmpty {
-                Text(log.content)
+            if !log.coachingNotes.isEmpty {
+                Text(log.coachingNotes)
                     .font(.subheadline)
                     .foregroundColor(Color.secondaryText)
                     .lineLimit(2)
             }
-            
-            if !log.goals.isEmpty || !log.achievements.isEmpty {
+            if !log.achievements.isEmpty {
                 HStack(spacing: DesignConstants.smallSpacing) {
-                    if !log.goals.isEmpty {
-                        HStack(spacing: 4) {
-                            Image(systemName: "target")
-                                .font(.caption)
-                                .foregroundColor(Color.primaryBlue)
-                            Text("목표 \(log.goals.count)개")
-                                .font(.caption)
-                                .foregroundColor(Color.primaryBlue)
-                        }
-                    }
-                    
-                    if !log.achievements.isEmpty {
-                        HStack(spacing: 4) {
-                            Image(systemName: "checkmark.circle")
-                                .font(.caption)
-                                .foregroundColor(Color.successColor)
-                            Text("달성 \(log.achievements.count)개")
-                                .font(.caption)
-                                .foregroundColor(Color.successColor)
-                        }
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.circle")
+                            .font(.caption)
+                            .foregroundColor(Color.successColor)
+                        Text("잘한 점 \(log.achievements.count)개")
+                            .font(.caption)
+                            .foregroundColor(Color.successColor)
                     }
                 }
             }

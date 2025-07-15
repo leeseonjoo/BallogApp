@@ -5,17 +5,18 @@ struct PersonalTrainingLog: Identifiable, Codable {
     enum EventType: String, Codable { case match, training }
     enum MatchResult: String, Codable { case win = "승", loss = "패", draw = "무승부" }
     
-    let id = UUID()
+    let id: UUID
     var date: Date
     var title: String
-    var content: String
-    let duration: Int // 분 단위
-    let category: TrainingCategory
-    let mood: TrainingMood
-    let goals: [String]
-    let achievements: [String]
-    let nextGoals: [String]
-    
+    var coachingNotes: String // "훈련 중 코칭 받은 내용"
+    var duration: Int // 분 단위
+    var categories: [TrainingCategory] // 멀티 선택
+    var condition: TrainingCondition // 5단계 이모지
+    var achievements: [String] // 오늘 훈련 중 잘한 것들
+    var shortcomings: [String] // 부족한 것들
+    var nextGoals: [String] // 다음 훈련 목표
+    var isTeam: Bool // 팀/개인 구분
+
     enum TrainingCategory: String, Codable, CaseIterable {
         case dribbling = "드리블"
         case shooting = "슈팅"
@@ -40,7 +41,7 @@ struct PersonalTrainingLog: Identifiable, Codable {
         }
     }
     
-    enum TrainingMood: String, Codable, CaseIterable {
+    enum TrainingCondition: String, Codable, CaseIterable {
         case excellent = "매우 좋음"
         case good = "좋음"
         case normal = "보통"
@@ -58,16 +59,18 @@ struct PersonalTrainingLog: Identifiable, Codable {
         }
     }
     
-    init(date: Date = Date(), title: String, content: String, duration: Int, category: TrainingCategory, mood: TrainingMood, goals: [String] = [], achievements: [String] = [], nextGoals: [String] = []) {
+    init(id: UUID = UUID(), date: Date = Date(), title: String, coachingNotes: String, duration: Int, categories: [TrainingCategory], condition: TrainingCondition, achievements: [String] = [], shortcomings: [String] = [], nextGoals: [String] = [], isTeam: Bool = false) {
+        self.id = id
         self.date = date
         self.title = title
-        self.content = content
+        self.coachingNotes = coachingNotes
         self.duration = duration
-        self.category = category
-        self.mood = mood
-        self.goals = goals
+        self.categories = categories
+        self.condition = condition
         self.achievements = achievements
+        self.shortcomings = shortcomings
         self.nextGoals = nextGoals
+        self.isTeam = isTeam
     }
 }
 
@@ -159,13 +162,14 @@ final class PersonalTrainingStore: ObservableObject {
         entity.userId = currentUserId
         entity.date = log.date
         entity.title = log.title
-        entity.content = log.content
+        entity.coachingNotes = log.coachingNotes
         entity.duration = Int32(log.duration)
-        entity.category = log.category.rawValue
-        entity.mood = log.mood.rawValue
-        entity.goals = log.goals
-        entity.achievements = log.achievements
-        entity.nextGoals = log.nextGoals
+        entity.categories = log.categories.map { $0.rawValue } as NSArray
+        entity.condition = log.condition.rawValue
+        entity.achievements = log.achievements as NSArray
+        entity.shortcomings = log.shortcomings as NSArray
+        entity.nextGoals = log.nextGoals as NSArray
+        entity.isTeam = log.isTeam
         
         coreDataStack.save()
     }
@@ -178,13 +182,14 @@ final class PersonalTrainingStore: ObservableObject {
         if let entity = try? context.fetch(request).first {
             entity.date = log.date
             entity.title = log.title
-            entity.content = log.content
+            entity.coachingNotes = log.coachingNotes
             entity.duration = Int32(log.duration)
-            entity.category = log.category.rawValue
-            entity.mood = log.mood.rawValue
-            entity.goals = log.goals
-            entity.achievements = log.achievements
-            entity.nextGoals = log.nextGoals
+            entity.categories = log.categories.map { $0.rawValue } as NSArray
+            entity.condition = log.condition.rawValue
+            entity.achievements = log.achievements as NSArray
+            entity.shortcomings = log.shortcomings as NSArray
+            entity.nextGoals = log.nextGoals as NSArray
+            entity.isTeam = log.isTeam
             
             coreDataStack.save()
         }
@@ -258,22 +263,22 @@ final class PersonalTrainingStore: ObservableObject {
         request.predicate = NSPredicate(format: "userId == %@", currentUserId)
         
         if let entities = try? context.fetch(request) {
-            logs = entities.compactMap { entity in
-                guard let category = PersonalTrainingLog.TrainingCategory(rawValue: entity.category),
-                      let mood = PersonalTrainingLog.TrainingMood(rawValue: entity.mood) else {
-                    return nil
-                }
-                
+            logs = entities.compactMap { entity -> PersonalTrainingLog? in
+                let categories = (entity.categories as? [String])?.compactMap { PersonalTrainingLog.TrainingCategory(rawValue: $0) } ?? []
+                guard let conditionRaw = entity.condition,
+                      let condition = PersonalTrainingLog.TrainingCondition(rawValue: conditionRaw) else { return nil }
                 return PersonalTrainingLog(
-                    date: entity.date,
-                    title: entity.title,
-                    content: entity.content,
+                    id: entity.id ?? UUID(),
+                    date: entity.date ?? Date(),
+                    title: entity.title ?? "",
+                    coachingNotes: entity.coachingNotes ?? "",
                     duration: Int(entity.duration),
-                    category: category,
-                    mood: mood,
-                    goals: entity.goals,
-                    achievements: entity.achievements,
-                    nextGoals: entity.nextGoals
+                    categories: categories,
+                    condition: condition,
+                    achievements: entity.achievements as? [String] ?? [],
+                    shortcomings: entity.shortcomings as? [String] ?? [],
+                    nextGoals: entity.nextGoals as? [String] ?? [],
+                    isTeam: entity.isTeam
                 )
             }
         }

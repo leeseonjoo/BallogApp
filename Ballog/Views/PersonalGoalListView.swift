@@ -367,7 +367,7 @@ struct PersonalGoalDetailView: View {
                 .font(.title2.bold())
                 .foregroundColor(Color.primaryText)
             
-            let relatedLogs = personalTrainingStore.logs.filter { $0.category == goal.category }
+            let relatedLogs = personalTrainingStore.logs.filter { $0.categories.contains(goal.category) }
             
             if relatedLogs.isEmpty {
                 VStack(spacing: DesignConstants.smallSpacing) {

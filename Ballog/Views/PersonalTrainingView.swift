@@ -39,10 +39,10 @@ struct PersonalTrainingView: View {
         personalTrainingStore.logs.count
     }
     
-    private var averageMood: PersonalTrainingLog.TrainingMood {
-        let moods = personalTrainingStore.logs.map { $0.mood }
-        let moodCounts = Dictionary(grouping: moods, by: { $0 }).mapValues { $0.count }
-        return moodCounts.max(by: { $0.value < $1.value })?.key ?? .normal
+    private var averageCondition: PersonalTrainingLog.TrainingCondition {
+        let conditions = personalTrainingStore.logs.map { $0.condition }
+        let conditionCounts = Dictionary(grouping: conditions, by: { $0 }).mapValues { $0.count }
+        return conditionCounts.max(by: { $0.value < $1.value })?.key ?? .normal
     }
 
     var body: some View {
@@ -267,16 +267,18 @@ struct PersonalTrainingView: View {
                         .foregroundColor(Color.primaryText)
                     
                     HStack(spacing: 8) {
-                        Image(systemName: log.category.icon)
-                            .font(.caption)
-                            .foregroundColor(Color.primaryBlue)
-                        Text(log.category.rawValue)
-                            .font(.caption)
-                            .foregroundColor(Color.secondaryText)
+                        if let firstCategory = log.categories.first {
+                            Image(systemName: firstCategory.icon)
+                                .font(.caption)
+                                .foregroundColor(Color.primaryBlue)
+                            Text(firstCategory.rawValue)
+                                .font(.caption)
+                                .foregroundColor(Color.secondaryText)
+                        }
                         Text("\(log.duration)분")
                             .font(.caption)
                             .foregroundColor(Color.secondaryText)
-                        Text(log.mood.emoji)
+                        Text(log.condition.emoji)
                             .font(.caption)
                     }
                 }
@@ -427,7 +429,7 @@ struct PersonalTrainingView: View {
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                                 .foregroundColor(Color.primaryText)
-                            Text("평균 기분: \(averageMood.emoji) \(averageMood.rawValue)")
+                            Text("평균 기분: \(averageCondition.emoji) \(averageCondition.rawValue)")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                                 .foregroundColor(Color.primaryText)
