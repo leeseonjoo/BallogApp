@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2305C0972E26ABEC00F75E33 /* Ballog.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2305C0952E26ABEB00F75E33 /* Ballog.xcdatamodeld */; };
 		B388367C676989F4EC1C1789 /* Pods_Ballog.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DBD740EAFB43BC251BB61D5 /* Pods_Ballog.framework */; };
 /* End PBXBuildFile section */
 
@@ -31,7 +30,6 @@
 /* Begin PBXFileReference section */
 		03C264BB94942DDAFEFE1295 /* Pods-Ballog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballog.debug.xcconfig"; path = "Target Support Files/Pods-Ballog/Pods-Ballog.debug.xcconfig"; sourceTree = "<group>"; };
 		1DBD740EAFB43BC251BB61D5 /* Pods_Ballog.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Ballog.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		2305C0962E26ABEC00F75E33 /* Ballog.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Ballog.xcdatamodel; sourceTree = "<group>"; };
 		235B0A452E1D68BF00EF9DDD /* Ballog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ballog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		235B0A552E1D68C000EF9DDD /* BallogTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BallogTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		235B0A5F2E1D68C000EF9DDD /* BallogUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BallogUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -98,7 +96,6 @@
 		235B0A3C2E1D68BF00EF9DDD = {
 			isa = PBXGroup;
 			children = (
-				2305C0952E26ABEB00F75E33 /* Ballog.xcdatamodeld */,
 				235B0A472E1D68BF00EF9DDD /* Ballog */,
 				235B0A582E1D68C000EF9DDD /* BallogTests */,
 				235B0A622E1D68C000EF9DDD /* BallogUITests */,
@@ -321,7 +318,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2305C0972E26ABEC00F75E33 /* Ballog.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -684,19 +680,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCVersionGroup section */
-		2305C0952E26ABEB00F75E33 /* Ballog.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				2305C0962E26ABEC00F75E33 /* Ballog.xcdatamodel */,
-			);
-			currentVersion = 2305C0962E26ABEC00F75E33 /* Ballog.xcdatamodel */;
-			name = Ballog.xcdatamodeld;
-			path = Ballog/Ballog.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = 235B0A3D2E1D68BF00EF9DDD /* Project object */;
 }
