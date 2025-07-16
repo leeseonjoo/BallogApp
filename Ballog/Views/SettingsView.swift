@@ -79,16 +79,7 @@ struct SettingsView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
                 
-                if isAdminUser {
-                    NavigationLink(destination: AdminView()) {
-                        SettingsItem(
-                            icon: "lock.shield",
-                            title: "관리자",
-                            subtitle: "관리자 기능"
-                        )
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                }
+
                 
                 SettingsItem(
                     icon: "key",

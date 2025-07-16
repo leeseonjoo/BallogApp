@@ -6,8 +6,8 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 import SwiftData
-import CoreData
 
 @main
 struct BallogApp: App {
@@ -40,7 +40,6 @@ struct BallogApp: App {
     @AppStorage("savedPassword") private var savedPassword: String = ""
     @AppStorage("isAdminUser") private var isAdminUser: Bool = false
     @State private var showProfileCreator = false
-    private let persistenceController = CoreDataStack.shared
     
     // 유저별 프로필카드 키 생성
     private func profileCardKey(for username: String) -> String {
@@ -114,7 +113,6 @@ struct BallogApp: App {
             }
         }
         .modelContainer(sharedModelContainer)
-        .environment(\.managedObjectContext, persistenceController.container.viewContext)
     }
 
     private func handleAutoLogin() {
@@ -123,12 +121,11 @@ struct BallogApp: App {
                 isAdminUser = true
                 isLoggedIn = true
             } else {
-                let req = AccountEntity.fetchRequest()
-                req.predicate = NSPredicate(format: "username == %@", savedUsername)
-                if let account = try? persistenceController.container.viewContext.fetch(req).first,
-                   account.password == savedPassword {
-                    isAdminUser = account.isAdmin
-                    isLoggedIn = true
+                FirestoreAccountService.shared.fetchAccount(username: savedUsername) { account in
+                    if let account, account.password == savedPassword {
+                        isAdminUser = account.isAdmin
+                        isLoggedIn = true
+                    }
                 }
             }
         }
