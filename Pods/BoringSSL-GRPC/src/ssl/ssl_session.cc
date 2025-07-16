@@ -214,9 +214,9 @@ UniquePtr<SSL_SESSION> SSL_SESSION_dup(SSL_SESSION *session, int dup_flags) {
     }
   }
   if (session->certs != nullptr) {
-    auto buf_up_ref = [](const CRYPTO_BUFFER *buf) {
-      CRYPTO_BUFFER_up_ref(const_cast<CRYPTO_BUFFER *>(buf));
-      return const_cast<CRYPTO_BUFFER*>(buf);
+    auto buf_up_ref = [](CRYPTO_BUFFER *buf) {
+      CRYPTO_BUFFER_up_ref(buf);
+      return buf;
     };
     new_session->certs.reset(sk_CRYPTO_BUFFER_deep_copy(
         session->certs.get(), buf_up_ref, CRYPTO_BUFFER_free));
@@ -400,7 +400,7 @@ bool ssl_get_new_session(SSL_HANDSHAKE *hs) {
   return true;
 }
 
-bool ssl_ctx_rotate_ticket_encryption_key(SSL_CTX *ctx) {
+int ssl_ctx_rotate_ticket_encryption_key(SSL_CTX *ctx) {
   OPENSSL_timeval now;
   ssl_ctx_get_current_time(ctx, &now);
   {
@@ -412,7 +412,7 @@ bool ssl_ctx_rotate_ticket_encryption_key(SSL_CTX *ctx) {
          ctx->ticket_key_current->next_rotation_tv_sec > now.tv_sec) &&
         (!ctx->ticket_key_prev ||
          ctx->ticket_key_prev->next_rotation_tv_sec > now.tv_sec)) {
-      return true;
+      return 1;
     }
   }
 
@@ -423,7 +423,7 @@ bool ssl_ctx_rotate_ticket_encryption_key(SSL_CTX *ctx) {
     // The current key has not been initialized or it is expired.
     auto new_key = bssl::MakeUnique<TicketKey>();
     if (!new_key) {
-      return false;
+      return 0;
     }
     RAND_bytes(new_key->name, 16);
     RAND_bytes(new_key->hmac_key, 16);
@@ -447,7 +447,7 @@ bool ssl_ctx_rotate_ticket_encryption_key(SSL_CTX *ctx) {
     ctx->ticket_key_prev.reset();
   }
 
-  return true;
+  return 1;
 }
 
 static int ssl_encrypt_ticket_with_cipher_ctx(SSL_HANDSHAKE *hs, CBB *out,
@@ -560,28 +560,30 @@ static int ssl_encrypt_ticket_with_method(SSL_HANDSHAKE *hs, CBB *out,
   return 1;
 }
 
-bool ssl_encrypt_ticket(SSL_HANDSHAKE *hs, CBB *out,
+int ssl_encrypt_ticket(SSL_HANDSHAKE *hs, CBB *out,
                        const SSL_SESSION *session) {
   // Serialize the SSL_SESSION to be encoded into the ticket.
-  uint8_t *session_buf = nullptr;
+  uint8_t *session_buf = NULL;
   size_t session_len;
   if (!SSL_SESSION_to_bytes_for_ticket(session, &session_buf, &session_len)) {
-    return false;
+    return -1;
   }
-  bssl::UniquePtr<uint8_t> free_session_buf(session_buf);
 
+  int ret = 0;
   if (hs->ssl->session_ctx->ticket_aead_method) {
-    return ssl_encrypt_ticket_with_method(hs, out, session_buf, session_len);
+    ret = ssl_encrypt_ticket_with_method(hs, out, session_buf, session_len);
   } else {
-    return ssl_encrypt_ticket_with_cipher_ctx(hs, out, session_buf,
-                                              session_len);
+    ret = ssl_encrypt_ticket_with_cipher_ctx(hs, out, session_buf, session_len);
   }
+
+  OPENSSL_free(session_buf);
+  return ret;
 }
 
-bool ssl_session_is_context_valid(const SSL_HANDSHAKE *hs,
-                                  const SSL_SESSION *session) {
+int ssl_session_is_context_valid(const SSL_HANDSHAKE *hs,
+                                 const SSL_SESSION *session) {
   if (session == NULL) {
-    return false;
+    return 0;
   }
 
   return session->sid_ctx_length == hs->config->cert->sid_ctx_length &&
@@ -589,9 +591,9 @@ bool ssl_session_is_context_valid(const SSL_HANDSHAKE *hs,
                         hs->config->cert->sid_ctx_length) == 0;
 }
 
-bool ssl_session_is_time_valid(const SSL *ssl, const SSL_SESSION *session) {
+int ssl_session_is_time_valid(const SSL *ssl, const SSL_SESSION *session) {
   if (session == NULL) {
-    return false;
+    return 0;
   }
 
   struct OPENSSL_timeval now;
@@ -599,14 +601,14 @@ bool ssl_session_is_time_valid(const SSL *ssl, const SSL_SESSION *session) {
 
   // Reject tickets from the future to avoid underflow.
   if (now.tv_sec < session->time) {
-    return false;
+    return 0;
   }
 
   return session->timeout > now.tv_sec - session->time;
 }
 
-bool ssl_session_is_resumable(const SSL_HANDSHAKE *hs,
-                              const SSL_SESSION *session) {
+int ssl_session_is_resumable(const SSL_HANDSHAKE *hs,
+                             const SSL_SESSION *session) {
   const SSL *const ssl = hs->ssl;
   return ssl_session_is_context_valid(hs, session) &&
          // The session must have been created by the same type of end point as
@@ -935,8 +937,7 @@ BSSL_NAMESPACE_END
 using namespace bssl;
 
 ssl_session_st::ssl_session_st(const SSL_X509_METHOD *method)
-    : RefCounted(CheckSubClass()),
-      x509_method(method),
+    : x509_method(method),
       extended_master_secret(false),
       peer_sha256_valid(false),
       not_resumable(false),
@@ -958,14 +959,18 @@ SSL_SESSION *SSL_SESSION_new(const SSL_CTX *ctx) {
 }
 
 int SSL_SESSION_up_ref(SSL_SESSION *session) {
-  session->UpRefInternal();
+  CRYPTO_refcount_inc(&session->references);
   return 1;
 }
 
 void SSL_SESSION_free(SSL_SESSION *session) {
-  if (session != nullptr) {
-    session->DecRefInternal();
+  if (session == NULL ||
+      !CRYPTO_refcount_dec_and_test_zero(&session->references)) {
+    return;
   }
+
+  session->~ssl_session_st();
+  OPENSSL_free(session);
 }
 
 const uint8_t *SSL_SESSION_get_id(const SSL_SESSION *session,
@@ -1164,31 +1169,20 @@ SSL_SESSION *SSL_magic_pending_session_ptr(void) {
 }
 
 SSL_SESSION *SSL_get_session(const SSL *ssl) {
-  // Once the initially handshake completes, we return the most recently
-  // established session. In particular, if there is a pending renegotiation, we
-  // do not return information about it until it completes.
-  //
-  // Code in the handshake must either use |hs->new_session| (if updating a
-  // partial session) or |ssl_handshake_session| (if trying to query properties
-  // consistently across TLS 1.2 resumption and other handshakes).
-  if (ssl->s3->established_session != nullptr) {
+  // Once the handshake completes we return the established session. Otherwise
+  // we return the intermediate session, either |session| (for resumption) or
+  // |new_session| if doing a full handshake.
+  if (!SSL_in_init(ssl)) {
     return ssl->s3->established_session.get();
   }
-
-  // Otherwise, we must be in the initial handshake.
   SSL_HANDSHAKE *hs = ssl->s3->hs.get();
-  assert(hs != nullptr);
-  assert(!ssl->s3->initial_handshake_complete);
-
-  // Return the 0-RTT session, if in the 0-RTT state. While the handshake has
-  // not actually completed, the public accessors all report properties as if
-  // it has.
   if (hs->early_session) {
     return hs->early_session.get();
   }
-
-  // Otherwise, return the partial session.
-  return (SSL_SESSION *)ssl_handshake_session(hs);
+  if (hs->new_session) {
+    return hs->new_session.get();
+  }
+  return ssl->session.get();
 }
 
 SSL_SESSION *SSL_get1_session(SSL *ssl) {
@@ -1203,7 +1197,12 @@ int SSL_SESSION_get_ex_new_index(long argl, void *argp,
                                  CRYPTO_EX_unused *unused,
                                  CRYPTO_EX_dup *dup_unused,
                                  CRYPTO_EX_free *free_func) {
-  return CRYPTO_get_ex_new_index_ex(&g_ex_data_class, argl, argp, free_func);
+  int index;
+  if (!CRYPTO_get_ex_new_index(&g_ex_data_class, &index, argl, argp,
+                               free_func)) {
+    return -1;
+  }
+  return index;
 }
 
 int SSL_SESSION_set_ex_data(SSL_SESSION *session, int idx, void *arg) {

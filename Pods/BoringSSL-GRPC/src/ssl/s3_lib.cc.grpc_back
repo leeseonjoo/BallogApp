@@ -171,14 +171,15 @@ SSL3_STATE::SSL3_STATE()
       has_message(false),
       initial_handshake_complete(false),
       session_reused(false),
+      delegated_credential_used(false),
       send_connection_binding(false),
       channel_id_valid(false),
       key_update_pending(false),
+      wpend_pending(false),
       early_data_accepted(false),
       alert_dispatch(false),
       renegotiate_pending(false),
-      used_hello_retry_request(false),
-      was_key_usage_invalid(false) {}
+      used_hello_retry_request(false) {}
 
 SSL3_STATE::~SSL3_STATE() {}
 

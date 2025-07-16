@@ -1,13 +1,13 @@
-workspace 'Ballog.xcworkspace'
-project 'Ballog.xcodeproj'
 platform :ios, '15.0'
 
 target 'Ballog' do
   use_frameworks!
-  pod 'Firebase/Firestore'
-  # Needed for Codable support when using Firestore with Swift
-  pod 'FirebaseFirestoreSwift'
+
+  pod 'Firebase/Core'
+  pod 'Firebase/Firestore', '~> 10.15.0'
+  pod 'FirebaseFirestoreSwift', '~> 10.15.0'
 end
+
 
 post_install do |installer|
   # Ballog.xcodeproj

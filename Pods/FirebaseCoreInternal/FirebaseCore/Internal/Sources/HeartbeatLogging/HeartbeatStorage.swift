@@ -15,22 +15,19 @@
 import Foundation
 
 /// A type that can perform atomic operations using block-based transformations.
-protocol HeartbeatStorageProtocol: Sendable {
+protocol HeartbeatStorageProtocol {
   func readAndWriteSync(using transform: (HeartbeatsBundle?) -> HeartbeatsBundle?)
-  func readAndWriteAsync(using transform: @escaping @Sendable (HeartbeatsBundle?)
-    -> HeartbeatsBundle?)
+  func readAndWriteAsync(using transform: @escaping (HeartbeatsBundle?) -> HeartbeatsBundle?)
   func getAndSet(using transform: (HeartbeatsBundle?) -> HeartbeatsBundle?) throws
     -> HeartbeatsBundle?
-  func getAndSetAsync(using transform: @escaping @Sendable (HeartbeatsBundle?) -> HeartbeatsBundle?,
-                      completion: @escaping @Sendable (Result<HeartbeatsBundle?, Error>) -> Void)
 }
 
 /// Thread-safe storage object designed for transforming heartbeat data that is persisted to disk.
-final class HeartbeatStorage: Sendable, HeartbeatStorageProtocol {
+final class HeartbeatStorage: HeartbeatStorageProtocol {
   /// The identifier used to differentiate instances.
   private let id: String
   /// The underlying storage container to read from and write to.
-  private let storage: any Storage
+  private let storage: Storage
   /// The encoder used for encoding heartbeat data.
   private let encoder: JSONEncoder = .init()
   /// The decoder used for decoding heartbeat data.
@@ -40,7 +37,7 @@ final class HeartbeatStorage: Sendable, HeartbeatStorageProtocol {
 
   /// Designated initializer.
   /// - Parameters:
-  ///   - id: A string identifier.
+  ///   - id: A string identifer.
   ///   - storage: The underlying storage container where heartbeat data is stored.
   init(id: String,
        storage: Storage) {
@@ -52,9 +49,7 @@ final class HeartbeatStorage: Sendable, HeartbeatStorageProtocol {
   // MARK: - Instance Management
 
   /// Statically allocated cache of `HeartbeatStorage` instances keyed by string IDs.
-  private static let cachedInstances: UnfairLock<
-    [String: WeakContainer<HeartbeatStorage>]
-  > = UnfairLock([:])
+  private static var cachedInstances: [String: WeakContainer<HeartbeatStorage>] = [:]
 
   /// Gets an existing `HeartbeatStorage` instance with the given `id` if one exists. Otherwise,
   /// makes a new instance with the given `id`.
@@ -62,14 +57,12 @@ final class HeartbeatStorage: Sendable, HeartbeatStorageProtocol {
   /// - Parameter id: A string identifier.
   /// - Returns: A `HeartbeatStorage` instance.
   static func getInstance(id: String) -> HeartbeatStorage {
-    cachedInstances.withLock { cachedInstances in
-      if let cachedInstance = cachedInstances[id]?.object {
-        return cachedInstance
-      } else {
-        let newInstance = HeartbeatStorage.makeHeartbeatStorage(id: id)
-        cachedInstances[id] = WeakContainer(object: newInstance)
-        return newInstance
-      }
+    if let cachedInstance = cachedInstances[id]?.object {
+      return cachedInstance
+    } else {
+      let newInstance = HeartbeatStorage.makeHeartbeatStorage(id: id)
+      cachedInstances[id] = WeakContainer(object: newInstance)
+      return newInstance
     }
   }
 
@@ -93,9 +86,7 @@ final class HeartbeatStorage: Sendable, HeartbeatStorageProtocol {
 
   deinit {
     // Removes the instance if it was cached.
-    Self.cachedInstances.withLock { value in
-      value.removeValue(forKey: id)
-    }
+    Self.cachedInstances.removeValue(forKey: id)
   }
 
   // MARK: - HeartbeatStorageProtocol
@@ -114,8 +105,7 @@ final class HeartbeatStorage: Sendable, HeartbeatStorageProtocol {
   /// Asynchronously reads from and writes to storage using the given transform block.
   /// - Parameter transform: A block to transform the currently stored heartbeats bundle to a new
   /// heartbeats bundle value.
-  func readAndWriteAsync(using transform: @escaping @Sendable (HeartbeatsBundle?)
-    -> HeartbeatsBundle?) {
+  func readAndWriteAsync(using transform: @escaping (HeartbeatsBundle?) -> HeartbeatsBundle?) {
     queue.async { [self] in
       let oldHeartbeatsBundle = try? load(from: storage)
       let newHeartbeatsBundle = transform(oldHeartbeatsBundle)
@@ -142,27 +132,6 @@ final class HeartbeatStorage: Sendable, HeartbeatStorageProtocol {
       return oldHeartbeatsBundle
     }
     return heartbeatsBundle
-  }
-
-  /// Asynchronously gets the current heartbeat data from storage and resets the storage using the
-  /// given transform block.
-  /// - Parameters:
-  ///   - transform: An escaping block used to reset the currently stored heartbeat.
-  ///   - completion: An escaping block used to process the heartbeat data that
-  ///   was stored (before the `transform` was applied); otherwise, the error
-  ///   that occurred.
-  func getAndSetAsync(using transform: @escaping @Sendable (HeartbeatsBundle?) -> HeartbeatsBundle?,
-                      completion: @escaping @Sendable (Result<HeartbeatsBundle?, Error>) -> Void) {
-    queue.async {
-      do {
-        let oldHeartbeatsBundle = try? self.load(from: self.storage)
-        let newHeartbeatsBundle = transform(oldHeartbeatsBundle)
-        try self.save(newHeartbeatsBundle, to: self.storage)
-        completion(.success(oldHeartbeatsBundle))
-      } catch {
-        completion(.failure(error))
-      }
-    }
   }
 
   /// Loads and decodes the stored heartbeats bundle from a given storage object.

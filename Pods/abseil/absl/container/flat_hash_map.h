@@ -26,24 +26,21 @@
 //
 // In most cases, your default choice for a hash map should be a map of type
 // `flat_hash_map`.
-//
-// `flat_hash_map` is not exception-safe.
 
 #ifndef ABSL_CONTAINER_FLAT_HASH_MAP_H_
 #define ABSL_CONTAINER_FLAT_HASH_MAP_H_
 
 #include <cstddef>
-#include <memory>
+#include <new>
 #include <type_traits>
 #include <utility>
 
 #include "absl/algorithm/container.h"
-#include "absl/base/attributes.h"
 #include "absl/base/macros.h"
-#include "absl/container/hash_container_defaults.h"
 #include "absl/container/internal/container_memory.h"
+#include "absl/container/internal/hash_function_defaults.h"  // IWYU pragma: export
 #include "absl/container/internal/raw_hash_map.h"  // IWYU pragma: export
-#include "absl/meta/type_traits.h"
+#include "absl/memory/memory.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -65,9 +62,9 @@ struct FlatHashMapPolicy;
 // * Requires values that are MoveConstructible
 // * Supports heterogeneous lookup, through `find()`, `operator[]()` and
 //   `insert()`, provided that the map is provided a compatible heterogeneous
-//   hashing function and equality operator. See below for details.
+//   hashing function and equality operator.
 // * Invalidates any references and pointers to elements within the table after
-//   `rehash()` and when the table is moved.
+//   `rehash()`.
 // * Contains a `capacity()` member function indicating the number of element
 //   slots (open, deleted, and empty) within the hash map.
 // * Returns `void` from the `erase(iterator)` overload.
@@ -82,19 +79,6 @@ struct FlatHashMapPolicy;
 // Using `absl::flat_hash_map` at interface boundaries in dynamically loaded
 // libraries (e.g. .dll, .so) is unsupported due to way `absl::Hash` values may
 // be randomized across dynamically loaded libraries.
-//
-// To achieve heterogeneous lookup for custom types either `Hash` and `Eq` type
-// parameters can be used or `T` should have public inner types
-// `absl_container_hash` and (optionally) `absl_container_eq`. In either case,
-// `typename Hash::is_transparent` and `typename Eq::is_transparent` should be
-// well-formed. Both types are basically functors:
-// * `Hash` should support `size_t operator()(U val) const` that returns a hash
-// for the given `val`.
-// * `Eq` should support `bool operator()(U lhs, V rhs) const` that returns true
-// if `lhs` is equal to `rhs`.
-//
-// In most cases `T` needs only to provide the `absl_container_hash`. In this
-// case `std::equal_to<void>` will be used instead of `eq` part.
 //
 // NOTE: A `flat_hash_map` stores its value types directly inside its
 // implementation array to avoid memory indirection. Because a `flat_hash_map`
@@ -122,13 +106,13 @@ struct FlatHashMapPolicy;
 //  if (result != ducks.end()) {
 //    std::cout << "Result: " << result->second << std::endl;
 //  }
-template <class K, class V, class Hash = DefaultHashContainerHash<K>,
-          class Eq = DefaultHashContainerEq<K>,
+template <class K, class V,
+          class Hash = absl::container_internal::hash_default_hash<K>,
+          class Eq = absl::container_internal::hash_default_eq<K>,
           class Allocator = std::allocator<std::pair<const K, V>>>
-class ABSL_INTERNAL_ATTRIBUTE_OWNER flat_hash_map
-    : public absl::container_internal::raw_hash_map<
-          absl::container_internal::FlatHashMapPolicy<K, V>, Hash, Eq,
-          Allocator> {
+class flat_hash_map : public absl::container_internal::raw_hash_map<
+                          absl::container_internal::FlatHashMapPolicy<K, V>,
+                          Hash, Eq, Allocator> {
   using Base = typename flat_hash_map::raw_hash_map;
 
  public:
@@ -251,11 +235,7 @@ class ABSL_INTERNAL_ATTRIBUTE_OWNER flat_hash_map
   // iterator erase(const_iterator first, const_iterator last):
   //
   //   Erases the elements in the open interval [`first`, `last`), returning an
-  //   iterator pointing to `last`. The special case of calling
-  //   `erase(begin(), end())` resets the reserved growth such that if
-  //   `reserve(N)` has previously been called and there has been no intervening
-  //   call to `clear()`, then after calling `erase(begin(), end())`, it is safe
-  //   to assume that inserting N elements will not cause a rehash.
+  //   iterator pointing to `last`.
   //
   // size_type erase(const key_type& key):
   //
@@ -576,38 +556,6 @@ typename flat_hash_map<K, V, H, E, A>::size_type erase_if(
 
 namespace container_internal {
 
-// c_for_each_fast(flat_hash_map<>, Function)
-//
-// Container-based version of the <algorithm> `std::for_each()` function to
-// apply a function to a container's elements.
-// There is no guarantees on the order of the function calls.
-// Erasure and/or insertion of elements in the function is not allowed.
-template <typename K, typename V, typename H, typename E, typename A,
-          typename Function>
-decay_t<Function> c_for_each_fast(const flat_hash_map<K, V, H, E, A>& c,
-                                  Function&& f) {
-  container_internal::ForEach(f, &c);
-  return f;
-}
-template <typename K, typename V, typename H, typename E, typename A,
-          typename Function>
-decay_t<Function> c_for_each_fast(flat_hash_map<K, V, H, E, A>& c,
-                                  Function&& f) {
-  container_internal::ForEach(f, &c);
-  return f;
-}
-template <typename K, typename V, typename H, typename E, typename A,
-          typename Function>
-decay_t<Function> c_for_each_fast(flat_hash_map<K, V, H, E, A>&& c,
-                                  Function&& f) {
-  container_internal::ForEach(f, &c);
-  return f;
-}
-
-}  // namespace container_internal
-
-namespace container_internal {
-
 template <class K, class V>
 struct FlatHashMapPolicy {
   using slot_policy = container_internal::map_slot_policy<K, V>;
@@ -621,16 +569,15 @@ struct FlatHashMapPolicy {
     slot_policy::construct(alloc, slot, std::forward<Args>(args)...);
   }
 
-  // Returns std::true_type in case destroy is trivial.
   template <class Allocator>
-  static auto destroy(Allocator* alloc, slot_type* slot) {
-    return slot_policy::destroy(alloc, slot);
+  static void destroy(Allocator* alloc, slot_type* slot) {
+    slot_policy::destroy(alloc, slot);
   }
 
   template <class Allocator>
-  static auto transfer(Allocator* alloc, slot_type* new_slot,
+  static void transfer(Allocator* alloc, slot_type* new_slot,
                        slot_type* old_slot) {
-    return slot_policy::transfer(alloc, new_slot, old_slot);
+    slot_policy::transfer(alloc, new_slot, old_slot);
   }
 
   template <class F, class... Args>
@@ -639,13 +586,6 @@ struct FlatHashMapPolicy {
   apply(F&& f, Args&&... args) {
     return absl::container_internal::DecomposePair(std::forward<F>(f),
                                                    std::forward<Args>(args)...);
-  }
-
-  template <class Hash>
-  static constexpr HashSlotFn get_hash_slot_fn() {
-    return memory_internal::IsLayoutCompatible<K, V>::value
-               ? &TypeErasedApplyToSlotFn<Hash, K>
-               : nullptr;
   }
 
   static size_t space_used(const slot_type*) { return 0; }

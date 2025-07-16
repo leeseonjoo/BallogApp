@@ -11,18 +11,19 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#ifndef GRPC_SRC_CORE_LIB_EVENT_ENGINE_WINDOWS_IOCP_H
-#define GRPC_SRC_CORE_LIB_EVENT_ENGINE_WINDOWS_IOCP_H
+#ifndef GRPC_CORE_LIB_EVENT_ENGINE_WINDOWS_IOCP_H
+#define GRPC_CORE_LIB_EVENT_ENGINE_WINDOWS_IOCP_H
 
 #include <grpc/support/port_platform.h>
 
 #ifdef GPR_WINDOWS
 
+#include "absl/status/status.h"
+
 #include <grpc/event_engine/event_engine.h>
 
-#include "absl/status/status.h"
+#include "src/core/lib/event_engine/executor/executor.h"
 #include "src/core/lib/event_engine/poller.h"
-#include "src/core/lib/event_engine/thread_pool/thread_pool.h"
 #include "src/core/lib/event_engine/windows/win_socket.h"
 
 namespace grpc_event_engine {
@@ -30,8 +31,8 @@ namespace experimental {
 
 class IOCP final : public Poller {
  public:
-  explicit IOCP(ThreadPool* thread_pool) noexcept;
-  ~IOCP() override;
+  explicit IOCP(Executor* executor) noexcept;
+  ~IOCP();
   // Not copyable
   IOCP(const IOCP&) = delete;
   IOCP& operator=(const IOCP&) = delete;
@@ -45,7 +46,7 @@ class IOCP final : public Poller {
                   absl::FunctionRef<void()> schedule_poll_again) override;
   void Kick() override;
 
-  std::unique_ptr<WinSocket> Watch(SOCKET socket);
+  WinSocket* Watch(SOCKET socket);
   // Return the set of default flags
   static DWORD GetDefaultSocketFlags();
 
@@ -53,7 +54,7 @@ class IOCP final : public Poller {
   // Initialize default flags via checking platform support
   static DWORD WSASocketFlagsInit();
 
-  ThreadPool* thread_pool_;
+  Executor* executor_;
   HANDLE iocp_handle_;
   OVERLAPPED kick_overlap_;
   ULONG kick_token_;
@@ -65,4 +66,4 @@ class IOCP final : public Poller {
 
 #endif
 
-#endif  // GRPC_SRC_CORE_LIB_EVENT_ENGINE_WINDOWS_IOCP_H
+#endif  // GRPC_CORE_LIB_EVENT_ENGINE_WINDOWS_IOCP_H

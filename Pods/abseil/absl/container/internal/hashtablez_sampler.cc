@@ -14,28 +14,19 @@
 
 #include "absl/container/internal/hashtablez_sampler.h"
 
-#include <algorithm>
 #include <atomic>
 #include <cassert>
 #include <cmath>
-#include <cstddef>
-#include <cstdint>
 #include <functional>
 #include <limits>
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
-#include "absl/base/internal/per_thread_tls.h"
-#include "absl/base/internal/raw_logging.h"
-#include "absl/base/macros.h"
-#include "absl/base/no_destructor.h"
-#include "absl/base/optimization.h"
 #include "absl/debugging/stacktrace.h"
 #include "absl/memory/memory.h"
 #include "absl/profiling/internal/exponential_biased.h"
 #include "absl/profiling/internal/sample_recorder.h"
 #include "absl/synchronization/mutex.h"
-#include "absl/time/clock.h"
 #include "absl/utility/utility.h"
 
 namespace absl {
@@ -70,7 +61,7 @@ ABSL_PER_THREAD_TLS_KEYWORD SamplingState global_next_sample = {0, 0};
 #endif  // defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 
 HashtablezSampler& GlobalHashtablezSampler() {
-  static absl::NoDestructor<HashtablezSampler> sampler;
+  static auto* sampler = new HashtablezSampler();
   return *sampler;
 }
 
@@ -78,10 +69,7 @@ HashtablezInfo::HashtablezInfo() = default;
 HashtablezInfo::~HashtablezInfo() = default;
 
 void HashtablezInfo::PrepareForSampling(int64_t stride,
-                                        size_t inline_element_size_value,
-                                        size_t key_size_value,
-                                        size_t value_size_value,
-                                        uint16_t soo_capacity_value) {
+                                        size_t inline_element_size_value) {
   capacity.store(0, std::memory_order_relaxed);
   size.store(0, std::memory_order_relaxed);
   num_erases.store(0, std::memory_order_relaxed);
@@ -101,9 +89,6 @@ void HashtablezInfo::PrepareForSampling(int64_t stride,
   depth = absl::GetStackTrace(stack, HashtablezInfo::kMaxStackDepth,
                               /* skip_count= */ 0);
   inline_element_size = inline_element_size_value;
-  key_size = key_size_value;
-  value_size = value_size_value;
-  soo_capacity = soo_capacity_value;
 }
 
 static bool ShouldForceSampling() {
@@ -127,13 +112,12 @@ static bool ShouldForceSampling() {
 }
 
 HashtablezInfo* SampleSlow(SamplingState& next_sample,
-                           size_t inline_element_size, size_t key_size,
-                           size_t value_size, uint16_t soo_capacity) {
+                           size_t inline_element_size) {
   if (ABSL_PREDICT_FALSE(ShouldForceSampling())) {
     next_sample.next_sample = 1;
     const int64_t old_stride = exchange(next_sample.sample_stride, 1);
-    HashtablezInfo* result = GlobalHashtablezSampler().Register(
-        old_stride, inline_element_size, key_size, value_size, soo_capacity);
+    HashtablezInfo* result =
+        GlobalHashtablezSampler().Register(old_stride, inline_element_size);
     return result;
   }
 
@@ -163,54 +147,15 @@ HashtablezInfo* SampleSlow(SamplingState& next_sample,
   // that case.
   if (first) {
     if (ABSL_PREDICT_TRUE(--next_sample.next_sample > 0)) return nullptr;
-    return SampleSlow(next_sample, inline_element_size, key_size, value_size,
-                      soo_capacity);
+    return SampleSlow(next_sample, inline_element_size);
   }
 
-  return GlobalHashtablezSampler().Register(old_stride, inline_element_size,
-                                            key_size, value_size, soo_capacity);
+  return GlobalHashtablezSampler().Register(old_stride, inline_element_size);
 #endif
 }
 
 void UnsampleSlow(HashtablezInfo* info) {
   GlobalHashtablezSampler().Unregister(info);
-}
-
-void RecordRehashSlow(HashtablezInfo* info, size_t total_probe_length) {
-#ifdef ABSL_INTERNAL_HAVE_SSE2
-  total_probe_length /= 16;
-#else
-  total_probe_length /= 8;
-#endif
-  info->total_probe_length.store(total_probe_length, std::memory_order_relaxed);
-  info->num_erases.store(0, std::memory_order_relaxed);
-  // There is only one concurrent writer, so `load` then `store` is sufficient
-  // instead of using `fetch_add`.
-  info->num_rehashes.store(
-      1 + info->num_rehashes.load(std::memory_order_relaxed),
-      std::memory_order_relaxed);
-}
-
-void RecordReservationSlow(HashtablezInfo* info, size_t target_capacity) {
-  info->max_reserve.store(
-      (std::max)(info->max_reserve.load(std::memory_order_relaxed),
-                 target_capacity),
-      std::memory_order_relaxed);
-}
-
-void RecordClearedReservationSlow(HashtablezInfo* info) {
-  info->max_reserve.store(0, std::memory_order_relaxed);
-}
-
-void RecordStorageChangedSlow(HashtablezInfo* info, size_t size,
-                              size_t capacity) {
-  info->size.store(size, std::memory_order_relaxed);
-  info->capacity.store(capacity, std::memory_order_relaxed);
-  if (size == 0) {
-    // This is a clear, reset the total/num_erases too.
-    info->total_probe_length.store(0, std::memory_order_relaxed);
-    info->num_erases.store(0, std::memory_order_relaxed);
-  }
 }
 
 void RecordInsertSlow(HashtablezInfo* info, size_t hash,
@@ -233,14 +178,6 @@ void RecordInsertSlow(HashtablezInfo* info, size_t hash,
       std::memory_order_relaxed);
   info->total_probe_length.fetch_add(probe_length, std::memory_order_relaxed);
   info->size.fetch_add(1, std::memory_order_relaxed);
-}
-
-void RecordEraseSlow(HashtablezInfo* info) {
-  info->size.fetch_sub(1, std::memory_order_relaxed);
-  // There is only one concurrent writer, so `load` then `store` is sufficient
-  // instead of using `fetch_add`.
-  info->num_erases.store(1 + info->num_erases.load(std::memory_order_relaxed),
-                         std::memory_order_relaxed);
 }
 
 void SetHashtablezConfigListener(HashtablezConfigListener l) {
@@ -278,20 +215,21 @@ void SetHashtablezSampleParameterInternal(int32_t rate) {
   }
 }
 
-size_t GetHashtablezMaxSamples() {
+int32_t GetHashtablezMaxSamples() {
   return GlobalHashtablezSampler().GetMaxSamples();
 }
 
-void SetHashtablezMaxSamples(size_t max) {
+void SetHashtablezMaxSamples(int32_t max) {
   SetHashtablezMaxSamplesInternal(max);
   TriggerHashtablezConfigListener();
 }
 
-void SetHashtablezMaxSamplesInternal(size_t max) {
+void SetHashtablezMaxSamplesInternal(int32_t max) {
   if (max > 0) {
     GlobalHashtablezSampler().SetMaxSamples(max);
   } else {
-    ABSL_RAW_LOG(ERROR, "Invalid hashtablez max samples: 0");
+    ABSL_RAW_LOG(ERROR, "Invalid hashtablez max samples: %lld",
+                 static_cast<long long>(max));  // NOLINT(runtime/int)
   }
 }
 

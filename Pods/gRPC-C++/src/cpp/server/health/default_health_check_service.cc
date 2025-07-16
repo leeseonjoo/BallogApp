@@ -1,38 +1,40 @@
-//
-//
-// Copyright 2016 gRPC authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-//
+/*
+ *
+ * Copyright 2016 gRPC authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
 #include "src/cpp/server/health/default_health_check_service.h"
 
-#include <grpc/slice.h>
-#include <grpcpp/impl/rpc_method.h>
-#include <grpcpp/impl/rpc_service_method.h>
-#include <grpcpp/impl/server_callback_handlers.h>
-#include <grpcpp/support/slice.h>
 #include <stdint.h>
 
 #include <memory>
 #include <utility>
 
-#include "absl/log/check.h"
-#include "absl/log/log.h"
+#include "absl/memory/memory.h"
+#include "upb/upb.h"
+#include "upb/upb.hpp"
+
+#include <grpc/slice.h>
+#include <grpc/support/log.h>
+#include <grpcpp/impl/codegen/server_callback_handlers.h>
+#include <grpcpp/impl/rpc_method.h>
+#include <grpcpp/impl/rpc_service_method.h>
+#include <grpcpp/support/slice.h>
+
 #include "src/proto/grpc/health/v1/health.upb.h"
-#include "upb/base/string_view.h"
-#include "upb/mem/arena.hpp"
 
 #define MAX_SERVICE_NAME_LENGTH 200
 
@@ -108,8 +110,8 @@ void DefaultHealthCheckService::UnregisterWatch(
 
 DefaultHealthCheckService::HealthCheckServiceImpl*
 DefaultHealthCheckService::GetHealthCheckService() {
-  CHECK(impl_ == nullptr);
-  impl_ = std::make_unique<HealthCheckServiceImpl>(this);
+  GPR_ASSERT(impl_ == nullptr);
+  impl_ = absl::make_unique<HealthCheckServiceImpl>(this);
   return impl_.get();
 }
 
@@ -257,8 +259,8 @@ DefaultHealthCheckService::HealthCheckServiceImpl::WatchReactor::WatchReactor(
     ++service_->num_watches_;
   }
   bool success = DecodeRequest(*request, &service_name_);
-  VLOG(2) << "[HCS " << service_ << "] watcher " << this << " \""
-          << service_name_ << "\": watch call started";
+  gpr_log(GPR_DEBUG, "[HCS %p] watcher %p \"%s\": watch call started", service_,
+          this, service_name_.c_str());
   if (!success) {
     MaybeFinishLocked(Status(StatusCode::INTERNAL, "could not parse request"));
     return;
@@ -269,14 +271,15 @@ DefaultHealthCheckService::HealthCheckServiceImpl::WatchReactor::WatchReactor(
 
 void DefaultHealthCheckService::HealthCheckServiceImpl::WatchReactor::
     SendHealth(ServingStatus status) {
-  VLOG(2) << "[HCS " << service_ << "] watcher " << this << " \""
-          << service_name_ << "\": SendHealth() for ServingStatus " << status;
+  gpr_log(GPR_DEBUG,
+          "[HCS %p] watcher %p \"%s\": SendHealth() for ServingStatus %d",
+          service_, this, service_name_.c_str(), status);
   grpc::internal::MutexLock lock(&mu_);
   // If there's already a send in flight, cache the new status, and
   // we'll start a new send for it when the one in flight completes.
   if (write_pending_) {
-    VLOG(2) << "[HCS " << service_ << "] watcher " << this << " \""
-            << service_name_ << "\": queuing write";
+    gpr_log(GPR_DEBUG, "[HCS %p] watcher %p \"%s\": queuing write", service_,
+            this, service_name_.c_str());
     pending_status_ = status;
     return;
   }
@@ -304,16 +307,17 @@ void DefaultHealthCheckService::HealthCheckServiceImpl::WatchReactor::
         Status(StatusCode::INTERNAL, "could not encode response"));
     return;
   }
-  VLOG(2) << "[HCS " << service_ << "] watcher " << this << " \""
-          << service_name_ << "\": starting write for ServingStatus " << status;
+  gpr_log(GPR_DEBUG,
+          "[HCS %p] watcher %p \"%s\": starting write for ServingStatus %d",
+          service_, this, service_name_.c_str(), status);
   write_pending_ = true;
   StartWrite(&response_);
 }
 
 void DefaultHealthCheckService::HealthCheckServiceImpl::WatchReactor::
     OnWriteDone(bool ok) {
-  VLOG(2) << "[HCS " << service_ << "] watcher " << this << " \""
-          << service_name_ << "\": OnWriteDone(): ok=" << ok;
+  gpr_log(GPR_DEBUG, "[HCS %p] watcher %p \"%s\": OnWriteDone(): ok=%d",
+          service_, this, service_name_.c_str(), ok);
   response_.Clear();
   grpc::internal::MutexLock lock(&mu_);
   if (!ok) {
@@ -337,8 +341,8 @@ void DefaultHealthCheckService::HealthCheckServiceImpl::WatchReactor::
 }
 
 void DefaultHealthCheckService::HealthCheckServiceImpl::WatchReactor::OnDone() {
-  VLOG(2) << "[HCS " << service_ << "] watcher " << this << " \""
-          << service_name_ << "\": OnDone()";
+  gpr_log(GPR_DEBUG, "[HCS %p] watcher %p \"%s\": OnDone()", service_, this,
+          service_name_.c_str());
   service_->database_->UnregisterWatch(service_name_, this);
   {
     grpc::internal::MutexLock lock(&service_->mu_);
@@ -352,13 +356,13 @@ void DefaultHealthCheckService::HealthCheckServiceImpl::WatchReactor::OnDone() {
 
 void DefaultHealthCheckService::HealthCheckServiceImpl::WatchReactor::
     MaybeFinishLocked(Status status) {
-  VLOG(2) << "[HCS " << service_ << "] watcher " << this << " \""
-          << service_name_
-          << "\": MaybeFinishLocked() with code=" << status.error_code()
-          << " msg=" << status.error_message();
+  gpr_log(GPR_DEBUG,
+          "[HCS %p] watcher %p \"%s\": MaybeFinishLocked() with code=%d msg=%s",
+          service_, this, service_name_.c_str(), status.error_code(),
+          status.error_message().c_str());
   if (!finish_called_) {
-    VLOG(2) << "[HCS " << service_ << "] watcher " << this << " \""
-            << service_name_ << "\": actually calling Finish()";
+    gpr_log(GPR_DEBUG, "[HCS %p] watcher %p \"%s\": actually calling Finish()",
+            service_, this, service_name_.c_str());
     finish_called_ = true;
     Finish(status);
   }

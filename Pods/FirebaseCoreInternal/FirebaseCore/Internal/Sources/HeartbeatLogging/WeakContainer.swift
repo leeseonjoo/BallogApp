@@ -18,5 +18,3 @@ import Foundation
 struct WeakContainer<Object: AnyObject> {
   weak var object: Object?
 }
-
-extension WeakContainer: Sendable where Object: Sendable {}

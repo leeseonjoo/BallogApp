@@ -56,7 +56,7 @@
 
 #include <openssl_grpc/bio.h>
 
-#if !defined(OPENSSL_NO_POSIX_IO)
+#if !defined(OPENSSL_TRUSTY)
 
 #include <errno.h>
 #include <string.h>
@@ -65,6 +65,9 @@
 #include <unistd.h>
 #else
 #include <io.h>
+OPENSSL_MSVC_PRAGMA(warning(push, 3))
+#include <windows.h>
+OPENSSL_MSVC_PRAGMA(warning(pop))
 #endif
 
 #include <openssl_grpc/err.h>
@@ -74,17 +77,58 @@
 #include "../internal.h"
 
 
+static int bio_fd_non_fatal_error(int err) {
+  if (
+#ifdef EWOULDBLOCK
+    err == EWOULDBLOCK ||
+#endif
+#ifdef WSAEWOULDBLOCK
+    err == WSAEWOULDBLOCK ||
+#endif
+#ifdef ENOTCONN
+    err == ENOTCONN ||
+#endif
+#ifdef EINTR
+    err == EINTR ||
+#endif
+#ifdef EAGAIN
+    err == EAGAIN ||
+#endif
+#ifdef EPROTO
+    err == EPROTO ||
+#endif
+#ifdef EINPROGRESS
+    err == EINPROGRESS ||
+#endif
+#ifdef EALREADY
+    err == EALREADY ||
+#endif
+    0) {
+    return 1;
+  }
+  return 0;
+}
+
 #if defined(OPENSSL_WINDOWS)
+  #define BORINGSSL_ERRNO (int)GetLastError()
   #define BORINGSSL_CLOSE _close
   #define BORINGSSL_LSEEK _lseek
   #define BORINGSSL_READ _read
   #define BORINGSSL_WRITE _write
 #else
+  #define BORINGSSL_ERRNO errno
   #define BORINGSSL_CLOSE close
   #define BORINGSSL_LSEEK lseek
   #define BORINGSSL_READ read
   #define BORINGSSL_WRITE write
 #endif
+
+int bio_fd_should_retry(int i) {
+  if (i == -1) {
+    return bio_fd_non_fatal_error(BORINGSSL_ERRNO);
+  }
+  return 0;
+}
 
 BIO *BIO_new_fd(int fd, int close_flag) {
   BIO *ret = BIO_new(BIO_s_fd());
@@ -114,10 +158,10 @@ static int fd_free(BIO *bio) {
 static int fd_read(BIO *b, char *out, int outl) {
   int ret = 0;
 
-  ret = (int)BORINGSSL_READ(b->num, out, outl);
+  ret = BORINGSSL_READ(b->num, out, outl);
   BIO_clear_retry_flags(b);
   if (ret <= 0) {
-    if (bio_errno_should_retry(ret)) {
+    if (bio_fd_should_retry(ret)) {
       BIO_set_retry_read(b);
     }
   }
@@ -126,10 +170,10 @@ static int fd_read(BIO *b, char *out, int outl) {
 }
 
 static int fd_write(BIO *b, const char *in, int inl) {
-  int ret = (int)BORINGSSL_WRITE(b->num, in, inl);
+  int ret = BORINGSSL_WRITE(b->num, in, inl);
   BIO_clear_retry_flags(b);
   if (ret <= 0) {
-    if (bio_errno_should_retry(ret)) {
+    if (bio_fd_should_retry(ret)) {
       BIO_set_retry_write(b);
     }
   }
@@ -197,24 +241,20 @@ static long fd_ctrl(BIO *b, int cmd, long num, void *ptr) {
 }
 
 static int fd_gets(BIO *bp, char *buf, int size) {
+  char *ptr = buf;
+  char *end = buf + size - 1;
+
   if (size <= 0) {
     return 0;
   }
 
-  char *ptr = buf;
-  char *end = buf + size - 1;
-  while (ptr < end && fd_read(bp, ptr, 1) > 0) {
-    char c = ptr[0];
+  while (ptr < end && fd_read(bp, ptr, 1) > 0 && ptr[0] != '\n') {
     ptr++;
-    if (c == '\n') {
-      break;
-    }
   }
 
   ptr[0] = '\0';
 
-  // The output length is bounded by |size|.
-  return (int)(ptr - buf);
+  return ptr - buf;
 }
 
 static const BIO_METHOD methods_fdp = {
@@ -224,12 +264,12 @@ static const BIO_METHOD methods_fdp = {
 
 const BIO_METHOD *BIO_s_fd(void) { return &methods_fdp; }
 
-#endif  // OPENSSL_NO_POSIX_IO
-
 int BIO_set_fd(BIO *bio, int fd, int close_flag) {
-  return (int)BIO_int_ctrl(bio, BIO_C_SET_FD, close_flag, fd);
+  return BIO_int_ctrl(bio, BIO_C_SET_FD, close_flag, fd);
 }
 
 int BIO_get_fd(BIO *bio, int *out_fd) {
-  return (int)BIO_ctrl(bio, BIO_C_GET_FD, 0, (char *) out_fd);
+  return BIO_ctrl(bio, BIO_C_GET_FD, 0, (char *) out_fd);
 }
+
+#endif  // OPENSSL_TRUSTY

@@ -73,7 +73,8 @@
 
 #include <openssl_grpc/bio.h>
 
-#include <assert.h>
+#if !defined(OPENSSL_TRUSTY)
+
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -83,29 +84,16 @@
 
 #include "../internal.h"
 
-#if defined(OPENSSL_WINDOWS)
-#include <fcntl.h>
-#include <io.h>
-#endif
 
 #define BIO_FP_READ 0x02
 #define BIO_FP_WRITE 0x04
 #define BIO_FP_APPEND 0x08
 
-#if !defined(OPENSSL_NO_FILESYSTEM)
-#define fopen_if_available fopen
-#else
-static FILE *fopen_if_available(const char *path, const char *mode) {
-  errno = ENOENT;
-  return NULL;
-}
-#endif
-
 BIO *BIO_new_file(const char *filename, const char *mode) {
   BIO *ret;
   FILE *file;
 
-  file = fopen_if_available(filename, mode);
+  file = fopen(filename, mode);
   if (file == NULL) {
     OPENSSL_PUT_SYSTEM_ERROR();
 
@@ -127,13 +115,14 @@ BIO *BIO_new_file(const char *filename, const char *mode) {
   return ret;
 }
 
-BIO *BIO_new_fp(FILE *stream, int flags) {
+BIO *BIO_new_fp(FILE *stream, int close_flag) {
   BIO *ret = BIO_new(BIO_s_file());
+
   if (ret == NULL) {
     return NULL;
   }
 
-  BIO_set_fp(ret, stream, flags);
+  BIO_set_fp(ret, stream, close_flag);
   return ret;
 }
 
@@ -168,11 +157,13 @@ static int file_read(BIO *b, char *out, int outl) {
 }
 
 static int file_write(BIO *b, const char *in, int inl) {
+  int ret = 0;
+
   if (!b->init) {
     return 0;
   }
 
-  int ret = (int)fwrite(in, inl, 1, (FILE *)b->ptr);
+  ret = fwrite(in, inl, 1, (FILE *)b->ptr);
   if (ret > 0) {
     ret = inl;
   }
@@ -183,6 +174,7 @@ static long file_ctrl(BIO *b, int cmd, long num, void *ptr) {
   long ret = 1;
   FILE *fp = (FILE *)b->ptr;
   FILE **fpp;
+  char p[4];
 
   switch (cmd) {
     case BIO_CTRL_RESET:
@@ -200,17 +192,6 @@ static long file_ctrl(BIO *b, int cmd, long num, void *ptr) {
       break;
     case BIO_C_SET_FILE_PTR:
       file_free(b);
-      static_assert((BIO_CLOSE & BIO_FP_TEXT) == 0,
-                    "BIO_CLOSE and BIO_FP_TEXT must not collide");
-#if defined(OPENSSL_WINDOWS)
-      // If |BIO_FP_TEXT| is not set, OpenSSL will switch the file to binary
-      // mode. BoringSSL intentionally diverges here because it means code
-      // tested under POSIX will inadvertently change the state of |FILE|
-      // objects when wrapping them in a |BIO|.
-      if (num & BIO_FP_TEXT) {
-        _setmode(_fileno(ptr), _O_TEXT);
-      }
-#endif
       b->shutdown = (int)num & BIO_CLOSE;
       b->ptr = ptr;
       b->init = 1;
@@ -218,28 +199,27 @@ static long file_ctrl(BIO *b, int cmd, long num, void *ptr) {
     case BIO_C_SET_FILENAME:
       file_free(b);
       b->shutdown = (int)num & BIO_CLOSE;
-      const char *mode;
       if (num & BIO_FP_APPEND) {
         if (num & BIO_FP_READ) {
-          mode = "ab+";
+          OPENSSL_strlcpy(p, "a+", sizeof(p));
         } else {
-          mode = "ab";
+          OPENSSL_strlcpy(p, "a", sizeof(p));
         }
       } else if ((num & BIO_FP_READ) && (num & BIO_FP_WRITE)) {
-        mode = "rb+";
+        OPENSSL_strlcpy(p, "r+", sizeof(p));
       } else if (num & BIO_FP_WRITE) {
-        mode = "wb";
+        OPENSSL_strlcpy(p, "w", sizeof(p));
       } else if (num & BIO_FP_READ) {
-        mode = "rb";
+        OPENSSL_strlcpy(p, "r", sizeof(p));
       } else {
         OPENSSL_PUT_ERROR(BIO, BIO_R_BAD_FOPEN_MODE);
         ret = 0;
         break;
       }
-      fp = fopen_if_available(ptr, mode);
+      fp = fopen(ptr, p);
       if (fp == NULL) {
         OPENSSL_PUT_SYSTEM_ERROR();
-        ERR_add_error_data(5, "fopen('", ptr, "','", mode, "')");
+        ERR_add_error_data(5, "fopen('", ptr, "','", p, "')");
         OPENSSL_PUT_ERROR(BIO, ERR_R_SYS_LIB);
         ret = 0;
         break;
@@ -273,18 +253,20 @@ static long file_ctrl(BIO *b, int cmd, long num, void *ptr) {
 }
 
 static int file_gets(BIO *bp, char *buf, int size) {
+  int ret = 0;
+
   if (size == 0) {
     return 0;
   }
 
   if (!fgets(buf, size, (FILE *)bp->ptr)) {
     buf[0] = 0;
-    // TODO(davidben): This doesn't distinguish error and EOF. This should check
-    // |ferror| as in |file_read|.
-    return 0;
+    goto err;
   }
+  ret = strlen(buf);
 
-  return (int)strlen(buf);
+err:
+  return ret;
 }
 
 static const BIO_METHOD methods_filep = {
@@ -299,36 +281,31 @@ const BIO_METHOD *BIO_s_file(void) { return &methods_filep; }
 
 
 int BIO_get_fp(BIO *bio, FILE **out_file) {
-  return (int)BIO_ctrl(bio, BIO_C_GET_FILE_PTR, 0, (char *)out_file);
+  return BIO_ctrl(bio, BIO_C_GET_FILE_PTR, 0, (char*) out_file);
 }
 
-int BIO_set_fp(BIO *bio, FILE *file, int flags) {
-  return (int)BIO_ctrl(bio, BIO_C_SET_FILE_PTR, flags, (char *)file);
+int BIO_set_fp(BIO *bio, FILE *file, int close_flag) {
+  return BIO_ctrl(bio, BIO_C_SET_FILE_PTR, close_flag, (char *) file);
 }
 
 int BIO_read_filename(BIO *bio, const char *filename) {
-  return (int)BIO_ctrl(bio, BIO_C_SET_FILENAME, BIO_CLOSE | BIO_FP_READ,
-                       (char *)filename);
+  return BIO_ctrl(bio, BIO_C_SET_FILENAME, BIO_CLOSE | BIO_FP_READ,
+                  (char *)filename);
 }
 
 int BIO_write_filename(BIO *bio, const char *filename) {
-  return (int)BIO_ctrl(bio, BIO_C_SET_FILENAME, BIO_CLOSE | BIO_FP_WRITE,
-                       (char *)filename);
+  return BIO_ctrl(bio, BIO_C_SET_FILENAME, BIO_CLOSE | BIO_FP_WRITE,
+                  (char *)filename);
 }
 
 int BIO_append_filename(BIO *bio, const char *filename) {
-  return (int)BIO_ctrl(bio, BIO_C_SET_FILENAME, BIO_CLOSE | BIO_FP_APPEND,
-                       (char *)filename);
+  return BIO_ctrl(bio, BIO_C_SET_FILENAME, BIO_CLOSE | BIO_FP_APPEND,
+                  (char *)filename);
 }
 
 int BIO_rw_filename(BIO *bio, const char *filename) {
-  return (int)BIO_ctrl(bio, BIO_C_SET_FILENAME,
-                       BIO_CLOSE | BIO_FP_READ | BIO_FP_WRITE,
-                       (char *)filename);
+  return BIO_ctrl(bio, BIO_C_SET_FILENAME,
+                  BIO_CLOSE | BIO_FP_READ | BIO_FP_WRITE, (char *)filename);
 }
 
-long BIO_tell(BIO *bio) { return BIO_ctrl(bio, BIO_C_FILE_TELL, 0, NULL); }
-
-long BIO_seek(BIO *bio, long offset) {
-  return BIO_ctrl(bio, BIO_C_FILE_SEEK, offset, NULL);
-}
+#endif  // OPENSSL_TRUSTY

@@ -12,19 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GRPC_SRC_CORE_LIB_PROMISE_SLEEP_H
-#define GRPC_SRC_CORE_LIB_PROMISE_SLEEP_H
+#ifndef GRPC_CORE_LIB_PROMISE_SLEEP_H
+#define GRPC_CORE_LIB_PROMISE_SLEEP_H
 
-#include <grpc/event_engine/event_engine.h>
 #include <grpc/support/port_platform.h>
 
 #include <atomic>
-#include <utility>
 
 #include "absl/status/status.h"
+
+#include <grpc/event_engine/event_engine.h>
+#include <grpc/support/log.h>
+
+#include "src/core/lib/gprpp/time.h"
 #include "src/core/lib/promise/activity.h"
 #include "src/core/lib/promise/poll.h"
-#include "src/core/util/time.h"
 
 namespace grpc_core {
 
@@ -36,12 +38,17 @@ class Sleep final {
 
   Sleep(const Sleep&) = delete;
   Sleep& operator=(const Sleep&) = delete;
-  Sleep(Sleep&& other) noexcept
-      : deadline_(other.deadline_),
-        closure_(std::exchange(other.closure_, nullptr)) {}
+  Sleep(Sleep&& other) noexcept : deadline_(other.deadline_) {
+    // Promises can be moved only until they're polled, and since we only create
+    // the closure when first polled we can assume it's nullptr here.
+    GPR_DEBUG_ASSERT(other.closure_ == nullptr);
+  };
   Sleep& operator=(Sleep&& other) noexcept {
+    // Promises can be moved only until they're polled, and since we only create
+    // the closure when first polled we can assume it's nullptr here.
+    GPR_DEBUG_ASSERT(closure_ == nullptr);
+    GPR_DEBUG_ASSERT(other.closure_ == nullptr);
     deadline_ = other.deadline_;
-    std::swap(closure_, other.closure_);
     return *this;
   };
 
@@ -65,7 +72,8 @@ class Sleep final {
     Waker waker_;
     // One ref dropped by Run(), the other by Cancel().
     std::atomic<int> refs_{2};
-    grpc_event_engine::experimental::EventEngine::TaskHandle timer_handle_;
+    const grpc_event_engine::experimental::EventEngine::TaskHandle
+        timer_handle_;
   };
 
   Timestamp deadline_;
@@ -74,4 +82,4 @@ class Sleep final {
 
 }  // namespace grpc_core
 
-#endif  // GRPC_SRC_CORE_LIB_PROMISE_SLEEP_H
+#endif  // GRPC_CORE_LIB_PROMISE_SLEEP_H

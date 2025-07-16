@@ -43,7 +43,7 @@
 //    * A read-only `absl::Span<const T>` can be implicitly constructed from an
 //      initializer list.
 //    * `absl::Span` has no `bytes()`, `size_bytes()`, `as_bytes()`, or
-//      `as_writable_bytes()` methods
+//      `as_mutable_bytes()` methods
 //    * `absl::Span` has no static extent template parameter, nor constructors
 //      which exist only because of the static extent parameter.
 //    * `absl::Span` has an explicit mutable-reference constructor
@@ -60,10 +60,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "absl/base/attributes.h"
 #include "absl/base/internal/throw_delegate.h"
 #include "absl/base/macros.h"
-#include "absl/base/nullability.h"
 #include "absl/base/optimization.h"
 #include "absl/base/port.h"    // TODO(strel): remove this include
 #include "absl/meta/type_traits.h"
@@ -151,7 +149,7 @@ ABSL_NAMESPACE_BEGIN
 //   int* my_array = new int[10];
 //   MyRoutine(absl::Span<const int>(my_array, 10));
 template <typename T>
-class ABSL_INTERNAL_ATTRIBUTE_VIEW Span {
+class Span {
  private:
   // Used to determine whether a Span can be constructed from a container of
   // type C.
@@ -162,19 +160,17 @@ class ABSL_INTERNAL_ATTRIBUTE_VIEW Span {
 
   // Used to SFINAE-enable a function when the slice elements are const.
   template <typename U>
-  using EnableIfValueIsConst =
+  using EnableIfConstView =
       typename std::enable_if<std::is_const<T>::value, U>::type;
 
   // Used to SFINAE-enable a function when the slice elements are mutable.
   template <typename U>
-  using EnableIfValueIsMutable =
+  using EnableIfMutableView =
       typename std::enable_if<!std::is_const<T>::value, U>::type;
 
  public:
   using element_type = T;
   using value_type = absl::remove_cv_t<T>;
-  // TODO(b/316099902) - pointer should be Nullable<T*>, but this makes it hard
-  // to recognize foreach loops as safe.
   using pointer = T*;
   using const_pointer = const T*;
   using reference = T&;
@@ -185,7 +181,6 @@ class ABSL_INTERNAL_ATTRIBUTE_VIEW Span {
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
   using size_type = size_t;
   using difference_type = ptrdiff_t;
-  using absl_internal_is_view = std::true_type;
 
   static const size_type npos = ~(size_type(0));
 
@@ -201,34 +196,13 @@ class ABSL_INTERNAL_ATTRIBUTE_VIEW Span {
   // Explicit reference constructor for a mutable `Span<T>` type. Can be
   // replaced with MakeSpan() to infer the type parameter.
   template <typename V, typename = EnableIfConvertibleFrom<V>,
-            typename = EnableIfValueIsMutable<V>,
-            typename = span_internal::EnableIfNotIsView<V>>
-  explicit Span(
-      V& v
-          ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept  // NOLINT(runtime/references)
+            typename = EnableIfMutableView<V>>
+  explicit Span(V& v) noexcept  // NOLINT(runtime/references)
       : Span(span_internal::GetData(v), v.size()) {}
 
   // Implicit reference constructor for a read-only `Span<const T>` type
   template <typename V, typename = EnableIfConvertibleFrom<V>,
-            typename = EnableIfValueIsConst<V>,
-            typename = span_internal::EnableIfNotIsView<V>>
-  constexpr Span(
-      const V& v
-          ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept  // NOLINT(runtime/explicit)
-      : Span(span_internal::GetData(v), v.size()) {}
-
-  // Overloads of the above two functions that are only enabled for view types.
-  // This is so we can drop the ABSL_ATTRIBUTE_LIFETIME_BOUND annotation. These
-  // overloads must be made unique by using a different template parameter list
-  // (hence the = 0 for the IsView enabler).
-  template <typename V, typename = EnableIfConvertibleFrom<V>,
-            typename = EnableIfValueIsMutable<V>,
-            span_internal::EnableIfIsView<V> = 0>
-  explicit Span(V& v) noexcept  // NOLINT(runtime/references)
-      : Span(span_internal::GetData(v), v.size()) {}
-  template <typename V, typename = EnableIfConvertibleFrom<V>,
-            typename = EnableIfValueIsConst<V>,
-            span_internal::EnableIfIsView<V> = 0>
+            typename = EnableIfConstView<V>>
   constexpr Span(const V& v) noexcept  // NOLINT(runtime/explicit)
       : Span(span_internal::GetData(v), v.size()) {}
 
@@ -268,7 +242,7 @@ class ABSL_INTERNAL_ATTRIBUTE_VIEW Span {
   //   Process(ints);
   //
   template <typename LazyT = T,
-            typename = EnableIfValueIsConst<LazyT>>
+            typename = EnableIfConstView<LazyT>>
   Span(std::initializer_list<value_type> v
            ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept  // NOLINT(runtime/explicit)
       : Span(v.begin(), v.size()) {}
@@ -300,7 +274,8 @@ class ABSL_INTERNAL_ATTRIBUTE_VIEW Span {
   //
   // Returns a reference to the i'th element of this span.
   constexpr reference operator[](size_type i) const noexcept {
-    return ABSL_HARDENING_ASSERT(i < size()), ptr_[i];
+    // MSVC 2015 accepts this as constexpr, but not ptr_[i]
+    return ABSL_HARDENING_ASSERT(i < size()), *(data() + i);
   }
 
   // Span::at()
@@ -423,7 +398,7 @@ class ABSL_INTERNAL_ATTRIBUTE_VIEW Span {
   //   absl::MakeSpan(vec).subspan(5);     // throws std::out_of_range
   constexpr Span subspan(size_type pos = 0, size_type len = npos) const {
     return (pos <= size())
-               ? Span(data() + pos, (std::min)(size() - pos, len))
+               ? Span(data() + pos, span_internal::Min(size() - pos, len))
                : (base_internal::ThrowStdOutOfRange("pos > size()"), Span());
   }
 
@@ -683,12 +658,12 @@ bool operator>=(Span<T> a, const U& b) {
 //   }
 //
 template <int&... ExplicitArgumentBarrier, typename T>
-constexpr Span<T> MakeSpan(absl::Nullable<T*> ptr, size_t size) noexcept {
+constexpr Span<T> MakeSpan(T* ptr, size_t size) noexcept {
   return Span<T>(ptr, size);
 }
 
 template <int&... ExplicitArgumentBarrier, typename T>
-Span<T> MakeSpan(absl::Nullable<T*> begin, absl::Nullable<T*> end) noexcept {
+Span<T> MakeSpan(T* begin, T* end) noexcept {
   return ABSL_HARDENING_ASSERT(begin <= end),
          Span<T>(begin, static_cast<size_t>(end - begin));
 }
@@ -729,14 +704,12 @@ constexpr Span<T> MakeSpan(T (&array)[N]) noexcept {
 //   ProcessInts(absl::MakeConstSpan(std::vector<int>{ 0, 0, 0 }));
 //
 template <int&... ExplicitArgumentBarrier, typename T>
-constexpr Span<const T> MakeConstSpan(absl::Nullable<T*> ptr,
-                                      size_t size) noexcept {
+constexpr Span<const T> MakeConstSpan(T* ptr, size_t size) noexcept {
   return Span<const T>(ptr, size);
 }
 
 template <int&... ExplicitArgumentBarrier, typename T>
-Span<const T> MakeConstSpan(absl::Nullable<T*> begin,
-                            absl::Nullable<T*> end) noexcept {
+Span<const T> MakeConstSpan(T* begin, T* end) noexcept {
   return ABSL_HARDENING_ASSERT(begin <= end), Span<const T>(begin, end - begin);
 }
 

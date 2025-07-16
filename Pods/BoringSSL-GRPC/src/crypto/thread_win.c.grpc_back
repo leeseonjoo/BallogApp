@@ -12,8 +12,6 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
-// Ensure we can't call OPENSSL_malloc circularly.
-#define _BORINGSSL_PROHIBIT_OPENSSL_MALLOC
 #include "internal.h"
 
 #if defined(OPENSSL_WINDOWS_THREADS)
@@ -22,9 +20,19 @@ OPENSSL_MSVC_PRAGMA(warning(push, 3))
 #include <windows.h>
 OPENSSL_MSVC_PRAGMA(warning(pop))
 
-#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <openssl_grpc/mem.h>
+#include <openssl_grpc/type_check.h>
+
+
+OPENSSL_STATIC_ASSERT(sizeof(CRYPTO_MUTEX) >= sizeof(SRWLOCK),
+                      "CRYPTO_MUTEX is too small");
+#if defined(__GNUC__) || defined(__clang__)
+OPENSSL_STATIC_ASSERT(alignof(CRYPTO_MUTEX) >= alignof(SRWLOCK),
+                      "CRYPTO_MUTEX has insufficient alignment");
+#endif
 
 static BOOL CALLBACK call_once_init(INIT_ONCE *once, void *arg, void **out) {
   void (**init)(void) = (void (**)(void))arg;
@@ -39,27 +47,43 @@ void CRYPTO_once(CRYPTO_once_t *once, void (*init)(void)) {
 }
 
 void CRYPTO_MUTEX_init(CRYPTO_MUTEX *lock) {
-  InitializeSRWLock(lock);
+  InitializeSRWLock((SRWLOCK *) lock);
 }
 
 void CRYPTO_MUTEX_lock_read(CRYPTO_MUTEX *lock) {
-  AcquireSRWLockShared(lock);
+  AcquireSRWLockShared((SRWLOCK *) lock);
 }
 
 void CRYPTO_MUTEX_lock_write(CRYPTO_MUTEX *lock) {
-  AcquireSRWLockExclusive(lock);
+  AcquireSRWLockExclusive((SRWLOCK *) lock);
 }
 
 void CRYPTO_MUTEX_unlock_read(CRYPTO_MUTEX *lock) {
-  ReleaseSRWLockShared(lock);
+  ReleaseSRWLockShared((SRWLOCK *) lock);
 }
 
 void CRYPTO_MUTEX_unlock_write(CRYPTO_MUTEX *lock) {
-  ReleaseSRWLockExclusive(lock);
+  ReleaseSRWLockExclusive((SRWLOCK *) lock);
 }
 
 void CRYPTO_MUTEX_cleanup(CRYPTO_MUTEX *lock) {
   // SRWLOCKs require no cleanup.
+}
+
+void CRYPTO_STATIC_MUTEX_lock_read(struct CRYPTO_STATIC_MUTEX *lock) {
+  AcquireSRWLockShared(&lock->lock);
+}
+
+void CRYPTO_STATIC_MUTEX_lock_write(struct CRYPTO_STATIC_MUTEX *lock) {
+  AcquireSRWLockExclusive(&lock->lock);
+}
+
+void CRYPTO_STATIC_MUTEX_unlock_read(struct CRYPTO_STATIC_MUTEX *lock) {
+  ReleaseSRWLockShared(&lock->lock);
+}
+
+void CRYPTO_STATIC_MUTEX_unlock_write(struct CRYPTO_STATIC_MUTEX *lock) {
+  ReleaseSRWLockExclusive(&lock->lock);
 }
 
 static SRWLOCK g_destructors_lock = SRWLOCK_INIT;
@@ -107,7 +131,7 @@ static void NTAPI thread_local_destructor(PVOID module, DWORD reason,
     }
   }
 
-  free(pointers);
+  OPENSSL_free(pointers);
 }
 
 // Thread Termination Callbacks.
@@ -212,14 +236,14 @@ int CRYPTO_set_thread_local(thread_local_data_t index, void *value,
 
   void **pointers = get_thread_locals();
   if (pointers == NULL) {
-    pointers = malloc(sizeof(void *) * NUM_OPENSSL_THREAD_LOCALS);
+    pointers = OPENSSL_malloc(sizeof(void *) * NUM_OPENSSL_THREAD_LOCALS);
     if (pointers == NULL) {
       destructor(value);
       return 0;
     }
     OPENSSL_memset(pointers, 0, sizeof(void *) * NUM_OPENSSL_THREAD_LOCALS);
     if (TlsSetValue(g_thread_local_key, pointers) == 0) {
-      free(pointers);
+      OPENSSL_free(pointers);
       destructor(value);
       return 0;
     }

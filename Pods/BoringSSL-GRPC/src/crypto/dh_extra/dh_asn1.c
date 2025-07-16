@@ -63,7 +63,6 @@
 #include <openssl_grpc/err.h>
 
 #include "../bytestring/internal.h"
-#include "../fipsmodule/dh/internal.h"
 
 
 static int parse_integer(CBS *cbs, BIGNUM **out) {
@@ -107,10 +106,6 @@ DH *DH_parse_parameters(CBS *cbs) {
   }
 
   if (CBS_len(&child) != 0) {
-    goto err;
-  }
-
-  if (!dh_check_params_fast(ret)) {
     goto err;
   }
 

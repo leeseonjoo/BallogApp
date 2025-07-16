@@ -75,29 +75,33 @@
 typedef struct {
   // message digest
   const EVP_MD *md;
-  const EC_GROUP *gen_group;
+  EC_GROUP *gen_group;
 } EC_PKEY_CTX;
 
 
 static int pkey_ec_init(EVP_PKEY_CTX *ctx) {
-  EC_PKEY_CTX *dctx = OPENSSL_zalloc(sizeof(EC_PKEY_CTX));
+  EC_PKEY_CTX *dctx;
+  dctx = OPENSSL_malloc(sizeof(EC_PKEY_CTX));
   if (!dctx) {
     return 0;
   }
+  OPENSSL_memset(dctx, 0, sizeof(EC_PKEY_CTX));
 
   ctx->data = dctx;
+
   return 1;
 }
 
 static int pkey_ec_copy(EVP_PKEY_CTX *dst, EVP_PKEY_CTX *src) {
+  EC_PKEY_CTX *dctx, *sctx;
   if (!pkey_ec_init(dst)) {
     return 0;
   }
+  sctx = src->data;
+  dctx = dst->data;
 
-  const EC_PKEY_CTX *sctx = src->data;
-  EC_PKEY_CTX *dctx = dst->data;
   dctx->md = sctx->md;
-  dctx->gen_group = sctx->gen_group;
+
   return 1;
 }
 
@@ -107,12 +111,15 @@ static void pkey_ec_cleanup(EVP_PKEY_CTX *ctx) {
     return;
   }
 
+  EC_GROUP_free(dctx->gen_group);
   OPENSSL_free(dctx);
 }
 
 static int pkey_ec_sign(EVP_PKEY_CTX *ctx, uint8_t *sig, size_t *siglen,
                         const uint8_t *tbs, size_t tbslen) {
-  const EC_KEY *ec = ctx->pkey->pkey;
+  unsigned int sltmp;
+  EC_KEY *ec = ctx->pkey->pkey.ec;
+
   if (!sig) {
     *siglen = ECDSA_size(ec);
     return 1;
@@ -121,7 +128,6 @@ static int pkey_ec_sign(EVP_PKEY_CTX *ctx, uint8_t *sig, size_t *siglen,
     return 0;
   }
 
-  unsigned int sltmp;
   if (!ECDSA_sign(0, tbs, tbslen, sig, &sltmp, ec)) {
     return 0;
   }
@@ -131,32 +137,37 @@ static int pkey_ec_sign(EVP_PKEY_CTX *ctx, uint8_t *sig, size_t *siglen,
 
 static int pkey_ec_verify(EVP_PKEY_CTX *ctx, const uint8_t *sig, size_t siglen,
                           const uint8_t *tbs, size_t tbslen) {
-  const EC_KEY *ec_key = ctx->pkey->pkey;
-  return ECDSA_verify(0, tbs, tbslen, sig, siglen, ec_key);
+  return ECDSA_verify(0, tbs, tbslen, sig, siglen, ctx->pkey->pkey.ec);
 }
 
 static int pkey_ec_derive(EVP_PKEY_CTX *ctx, uint8_t *key,
                           size_t *keylen) {
+  int ret;
+  size_t outlen;
+  const EC_POINT *pubkey = NULL;
+  EC_KEY *eckey;
+
   if (!ctx->pkey || !ctx->peerkey) {
     OPENSSL_PUT_ERROR(EVP, EVP_R_KEYS_NOT_SET);
     return 0;
   }
 
-  const EC_KEY *eckey = ctx->pkey->pkey;
+  eckey = ctx->pkey->pkey.ec;
+
   if (!key) {
     const EC_GROUP *group;
     group = EC_KEY_get0_group(eckey);
     *keylen = (EC_GROUP_get_degree(group) + 7) / 8;
     return 1;
   }
-
-  const EC_KEY *eckey_peer = ctx->peerkey->pkey;
-  const EC_POINT *pubkey = EC_KEY_get0_public_key(eckey_peer);
+  pubkey = EC_KEY_get0_public_key(ctx->peerkey->pkey.ec);
 
   // NB: unlike PKCS#3 DH, if *outlen is less than maximum size this is
   // not an error, the result is truncated.
-  size_t outlen = *keylen;
-  int ret = ECDH_compute_key(key, outlen, pubkey, eckey, 0);
+
+  outlen = *keylen;
+
+  ret = ECDH_compute_key(key, outlen, pubkey, eckey, 0);
   if (ret < 0) {
     return 0;
   }
@@ -168,18 +179,18 @@ static int pkey_ec_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2) {
   EC_PKEY_CTX *dctx = ctx->data;
 
   switch (type) {
-    case EVP_PKEY_CTRL_MD: {
-      const EVP_MD *md = p2;
-      int md_type = EVP_MD_type(md);
-      if (md_type != NID_sha1 && md_type != NID_sha224 &&
-          md_type != NID_sha256 && md_type != NID_sha384 &&
-          md_type != NID_sha512) {
+    case EVP_PKEY_CTRL_MD:
+      if (EVP_MD_type((const EVP_MD *)p2) != NID_sha1 &&
+          EVP_MD_type((const EVP_MD *)p2) != NID_ecdsa_with_SHA1 &&
+          EVP_MD_type((const EVP_MD *)p2) != NID_sha224 &&
+          EVP_MD_type((const EVP_MD *)p2) != NID_sha256 &&
+          EVP_MD_type((const EVP_MD *)p2) != NID_sha384 &&
+          EVP_MD_type((const EVP_MD *)p2) != NID_sha512) {
         OPENSSL_PUT_ERROR(EVP, EVP_R_INVALID_DIGEST_TYPE);
         return 0;
       }
-      dctx->md = md;
+      dctx->md = p2;
       return 1;
-    }
 
     case EVP_PKEY_CTRL_GET_MD:
       *(const EVP_MD **)p2 = dctx->md;
@@ -190,10 +201,11 @@ static int pkey_ec_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2) {
       return 1;
 
     case EVP_PKEY_CTRL_EC_PARAMGEN_CURVE_NID: {
-      const EC_GROUP *group = EC_GROUP_new_by_curve_name(p1);
+      EC_GROUP *group = EC_GROUP_new_by_curve_name(p1);
       if (group == NULL) {
         return 0;
       }
+      EC_GROUP_free(dctx->gen_group);
       dctx->gen_group = group;
       return 1;
     }
@@ -212,7 +224,7 @@ static int pkey_ec_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey) {
       OPENSSL_PUT_ERROR(EVP, EVP_R_NO_PARAMETERS_SET);
       return 0;
     }
-    group = EC_KEY_get0_group(ctx->pkey->pkey);
+    group = EC_KEY_get0_group(ctx->pkey->pkey.ec);
   }
   EC_KEY *ec = EC_KEY_new();
   if (ec == NULL ||
