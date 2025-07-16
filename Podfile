@@ -18,5 +18,14 @@ post_install do |installer|
       end
     end
   end
+
+  # abseil-umbrella.h 자동 패치
+  abseil_umbrella = File.join(__dir__, 'Pods', 'Target Support Files', 'abseil', 'abseil-umbrella.h')
+  if File.exist?(abseil_umbrella)
+    text = File.read(abseil_umbrella)
+    # "algorithm/algorithm.h" → <absl/algorithm/algorithm.h>
+    text = text.gsub(/#include\s+"algorithm\/(.+)"/, '#include <absl/algorithm/\1>')
+    File.write(abseil_umbrella, text)
+  end
 end
 
