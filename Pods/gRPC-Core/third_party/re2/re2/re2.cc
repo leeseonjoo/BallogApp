@@ -690,9 +690,15 @@ bool RE2::Match(const StringPiece& text,
   if (options_.longest_match())
     kind = Prog::kLongestMatch;
 
-  bool can_one_pass = is_one_pass_ && ncap <= Prog::kMaxOnePassCapture;
+  bool can_one_pass = (is_one_pass_ && ncap <= Prog::kMaxOnePassCapture);
+
+  // BitState allocates a bitmap of size prog_->list_count() * text.size().
+  // It also allocates a stack of 3-word structures which could potentially
+  // grow as large as prog_->list_count() * text.size(), but in practice is
+  // much smaller.
+  const int kMaxBitStateBitmapSize = 256*1024;  // bitmap size <= max (bits)
   bool can_bit_state = prog_->CanBitState();
-  size_t bit_state_text_max_size = prog_->bit_state_text_max_size();
+  size_t bit_state_text_max = kMaxBitStateBitmapSize / prog_->list_count();
 
 #ifdef RE2_HAVE_THREAD_LOCAL
   hooks::context = this;
@@ -799,8 +805,7 @@ bool RE2::Match(const StringPiece& text,
         skipped_test = true;
         break;
       }
-      if (can_bit_state && text.size() <= bit_state_text_max_size &&
-          ncap > 1) {
+      if (can_bit_state && text.size() <= bit_state_text_max && ncap > 1) {
         skipped_test = true;
         break;
       }
@@ -847,7 +852,7 @@ bool RE2::Match(const StringPiece& text,
           LOG(ERROR) << "SearchOnePass inconsistency";
         return false;
       }
-    } else if (can_bit_state && subtext1.size() <= bit_state_text_max_size) {
+    } else if (can_bit_state && subtext1.size() <= bit_state_text_max) {
       if (!prog_->SearchBitState(subtext1, text, anchor,
                                  kind, submatch, ncap)) {
         if (!skipped_test && options_.log_errors())
@@ -915,7 +920,7 @@ bool RE2::DoMatch(const StringPiece& text,
   }
 
   if (consumed != NULL)
-    *consumed = static_cast<size_t>(EndPtr(vec[0]) - BeginPtr(text));
+    *consumed = static_cast<size_t>(vec[0].end() - text.begin());
 
   if (n == 0 || args == NULL) {
     // We are not interested in results

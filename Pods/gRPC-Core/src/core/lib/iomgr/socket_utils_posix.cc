@@ -1,42 +1,43 @@
-//
-//
-// Copyright 2015 gRPC authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-//
+/*
+ *
+ * Copyright 2015 gRPC authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
 #include <grpc/support/port_platform.h>
 
 #include "absl/types/optional.h"
+
 #include "src/core/lib/iomgr/port.h"
 
 #ifdef GRPC_POSIX_SOCKETUTILS
 #include <fcntl.h>
-#include <grpc/impl/grpc_types.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <grpc/impl/codegen/grpc_types.h>
+#include <grpc/support/log.h>
+
 #include "src/core/lib/iomgr/sockaddr.h"
 #include "src/core/lib/iomgr/socket_utils_posix.h"
-#include "src/core/util/crash.h"
 #endif
 
 #ifdef GRPC_POSIX_SOCKET_TCP
 
 #include "src/core/lib/event_engine/channel_args_endpoint_config.h"
 #include "src/core/lib/iomgr/socket_utils_posix.h"
-#include "src/core/util/strerror.h"
 
 using ::grpc_event_engine::experimental::EndpointConfig;
 
@@ -74,9 +75,6 @@ PosixTcpOptions TcpOptionsFromEndpointConfig(const EndpointConfig& config) {
   options.tcp_tx_zerocopy_max_simultaneous_sends =
       AdjustValue(PosixTcpOptions::kDefaultMaxSends, 0, INT_MAX,
                   config.GetInt(GRPC_ARG_TCP_TX_ZEROCOPY_MAX_SIMULT_SENDS));
-  options.tcp_receive_buffer_size =
-      AdjustValue(PosixTcpOptions::kReadBufferSizeUnset, 0, INT_MAX,
-                  config.GetInt(GRPC_ARG_TCP_RECEIVE_BUFFER_SIZE));
   options.tcp_tx_zero_copy_enabled =
       (AdjustValue(PosixTcpOptions::kZerocpTxEnabledDefault, 0, 1,
                    config.GetInt(GRPC_ARG_TCP_TX_ZEROCOPY_ENABLED)) != 0);
@@ -90,8 +88,6 @@ PosixTcpOptions TcpOptionsFromEndpointConfig(const EndpointConfig& config) {
   options.allow_reuse_port =
       (AdjustValue(0, 1, INT_MAX, config.GetInt(GRPC_ARG_ALLOW_REUSEPORT)) !=
        0);
-  options.dscp = AdjustValue(PosixTcpOptions::kDscpNotSet, 0, 63,
-                             config.GetInt(GRPC_ARG_DSCP));
 
   if (options.tcp_min_read_chunk_size > options.tcp_max_read_chunk_size) {
     options.tcp_min_read_chunk_size = options.tcp_max_read_chunk_size;
@@ -113,7 +109,7 @@ PosixTcpOptions TcpOptionsFromEndpointConfig(const EndpointConfig& config) {
   return options;
 }
 
-#endif  // GRPC_POSIX_SOCKET_TCP
+#endif /* GRPC_POSIX_SOCKET_TCP */
 
 #ifdef GRPC_POSIX_SOCKETUTILS
 
@@ -141,4 +137,4 @@ close_and_error:
   return -1;
 }
 
-#endif  // GRPC_POSIX_SOCKETUTILS
+#endif /* GRPC_POSIX_SOCKETUTILS */

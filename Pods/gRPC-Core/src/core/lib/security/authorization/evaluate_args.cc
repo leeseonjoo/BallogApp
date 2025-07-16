@@ -12,23 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <grpc/support/port_platform.h>
+
 #include "src/core/lib/security/authorization/evaluate_args.h"
 
-#include <grpc/grpc_security_constants.h>
-#include <grpc/support/port_platform.h>
 #include <string.h>
 
-#include "absl/log/log.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/match.h"
 #include "absl/strings/numbers.h"
-#include "src/core/handshaker/endpoint_info/endpoint_info_handshaker.h"
+
+#include <grpc/grpc_security_constants.h>
+#include <grpc/support/log.h>
+
 #include "src/core/lib/address_utils/parse_address.h"
+#include "src/core/lib/gprpp/host_port.h"
 #include "src/core/lib/security/credentials/tls/tls_utils.h"
 #include "src/core/lib/slice/slice.h"
-#include "src/core/util/host_port.h"
-#include "src/core/util/uri.h"
+#include "src/core/lib/uri/uri_parser.h"
 
 namespace grpc_core {
 
@@ -39,23 +41,25 @@ EvaluateArgs::PerChannelArgs::Address ParseEndpointUri(
   EvaluateArgs::PerChannelArgs::Address address;
   absl::StatusOr<URI> uri = URI::Parse(uri_text);
   if (!uri.ok()) {
-    VLOG(2) << "Failed to parse uri.";
+    gpr_log(GPR_DEBUG, "Failed to parse uri.");
     return address;
   }
   absl::string_view host_view;
   absl::string_view port_view;
   if (!SplitHostPort(uri->path(), &host_view, &port_view)) {
-    VLOG(2) << "Failed to split " << uri->path() << " into host and port.";
+    gpr_log(GPR_DEBUG, "Failed to split %s into host and port.",
+            uri->path().c_str());
     return address;
   }
   if (!absl::SimpleAtoi(port_view, &address.port)) {
-    VLOG(2) << "Port " << port_view << " is out of range or null.";
+    gpr_log(GPR_DEBUG, "Port %s is out of range or null.",
+            std::string(port_view).c_str());
   }
   address.address_str = std::string(host_view);
   auto resolved_address = StringToSockaddr(uri->path());
   if (!resolved_address.ok()) {
-    VLOG(2) << "Address \"" << uri->path()
-            << "\" is not IPv4/IPv6. Error: " << resolved_address.status();
+    gpr_log(GPR_DEBUG, "Address \"%s\" is not IPv4/IPv6. Error: %s",
+            uri->path().c_str(), resolved_address.status().ToString().c_str());
     memset(&address.address, 0, sizeof(address.address));
   } else {
     address.address = *resolved_address;
@@ -66,7 +70,7 @@ EvaluateArgs::PerChannelArgs::Address ParseEndpointUri(
 }  // namespace
 
 EvaluateArgs::PerChannelArgs::PerChannelArgs(grpc_auth_context* auth_context,
-                                             const ChannelArgs& args) {
+                                             grpc_endpoint* endpoint) {
   if (auth_context != nullptr) {
     transport_security_type = GetAuthPropertyValue(
         auth_context, GRPC_TRANSPORT_SECURITY_TYPE_PROPERTY_NAME);
@@ -79,10 +83,10 @@ EvaluateArgs::PerChannelArgs::PerChannelArgs(grpc_auth_context* auth_context,
     subject =
         GetAuthPropertyValue(auth_context, GRPC_X509_SUBJECT_PROPERTY_NAME);
   }
-  local_address = ParseEndpointUri(
-      args.GetString(GRPC_ARG_ENDPOINT_LOCAL_ADDRESS).value_or(""));
-  peer_address = ParseEndpointUri(
-      args.GetString(GRPC_ARG_ENDPOINT_PEER_ADDRESS).value_or(""));
+  if (endpoint != nullptr) {
+    local_address = ParseEndpointUri(grpc_endpoint_get_local_address(endpoint));
+    peer_address = ParseEndpointUri(grpc_endpoint_get_peer(endpoint));
+  }
 }
 
 absl::string_view EvaluateArgs::GetPath() const {

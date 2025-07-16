@@ -1,30 +1,31 @@
-//
-//
-// Copyright 2018 gRPC authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-//
+/*
+ *
+ * Copyright 2018 gRPC authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+#include <grpc/support/port_platform.h>
 
 #include "src/core/lib/security/credentials/alts/check_gcp_environment.h"
 
 #include <ctype.h>
-#include <grpc/support/alloc.h>
-#include <grpc/support/port_platform.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "absl/log/log.h"
+#include <grpc/support/alloc.h>
+#include <grpc/support/log.h>
 
 const size_t kBiosDataBufferSize = 256;
 
@@ -34,11 +35,11 @@ static char* trim(const char* src) {
   }
   char* des = nullptr;
   size_t start = 0, end = strlen(src) - 1;
-  // find the last character that is not a whitespace.
+  /* find the last character that is not a whitespace. */
   while (end != 0 && isspace(src[end])) {
     end--;
   }
-  // find the first character that is not a whitespace.
+  /* find the first character that is not a whitespace. */
   while (start < strlen(src) && isspace(src[start])) {
     start++;
   }
@@ -56,7 +57,7 @@ namespace internal {
 char* read_bios_file(const char* bios_file) {
   FILE* fp = fopen(bios_file, "r");
   if (!fp) {
-    VLOG(2) << "BIOS data file does not exist or cannot be opened.";
+    gpr_log(GPR_INFO, "BIOS data file does not exist or cannot be opened.");
     return nullptr;
   }
   char buf[kBiosDataBufferSize + 1];

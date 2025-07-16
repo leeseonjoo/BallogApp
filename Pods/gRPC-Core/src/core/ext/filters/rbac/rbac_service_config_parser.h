@@ -14,10 +14,11 @@
 // limitations under the License.
 //
 
-#ifndef GRPC_SRC_CORE_EXT_FILTERS_RBAC_RBAC_SERVICE_CONFIG_PARSER_H
-#define GRPC_SRC_CORE_EXT_FILTERS_RBAC_RBAC_SERVICE_CONFIG_PARSER_H
+#ifndef GRPC_CORE_EXT_FILTERS_RBAC_RBAC_SERVICE_CONFIG_PARSER_H
+#define GRPC_CORE_EXT_FILTERS_RBAC_RBAC_SERVICE_CONFIG_PARSER_H
 
 #include <grpc/support/port_platform.h>
+
 #include <stddef.h>
 
 #include <algorithm>
@@ -25,14 +26,15 @@
 #include <utility>
 #include <vector>
 
+#include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
-#include "src/core/config/core_configuration.h"
+
 #include "src/core/lib/channel/channel_args.h"
+#include "src/core/lib/config/core_configuration.h"
+#include "src/core/lib/json/json.h"
 #include "src/core/lib/security/authorization/grpc_authorization_engine.h"
 #include "src/core/lib/security/authorization/rbac_policy.h"
-#include "src/core/service_config/service_config_parser.h"
-#include "src/core/util/json/json.h"
-#include "src/core/util/validation_errors.h"
+#include "src/core/lib/service_config/service_config_parser.h"
 
 namespace grpc_core {
 
@@ -67,9 +69,8 @@ class RbacServiceConfigParser : public ServiceConfigParser::Parser {
  public:
   absl::string_view name() const override { return parser_name(); }
   // Parses the per-method service config for rbac filter.
-  std::unique_ptr<ServiceConfigParser::ParsedConfig> ParsePerMethodParams(
-      const ChannelArgs& args, const Json& json,
-      ValidationErrors* errors) override;
+  absl::StatusOr<std::unique_ptr<ServiceConfigParser::ParsedConfig>>
+  ParsePerMethodParams(const ChannelArgs& args, const Json& json) override;
   // Returns the parser index for RbacServiceConfigParser.
   static size_t ParserIndex();
   // Registers RbacServiceConfigParser to ServiceConfigParser.
@@ -81,4 +82,4 @@ class RbacServiceConfigParser : public ServiceConfigParser::Parser {
 
 }  // namespace grpc_core
 
-#endif  // GRPC_SRC_CORE_EXT_FILTERS_RBAC_RBAC_SERVICE_CONFIG_PARSER_H
+#endif  // GRPC_CORE_EXT_FILTERS_RBAC_RBAC_SERVICE_CONFIG_PARSER_H

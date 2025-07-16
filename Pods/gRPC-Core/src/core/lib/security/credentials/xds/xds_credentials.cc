@@ -16,22 +16,25 @@
 //
 //
 
-#include "src/core/lib/security/credentials/xds/xds_credentials.h"
-
-#include <grpc/grpc_security_constants.h>
-#include <grpc/impl/channel_arg_names.h>
 #include <grpc/support/port_platform.h>
 
-#include "absl/log/check.h"
+#include "src/core/lib/security/credentials/xds/xds_credentials.h"
+
+#include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
+
+#include <grpc/grpc_security_constants.h>
+#include <grpc/impl/codegen/grpc_types.h>
+#include <grpc/support/log.h>
+
+#include "src/core/ext/filters/client_channel/lb_policy/xds/xds_channel_args.h"
+#include "src/core/ext/xds/xds_certificate_provider.h"
 #include "src/core/lib/channel/channel_args.h"
+#include "src/core/lib/gpr/useful.h"
 #include "src/core/lib/security/credentials/tls/grpc_tls_certificate_provider.h"
 #include "src/core/lib/security/credentials/tls/grpc_tls_credentials_options.h"
 #include "src/core/lib/security/credentials/tls/tls_credentials.h"
 #include "src/core/lib/security/credentials/tls/tls_utils.h"
-#include "src/core/load_balancing/xds/xds_channel_args.h"
-#include "src/core/util/useful.h"
-#include "src/core/xds/grpc/xds_certificate_provider.h"
 
 namespace grpc_core {
 
@@ -72,30 +75,32 @@ bool XdsVerifySubjectAlternativeNames(
 //
 
 XdsCertificateVerifier::XdsCertificateVerifier(
-    RefCountedPtr<XdsCertificateProvider> xds_certificate_provider)
-    : xds_certificate_provider_(std::move(xds_certificate_provider)) {}
+    RefCountedPtr<XdsCertificateProvider> xds_certificate_provider,
+    std::string cluster_name)
+    : xds_certificate_provider_(std::move(xds_certificate_provider)),
+      cluster_name_(std::move(cluster_name)) {}
 
 bool XdsCertificateVerifier::Verify(
     grpc_tls_custom_verification_check_request* request,
     std::function<void(absl::Status)>, absl::Status* sync_status) {
-  CHECK_NE(request, nullptr);
+  GPR_ASSERT(request != nullptr);
   if (!XdsVerifySubjectAlternativeNames(
           request->peer_info.san_names.uri_names,
           request->peer_info.san_names.uri_names_size,
-          xds_certificate_provider_->san_matchers()) &&
+          xds_certificate_provider_->GetSanMatchers(cluster_name_)) &&
       !XdsVerifySubjectAlternativeNames(
           request->peer_info.san_names.ip_names,
           request->peer_info.san_names.ip_names_size,
-          xds_certificate_provider_->san_matchers()) &&
+          xds_certificate_provider_->GetSanMatchers(cluster_name_)) &&
       !XdsVerifySubjectAlternativeNames(
           request->peer_info.san_names.dns_names,
           request->peer_info.san_names.dns_names_size,
-          xds_certificate_provider_->san_matchers())) {
+          xds_certificate_provider_->GetSanMatchers(cluster_name_))) {
     *sync_status = absl::Status(
         absl::StatusCode::kUnauthenticated,
         "SANs from certificate did not match SANs from xDS control plane");
   }
-  return true;  // synchronous check
+  return true; /* synchronous check */
 }
 
 void XdsCertificateVerifier::Cancel(
@@ -104,12 +109,9 @@ void XdsCertificateVerifier::Cancel(
 int XdsCertificateVerifier::CompareImpl(
     const grpc_tls_certificate_verifier* other) const {
   auto* o = static_cast<const XdsCertificateVerifier*>(other);
-  if (xds_certificate_provider_ == nullptr ||
-      o->xds_certificate_provider_ == nullptr) {
-    return QsortCompare(xds_certificate_provider_,
-                        o->xds_certificate_provider_);
-  }
-  return xds_certificate_provider_->Compare(o->xds_certificate_provider_.get());
+  int r = QsortCompare(xds_certificate_provider_, o->xds_certificate_provider_);
+  if (r != 0) return r;
+  return cluster_name_.compare(o->cluster_name_);
 }
 
 UniqueTypeName XdsCertificateVerifier::type() const {
@@ -139,28 +141,29 @@ XdsCredentials::create_security_connector(
   RefCountedPtr<grpc_channel_security_connector> security_connector;
   auto xds_certificate_provider = args->GetObjectRef<XdsCertificateProvider>();
   if (xds_certificate_provider != nullptr) {
-    const bool watch_root = xds_certificate_provider->ProvidesRootCerts();
-    const bool use_system_root_certs =
-        xds_certificate_provider->UseSystemRootCerts();
+    std::string cluster_name(
+        args->GetString(GRPC_ARG_XDS_CLUSTER_NAME).value());
+    const bool watch_root =
+        xds_certificate_provider->ProvidesRootCerts(cluster_name);
     const bool watch_identity =
-        xds_certificate_provider->ProvidesIdentityCerts();
-    if (watch_root || use_system_root_certs || watch_identity) {
+        xds_certificate_provider->ProvidesIdentityCerts(cluster_name);
+    if (watch_root || watch_identity) {
       auto tls_credentials_options =
           MakeRefCounted<grpc_tls_credentials_options>();
-      if (watch_root || watch_identity) {
-        tls_credentials_options->set_certificate_provider(
-            xds_certificate_provider);
-        if (watch_root) {
-          tls_credentials_options->set_watch_root_cert(true);
-        }
-        if (watch_identity) {
-          tls_credentials_options->set_watch_identity_pair(true);
-        }
+      tls_credentials_options->set_certificate_provider(
+          xds_certificate_provider);
+      if (watch_root) {
+        tls_credentials_options->set_watch_root_cert(true);
+        tls_credentials_options->set_root_cert_name(cluster_name);
+      }
+      if (watch_identity) {
+        tls_credentials_options->set_watch_identity_pair(true);
+        tls_credentials_options->set_identity_cert_name(cluster_name);
       }
       tls_credentials_options->set_verify_server_cert(true);
       tls_credentials_options->set_certificate_verifier(
-          MakeRefCounted<XdsCertificateVerifier>(
-              std::move(xds_certificate_provider)));
+          MakeRefCounted<XdsCertificateVerifier>(xds_certificate_provider,
+                                                 std::move(cluster_name)));
       tls_credentials_options->set_check_call_host(false);
       auto tls_credentials =
           MakeRefCounted<TlsCredentials>(std::move(tls_credentials_options));
@@ -168,7 +171,7 @@ XdsCredentials::create_security_connector(
                                                         target_name, args);
     }
   }
-  CHECK(fallback_credentials_ != nullptr);
+  GPR_ASSERT(fallback_credentials_ != nullptr);
   return fallback_credentials_->create_security_connector(std::move(call_creds),
                                                           target_name, args);
 }
@@ -187,17 +190,20 @@ XdsServerCredentials::create_security_connector(const ChannelArgs& args) {
   auto xds_certificate_provider = args.GetObjectRef<XdsCertificateProvider>();
   // Identity certs are a must for TLS.
   if (xds_certificate_provider != nullptr &&
-      xds_certificate_provider->ProvidesIdentityCerts()) {
+      xds_certificate_provider->ProvidesIdentityCerts("")) {
     auto tls_credentials_options =
         MakeRefCounted<grpc_tls_credentials_options>();
     tls_credentials_options->set_watch_identity_pair(true);
     tls_credentials_options->set_certificate_provider(xds_certificate_provider);
-    if (xds_certificate_provider->ProvidesRootCerts()) {
+    if (xds_certificate_provider->ProvidesRootCerts("")) {
       tls_credentials_options->set_watch_root_cert(true);
-      tls_credentials_options->set_cert_request_type(
-          xds_certificate_provider->require_client_certificate()
-              ? GRPC_SSL_REQUEST_AND_REQUIRE_CLIENT_CERTIFICATE_AND_VERIFY
-              : GRPC_SSL_REQUEST_CLIENT_CERTIFICATE_AND_VERIFY);
+      if (xds_certificate_provider->GetRequireClientCertificate("")) {
+        tls_credentials_options->set_cert_request_type(
+            GRPC_SSL_REQUEST_AND_REQUIRE_CLIENT_CERTIFICATE_AND_VERIFY);
+      } else {
+        tls_credentials_options->set_cert_request_type(
+            GRPC_SSL_REQUEST_CLIENT_CERTIFICATE_AND_VERIFY);
+      }
     } else {
       // Do not request client certificate if there is no way to verify.
       tls_credentials_options->set_cert_request_type(
@@ -219,12 +225,12 @@ UniqueTypeName XdsServerCredentials::Type() {
 
 grpc_channel_credentials* grpc_xds_credentials_create(
     grpc_channel_credentials* fallback_credentials) {
-  CHECK_NE(fallback_credentials, nullptr);
+  GPR_ASSERT(fallback_credentials != nullptr);
   return new grpc_core::XdsCredentials(fallback_credentials->Ref());
 }
 
 grpc_server_credentials* grpc_xds_server_credentials_create(
     grpc_server_credentials* fallback_credentials) {
-  CHECK_NE(fallback_credentials, nullptr);
+  GPR_ASSERT(fallback_credentials != nullptr);
   return new grpc_core::XdsServerCredentials(fallback_credentials->Ref());
 }

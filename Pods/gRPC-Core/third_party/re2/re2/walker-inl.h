@@ -148,8 +148,7 @@ template<typename T> void Regexp::Walker<T>::Reset() {
   if (!stack_.empty()) {
     LOG(DFATAL) << "Stack not empty.";
     while (!stack_.empty()) {
-      if (stack_.top().re->nsub_ > 1)
-        delete[] stack_.top().child_args;
+      delete[] stack_.top().child_args;
       stack_.pop();
     }
   }
@@ -170,7 +169,7 @@ template<typename T> T Regexp::Walker<T>::WalkInternal(Regexp* re, T top_arg,
   for (;;) {
     T t;
     s = &stack_.top();
-    re = s->re;
+    Regexp* re = s->re;
     switch (s->n) {
       case -1: {
         if (--max_visits_ < 0) {

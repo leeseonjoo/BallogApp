@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -35,6 +36,9 @@ PrefilterTree::PrefilterTree(int min_atom_len)
 PrefilterTree::~PrefilterTree() {
   for (size_t i = 0; i < prefilter_vec_.size(); i++)
     delete prefilter_vec_[i];
+
+  for (size_t i = 0; i < entries_.size(); i++)
+    delete entries_[i].parents;
 }
 
 void PrefilterTree::Add(Prefilter* prefilter) {
@@ -63,6 +67,7 @@ void PrefilterTree::Compile(std::vector<std::string>* atom_vec) {
 
   compiled_ = true;
 
+  // TODO(junyer): Use std::unordered_set<Prefilter*> instead?
   NodeMap nodes;
   AssignUniqueIds(&nodes, atom_vec);
 
@@ -73,21 +78,25 @@ void PrefilterTree::Compile(std::vector<std::string>* atom_vec) {
   // not miss out on any regexps triggering by getting rid of a
   // prefilter node.
   for (size_t i = 0; i < entries_.size(); i++) {
-    std::vector<int>& parents = entries_[i].parents;
-    if (parents.size() > 8) {
+    StdIntMap* parents = entries_[i].parents;
+    if (parents->size() > 8) {
       // This one triggers too many things. If all the parents are AND
       // nodes and have other things guarding them, then get rid of
       // this trigger. TODO(vsri): Adjust the threshold appropriately,
       // make it a function of total number of nodes?
       bool have_other_guard = true;
-      for (int parent : parents) {
+      for (StdIntMap::iterator it = parents->begin();
+           it != parents->end(); ++it) {
         have_other_guard = have_other_guard &&
-            (entries_[parent].propagate_up_at_count > 1);
+            (entries_[it->first].propagate_up_at_count > 1);
       }
+
       if (have_other_guard) {
-        for (int parent : parents)
-          entries_[parent].propagate_up_at_count -= 1;
-        parents.clear();  // Forget the parents
+        for (StdIntMap::iterator it = parents->begin();
+             it != parents->end(); ++it)
+          entries_[it->first].propagate_up_at_count -= 1;
+
+        parents->clear();  // Forget the parents
       }
     }
   }
@@ -208,7 +217,20 @@ void PrefilterTree::AssignUniqueIds(NodeMap* nodes,
       node->set_unique_id(canonical->unique_id());
     }
   }
-  entries_.resize(unique_id);
+  entries_.resize(nodes->size());
+
+  // Create parent StdIntMap for the entries.
+  for (int i = static_cast<int>(v.size()) - 1; i >= 0; i--) {
+    Prefilter* prefilter = v[i];
+    if (prefilter == NULL)
+      continue;
+
+    if (CanonicalNode(nodes, prefilter) != prefilter)
+      continue;
+
+    Entry* entry = &entries_[prefilter->unique_id()];
+    entry->parents = new StdIntMap();
+  }
 
   // Fill the entries.
   for (int i = static_cast<int>(v.size()) - 1; i >= 0; i--) {
@@ -219,34 +241,41 @@ void PrefilterTree::AssignUniqueIds(NodeMap* nodes,
     if (CanonicalNode(nodes, prefilter) != prefilter)
       continue;
 
-    int id = prefilter->unique_id();
+    Entry* entry = &entries_[prefilter->unique_id()];
 
     switch (prefilter->op()) {
       default:
+      case Prefilter::ALL:
         LOG(DFATAL) << "Unexpected op: " << prefilter->op();
         return;
 
       case Prefilter::ATOM:
-        entries_[id].propagate_up_at_count = 1;
+        entry->propagate_up_at_count = 1;
         break;
 
       case Prefilter::OR:
       case Prefilter::AND: {
-        // For each child, we append our id to the child's list of
-        // parent ids... unless we happen to have done so already.
-        // The number of appends is the number of unique children,
-        // which allows correct upward propagation from AND nodes.
-        int up_count = 0;
+        std::set<int> uniq_child;
         for (size_t j = 0; j < prefilter->subs()->size(); j++) {
-          int child_id = (*prefilter->subs())[j]->unique_id();
-          std::vector<int>& parents = entries_[child_id].parents;
-          if (parents.empty() || parents.back() != id) {
-            parents.push_back(id);
-            up_count++;
+          Prefilter* child = (*prefilter->subs())[j];
+          Prefilter* canonical = CanonicalNode(nodes, child);
+          if (canonical == NULL) {
+            LOG(DFATAL) << "Null canonical node";
+            return;
+          }
+          int child_id = canonical->unique_id();
+          uniq_child.insert(child_id);
+          // To the child, we want to add to parent indices.
+          Entry* child_entry = &entries_[child_id];
+          if (child_entry->parents->find(prefilter->unique_id()) ==
+              child_entry->parents->end()) {
+            (*child_entry->parents)[prefilter->unique_id()] = 1;
           }
         }
-        entries_[id].propagate_up_at_count =
-            prefilter->op() == Prefilter::AND ? up_count : 1;
+        entry->propagate_up_at_count = prefilter->op() == Prefilter::AND
+                                           ? static_cast<int>(uniq_child.size())
+                                           : 1;
+
         break;
       }
     }
@@ -307,7 +336,10 @@ void PrefilterTree::PropagateMatch(const std::vector<int>& atom_ids,
       regexps->set(entry.regexps[i], 1);
     int c;
     // Pass trigger up to parents.
-    for (int j : entry.parents) {
+    for (StdIntMap::iterator it = entry.parents->begin();
+         it != entry.parents->end();
+         ++it) {
+      int j = it->first;
       const Entry& parent = entries_[j];
       // Delay until all the children have succeeded.
       if (parent.propagate_up_at_count > 1) {
@@ -337,12 +369,12 @@ void PrefilterTree::PrintDebugInfo(NodeMap* nodes) {
   LOG(ERROR) << "#Unique Nodes: " << entries_.size();
 
   for (size_t i = 0; i < entries_.size(); i++) {
-    const std::vector<int>& parents = entries_[i].parents;
+    StdIntMap* parents = entries_[i].parents;
     const std::vector<int>& regexps = entries_[i].regexps;
     LOG(ERROR) << "EntryId: " << i
-               << " N: " << parents.size() << " R: " << regexps.size();
-    for (int parent : parents)
-      LOG(ERROR) << parent;
+               << " N: " << parents->size() << " R: " << regexps.size();
+    for (StdIntMap::iterator it = parents->begin(); it != parents->end(); ++it)
+      LOG(ERROR) << it->first;
   }
   LOG(ERROR) << "Map:";
   for (NodeMap::const_iterator iter = nodes->begin();

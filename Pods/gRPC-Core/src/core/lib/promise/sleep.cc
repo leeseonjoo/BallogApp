@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "src/core/lib/promise/sleep.h"
-
-#include <grpc/event_engine/event_engine.h>
 #include <grpc/support/port_platform.h>
+
+#include "src/core/lib/promise/sleep.h"
 
 #include <utility>
 
-#include "src/core/lib/event_engine/event_engine_context.h"  // IWYU pragma: keep
+#include <grpc/event_engine/event_engine.h>
+
+#include "src/core/lib/event_engine/default_event_engine.h"
+#include "src/core/lib/gprpp/time.h"
 #include "src/core/lib/iomgr/exec_ctx.h"
 #include "src/core/lib/promise/activity.h"
-#include "src/core/lib/promise/context.h"
 #include "src/core/lib/promise/poll.h"
-#include "src/core/util/time.h"
 
 namespace grpc_core {
 
-using ::grpc_event_engine::experimental::EventEngine;
+using ::grpc_event_engine::experimental::GetDefaultEventEngine;
 
 Sleep::Sleep(Timestamp deadline) : deadline_(deadline) {}
 
@@ -40,9 +40,8 @@ Poll<absl::Status> Sleep::operator()() {
   // Invalidate now so that we see a fresh version of the time.
   // TODO(ctiller): the following can be safely removed when we remove ExecCtx.
   ExecCtx::Get()->InvalidateNow();
-  const auto now = Timestamp::Now();
   // If the deadline is earlier than now we can just return.
-  if (deadline_ <= now) return absl::OkStatus();
+  if (deadline_ <= Timestamp::Now()) return absl::OkStatus();
   if (closure_ == nullptr) {
     // TODO(ctiller): it's likely we'll want a pool of closures - probably per
     // cpu? - to avoid allocating/deallocating on fast paths.
@@ -53,8 +52,8 @@ Poll<absl::Status> Sleep::operator()() {
 }
 
 Sleep::ActiveClosure::ActiveClosure(Timestamp deadline)
-    : waker_(GetContext<Activity>()->MakeOwningWaker()),
-      timer_handle_(GetContext<EventEngine>()->RunAfter(
+    : waker_(Activity::current()->MakeOwningWaker()),
+      timer_handle_(GetDefaultEventEngine()->RunAfter(
           deadline - Timestamp::Now(), this)) {}
 
 void Sleep::ActiveClosure::Run() {
@@ -72,7 +71,7 @@ void Sleep::ActiveClosure::Cancel() {
   // If we cancel correctly then we must own both refs still and can simply
   // delete without unreffing twice, otherwise try unreffing since this may be
   // the last owned ref.
-  if (HasRun() || GetContext<EventEngine>()->Cancel(timer_handle_) || Unref()) {
+  if (GetDefaultEventEngine()->Cancel(timer_handle_) || Unref()) {
     delete this;
   }
 }

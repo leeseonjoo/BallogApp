@@ -1,33 +1,38 @@
-//
-//
-// Copyright 2015 gRPC authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-//
+/*
+ *
+ * Copyright 2015 gRPC authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+#include <grpc/support/port_platform.h>
 
 #include "src/core/lib/iomgr/iomgr.h"
 
-#include <grpc/support/alloc.h>
-#include <grpc/support/port_platform.h>
-#include <grpc/support/string_util.h>
-#include <grpc/support/sync.h>
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "absl/log/log.h"
-#include "src/core/config/config_vars.h"
+#include <grpc/support/alloc.h>
+#include <grpc/support/log.h>
+#include <grpc/support/string_util.h>
+#include <grpc/support/sync.h>
+
+#include "src/core/lib/gpr/string.h"
+#include "src/core/lib/gpr/useful.h"
+#include "src/core/lib/gprpp/global_config.h"
+#include "src/core/lib/gprpp/thd.h"
 #include "src/core/lib/iomgr/buffer_list.h"
 #include "src/core/lib/iomgr/exec_ctx.h"
 #include "src/core/lib/iomgr/executor.h"
@@ -35,15 +40,16 @@
 #include "src/core/lib/iomgr/iomgr_internal.h"
 #include "src/core/lib/iomgr/timer.h"
 #include "src/core/lib/iomgr/timer_manager.h"
-#include "src/core/util/crash.h"
-#include "src/core/util/string.h"
-#include "src/core/util/thd.h"
-#include "src/core/util/useful.h"
+
+GPR_GLOBAL_CONFIG_DEFINE_BOOL(grpc_abort_on_leaks, false,
+                              "A debugging aid to cause a call to abort() when "
+                              "gRPC objects are leaked past grpc_shutdown()");
 
 static gpr_mu g_mu;
 static gpr_cv g_rcv;
 static int g_shutdown;
 static grpc_iomgr_object g_root_object;
+static bool g_grpc_abort_on_leaks;
 
 void grpc_iomgr_init() {
   grpc_core::ExecCtx exec_ctx;
@@ -58,6 +64,7 @@ void grpc_iomgr_init() {
   g_root_object.name = const_cast<char*>("root");
   grpc_iomgr_platform_init();
   grpc_timer_list_init();
+  g_grpc_abort_on_leaks = GPR_GLOBAL_CONFIG_GET(grpc_abort_on_leaks);
 }
 
 void grpc_iomgr_start() { grpc_timer_manager_init(); }
@@ -81,7 +88,7 @@ size_t grpc_iomgr_count_objects_for_testing(void) {
 static void dump_objects(const char* kind) {
   grpc_iomgr_object* obj;
   for (obj = g_root_object.next; obj != &g_root_object; obj = obj->next) {
-    VLOG(2) << kind << " OBJECT: " << obj->name << " " << obj;
+    gpr_log(GPR_DEBUG, "%s OBJECT: %s %p", kind, obj->name, obj);
   }
 }
 
@@ -101,8 +108,9 @@ void grpc_iomgr_shutdown() {
               gpr_time_sub(gpr_now(GPR_CLOCK_REALTIME), last_warning_time),
               gpr_time_from_seconds(1, GPR_TIMESPAN)) >= 0) {
         if (g_root_object.next != &g_root_object) {
-          VLOG(2) << "Waiting for " << count_objects()
-                  << " iomgr objects to be destroyed";
+          gpr_log(GPR_DEBUG,
+                  "Waiting for %" PRIuPTR " iomgr objects to be destroyed",
+                  count_objects());
         }
         last_warning_time = gpr_now(GPR_CLOCK_REALTIME);
       }
@@ -116,9 +124,11 @@ void grpc_iomgr_shutdown() {
       }
       if (g_root_object.next != &g_root_object) {
         if (grpc_iomgr_abort_on_leaks()) {
-          VLOG(2) << "Failed to free " << count_objects()
-                  << " iomgr objects before shutdown deadline: "
-                  << "memory leaks are likely";
+          gpr_log(GPR_DEBUG,
+                  "Failed to free %" PRIuPTR
+                  " iomgr objects before shutdown deadline: "
+                  "memory leaks are likely",
+                  count_objects());
           dump_objects("LEAKED");
           abort();
         }
@@ -129,9 +139,11 @@ void grpc_iomgr_shutdown() {
           if (gpr_time_cmp(gpr_now(GPR_CLOCK_REALTIME), shutdown_deadline) >
               0) {
             if (g_root_object.next != &g_root_object) {
-              VLOG(2) << "Failed to free " << count_objects()
-                      << " iomgr objects before shutdown deadline: "
-                      << "memory leaks are likely";
+              gpr_log(GPR_DEBUG,
+                      "Failed to free %" PRIuPTR
+                      " iomgr objects before shutdown deadline: "
+                      "memory leaks are likely",
+                      count_objects());
               dump_objects("LEAKED");
             }
             break;
@@ -145,7 +157,7 @@ void grpc_iomgr_shutdown() {
     grpc_core::Executor::ShutdownAll();
   }
 
-  // ensure all threads have left g_mu
+  /* ensure all threads have left g_mu */
   gpr_mu_lock(&g_mu);
   gpr_mu_unlock(&g_mu);
 
@@ -185,6 +197,4 @@ void grpc_iomgr_unregister_object(grpc_iomgr_object* obj) {
   gpr_free(obj->name);
 }
 
-bool grpc_iomgr_abort_on_leaks(void) {
-  return grpc_core::ConfigVars::Get().AbortOnLeaks();
-}
+bool grpc_iomgr_abort_on_leaks(void) { return g_grpc_abort_on_leaks; }

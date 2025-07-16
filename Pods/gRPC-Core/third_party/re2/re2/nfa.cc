@@ -456,14 +456,14 @@ bool NFA::Search(const StringPiece& text, const StringPiece& const_context,
     context = text;
 
   // Sanity check: make sure that text lies within context.
-  if (BeginPtr(text) < BeginPtr(context) || EndPtr(text) > EndPtr(context)) {
+  if (text.begin() < context.begin() || text.end() > context.end()) {
     LOG(DFATAL) << "context does not contain text";
     return false;
   }
 
-  if (prog_->anchor_start() && BeginPtr(context) != BeginPtr(text))
+  if (prog_->anchor_start() && context.begin() != text.begin())
     return false;
-  if (prog_->anchor_end() && EndPtr(context) != EndPtr(text))
+  if (prog_->anchor_end() && context.end() != text.end())
     return false;
   anchored |= prog_->anchor_start();
   if (prog_->anchor_end()) {
@@ -646,7 +646,7 @@ Prog::SearchNFA(const StringPiece& text, const StringPiece& context,
   }
   if (!nfa.Search(text, context, anchor == kAnchored, kind != kFirstMatch, match, nmatch))
     return false;
-  if (kind == kFullMatch && EndPtr(match[0]) != EndPtr(text))
+  if (kind == kFullMatch && match[0].end() != text.end())
     return false;
   return true;
 }

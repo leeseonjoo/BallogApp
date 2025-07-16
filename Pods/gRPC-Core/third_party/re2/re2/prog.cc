@@ -118,7 +118,6 @@ Prog::Prog()
     prefix_foldcase_(false),
     prefix_size_(0),
     list_count_(0),
-    bit_state_text_max_size_(0),
     dfa_mem_(0),
     dfa_first_(NULL),
     dfa_longest_(NULL) {
@@ -611,13 +610,10 @@ void Prog::Flatten() {
     inst_count_[ip->opcode()]++;
   }
 
-#if !defined(NDEBUG)
-  // Address a `-Wunused-but-set-variable' warning from Clang 13.x.
-  size_t total = 0;
+  int total = 0;
   for (int i = 0; i < kNumInst; i++)
     total += inst_count_[i];
-  CHECK_EQ(total, flat.size());
-#endif
+  DCHECK_EQ(total, static_cast<int>(flat.size()));
 
   // Remap start_unanchored and start.
   if (start_unanchored() == 0) {
@@ -644,11 +640,6 @@ void Prog::Flatten() {
     for (int i = 0; i < list_count_; ++i)
       list_heads_[flatmap[i]] = i;
   }
-
-  // BitState allocates a bitmap of size list_count_ * (text.size()+1)
-  // for tracking pairs of possibilities that it has already explored.
-  const size_t kBitStateBitmapMaxSize = 256*1024;  // max size in bits
-  bit_state_text_max_size_ = kBitStateBitmapMaxSize / list_count_ - 1;
 }
 
 void Prog::MarkSuccessors(SparseArray<int>* rootmap,

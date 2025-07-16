@@ -1488,15 +1488,15 @@ inline bool DFA::InlinedSearchLoop(SearchParams* params) {
 
   int lastbyte;
   if (run_forward) {
-    if (EndPtr(params->text) == EndPtr(params->context))
+    if (params->text.end() == params->context.end())
       lastbyte = kByteEndText;
     else
-      lastbyte = EndPtr(params->text)[0] & 0xFF;
+      lastbyte = params->text.end()[0] & 0xFF;
   } else {
-    if (BeginPtr(params->text) == BeginPtr(params->context))
+    if (params->text.begin() == params->context.begin())
       lastbyte = kByteEndText;
     else
-      lastbyte = BeginPtr(params->text)[-1] & 0xFF;
+      lastbyte = params->text.begin()[-1] & 0xFF;
   }
 
   State* ns = s->next_[ByteMap(lastbyte)].load(std::memory_order_acquire);
@@ -1627,7 +1627,7 @@ bool DFA::AnalyzeSearch(SearchParams* params) {
   const StringPiece& context = params->context;
 
   // Sanity check: make sure that text lies within context.
-  if (BeginPtr(text) < BeginPtr(context) || EndPtr(text) > EndPtr(context)) {
+  if (text.begin() < context.begin() || text.end() > context.end()) {
     LOG(DFATAL) << "context does not contain text";
     params->start = DeadState;
     return true;
@@ -1637,13 +1637,13 @@ bool DFA::AnalyzeSearch(SearchParams* params) {
   int start;
   uint32_t flags;
   if (params->run_forward) {
-    if (BeginPtr(text) == BeginPtr(context)) {
+    if (text.begin() == context.begin()) {
       start = kStartBeginText;
       flags = kEmptyBeginText|kEmptyBeginLine;
-    } else if (BeginPtr(text)[-1] == '\n') {
+    } else if (text.begin()[-1] == '\n') {
       start = kStartBeginLine;
       flags = kEmptyBeginLine;
-    } else if (Prog::IsWordChar(BeginPtr(text)[-1] & 0xFF)) {
+    } else if (Prog::IsWordChar(text.begin()[-1] & 0xFF)) {
       start = kStartAfterWordChar;
       flags = kFlagLastWord;
     } else {
@@ -1651,13 +1651,13 @@ bool DFA::AnalyzeSearch(SearchParams* params) {
       flags = 0;
     }
   } else {
-    if (EndPtr(text) == EndPtr(context)) {
+    if (text.end() == context.end()) {
       start = kStartBeginText;
       flags = kEmptyBeginText|kEmptyBeginLine;
-    } else if (EndPtr(text)[0] == '\n') {
+    } else if (text.end()[0] == '\n') {
       start = kStartBeginLine;
       flags = kEmptyBeginLine;
-    } else if (Prog::IsWordChar(EndPtr(text)[0] & 0xFF)) {
+    } else if (Prog::IsWordChar(text.end()[0] & 0xFF)) {
       start = kStartAfterWordChar;
       flags = kFlagLastWord;
     } else {
@@ -1837,9 +1837,9 @@ bool Prog::SearchDFA(const StringPiece& text, const StringPiece& const_context,
     using std::swap;
     swap(caret, dollar);
   }
-  if (caret && BeginPtr(context) != BeginPtr(text))
+  if (caret && context.begin() != text.begin())
     return false;
-  if (dollar && EndPtr(context) != EndPtr(text))
+  if (dollar && context.end() != text.end())
     return false;
 
   // Handle full match by running an anchored longest match

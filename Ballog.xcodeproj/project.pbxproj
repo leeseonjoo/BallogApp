@@ -57,11 +57,15 @@
 		};
 		235B0A582E1D68C000EF9DDD /* BallogTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = BallogTests;
 			sourceTree = "<group>";
 		};
 		235B0A622E1D68C000EF9DDD /* BallogUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = BallogUITests;
 			sourceTree = "<group>";
 		};
@@ -276,13 +280,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Ballog/Pods-Ballog-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Ballog/Pods-Ballog-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -679,7 +679,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
 	};
 	rootObject = 235B0A3D2E1D68BF00EF9DDD /* Project object */;
 }

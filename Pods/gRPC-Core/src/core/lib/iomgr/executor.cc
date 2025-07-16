@@ -1,45 +1,58 @@
-//
-//
-// Copyright 2015 gRPC authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-//
+/*
+ *
+ * Copyright 2015 gRPC authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+#include <grpc/support/port_platform.h>
 
 #include "src/core/lib/iomgr/executor.h"
 
-#include <grpc/support/alloc.h>
-#include <grpc/support/cpu.h>
-#include <grpc/support/port_platform.h>
-#include <grpc/support/sync.h>
 #include <string.h>
 
-#include "absl/log/check.h"
-#include "absl/log/log.h"
-#include "absl/strings/str_format.h"
-#include "src/core/lib/debug/trace_impl.h"
+#include <grpc/support/alloc.h>
+#include <grpc/support/cpu.h>
+#include <grpc/support/log.h>
+#include <grpc/support/sync.h>
+
+#include "src/core/lib/gpr/tls.h"
+#include "src/core/lib/gpr/useful.h"
+#include "src/core/lib/gprpp/memory.h"
 #include "src/core/lib/iomgr/exec_ctx.h"
 #include "src/core/lib/iomgr/iomgr_internal.h"
-#include "src/core/util/crash.h"
-#include "src/core/util/memory.h"
-#include "src/core/util/useful.h"
 
 #define MAX_DEPTH 2
+
+#define EXECUTOR_TRACE(format, ...)                       \
+  do {                                                    \
+    if (GRPC_TRACE_FLAG_ENABLED(executor_trace)) {        \
+      gpr_log(GPR_INFO, "EXECUTOR " format, __VA_ARGS__); \
+    }                                                     \
+  } while (0)
+
+#define EXECUTOR_TRACE0(str)                       \
+  do {                                             \
+    if (GRPC_TRACE_FLAG_ENABLED(executor_trace)) { \
+      gpr_log(GPR_INFO, "EXECUTOR " str);          \
+    }                                              \
+  } while (0)
 
 namespace grpc_core {
 namespace {
 
-thread_local ThreadState* g_this_thread_state;
+GPR_THREAD_LOCAL(ThreadState*) g_this_thread_state;
 
 Executor* executors[static_cast<size_t>(ExecutorType::NUM_EXECUTORS)];
 
@@ -73,6 +86,8 @@ const EnqueueFunc
 
 }  // namespace
 
+TraceFlag executor_trace(false, "executor");
+
 Executor::Executor(const char* name) : name_(name) {
   adding_thread_lock_ = GPR_SPINLOCK_STATIC_INITIALIZER;
   gpr_atm_rel_store(&num_threads_, 0);
@@ -100,13 +115,11 @@ size_t Executor::RunClosures(const char* executor_name,
   while (c != nullptr) {
     grpc_closure* next = c->next_data.next;
 #ifndef NDEBUG
-    GRPC_TRACE_LOG(executor, INFO)
-        << "EXECUTOR (" << executor_name << ") run " << c << " [created by "
-        << c->file_created << ":" << c->line_created << "]";
+    EXECUTOR_TRACE("(%s) run %p [created by %s:%d]", executor_name, c,
+                   c->file_created, c->line_created);
     c->scheduled = false;
 #else
-    GRPC_TRACE_LOG(executor, INFO)
-        << "EXECUTOR (" << executor_name << ") run " << c;
+    EXECUTOR_TRACE("(%s) run %p", executor_name, c);
 #endif
     grpc_error_handle error =
         internal::StatusMoveFromHeapPtr(c->error_data.error);
@@ -126,18 +139,15 @@ bool Executor::IsThreaded() const {
 
 void Executor::SetThreading(bool threading) {
   gpr_atm curr_num_threads = gpr_atm_acq_load(&num_threads_);
-  GRPC_TRACE_LOG(executor, INFO)
-      << "EXECUTOR (" << name_ << ") SetThreading(" << threading << ") begin";
+  EXECUTOR_TRACE("(%s) SetThreading(%d) begin", name_, threading);
 
   if (threading) {
     if (curr_num_threads > 0) {
-      GRPC_TRACE_LOG(executor, INFO)
-          << "EXECUTOR (" << name_
-          << ") SetThreading(true). curr_num_threads > 0";
+      EXECUTOR_TRACE("(%s) SetThreading(true). curr_num_threads > 0", name_);
       return;
     }
 
-    CHECK_EQ(num_threads_, 0);
+    GPR_ASSERT(num_threads_ == 0);
     gpr_atm_rel_store(&num_threads_, 1);
     thd_state_ = static_cast<ThreadState*>(
         gpr_zalloc(sizeof(ThreadState) * max_threads_));
@@ -155,9 +165,7 @@ void Executor::SetThreading(bool threading) {
     thd_state_[0].thd.Start();
   } else {  // !threading
     if (curr_num_threads == 0) {
-      GRPC_TRACE_LOG(executor, INFO)
-          << "EXECUTOR (" << name_
-          << ") SetThreading(false). curr_num_threads == 0";
+      EXECUTOR_TRACE("(%s) SetThreading(false). curr_num_threads == 0", name_);
       return;
     }
 
@@ -168,17 +176,16 @@ void Executor::SetThreading(bool threading) {
       gpr_mu_unlock(&thd_state_[i].mu);
     }
 
-    // Ensure no thread is adding a new thread. Once this is past, then no
-    // thread will try to add a new one either (since shutdown is true)
+    /* Ensure no thread is adding a new thread. Once this is past, then no
+     * thread will try to add a new one either (since shutdown is true) */
     gpr_spinlock_lock(&adding_thread_lock_);
     gpr_spinlock_unlock(&adding_thread_lock_);
 
     curr_num_threads = gpr_atm_no_barrier_load(&num_threads_);
     for (gpr_atm i = 0; i < curr_num_threads; i++) {
       thd_state_[i].thd.Join();
-      GRPC_TRACE_LOG(executor, INFO)
-          << "EXECUTOR (" << name_ << ") Thread " << i + 1 << " of "
-          << curr_num_threads << " joined";
+      EXECUTOR_TRACE("(%s) Thread %" PRIdPTR " of %" PRIdPTR " joined", name_,
+                     i + 1, curr_num_threads);
     }
 
     gpr_atm_rel_store(&num_threads_, 0);
@@ -199,8 +206,7 @@ void Executor::SetThreading(bool threading) {
     grpc_iomgr_platform_shutdown_background_closure();
   }
 
-  GRPC_TRACE_LOG(executor, INFO)
-      << "EXECUTOR (" << name_ << ") SetThreading(" << threading << ") done";
+  EXECUTOR_TRACE("(%s) SetThreading(%d) done", name_, threading);
 }
 
 void Executor::Shutdown() { SetThreading(false); }
@@ -213,9 +219,8 @@ void Executor::ThreadMain(void* arg) {
 
   size_t subtract_depth = 0;
   for (;;) {
-    GRPC_TRACE_LOG(executor, INFO)
-        << "EXECUTOR (" << ts->name << ") [" << ts->id
-        << "]: step (sub_depth=" << subtract_depth << ")";
+    EXECUTOR_TRACE("(%s) [%" PRIdPTR "]: step (sub_depth=%" PRIdPTR ")",
+                   ts->name, ts->id, subtract_depth);
 
     gpr_mu_lock(&ts->mu);
     ts->depth -= subtract_depth;
@@ -226,8 +231,7 @@ void Executor::ThreadMain(void* arg) {
     }
 
     if (ts->shutdown) {
-      GRPC_TRACE_LOG(executor, INFO)
-          << "EXECUTOR (" << ts->name << ") [" << ts->id << "]: shutdown";
+      EXECUTOR_TRACE("(%s) [%" PRIdPTR "]: shutdown", ts->name, ts->id);
       gpr_mu_unlock(&ts->mu);
       break;
     }
@@ -236,8 +240,7 @@ void Executor::ThreadMain(void* arg) {
     ts->elems = GRPC_CLOSURE_LIST_INIT;
     gpr_mu_unlock(&ts->mu);
 
-    GRPC_TRACE_LOG(executor, INFO)
-        << "EXECUTOR (" << ts->name << ") [" << ts->id << "]: execute";
+    EXECUTOR_TRACE("(%s) [%" PRIdPTR "]: execute", ts->name, ts->id);
 
     ExecCtx::Get()->InvalidateNow();
     subtract_depth = RunClosures(ts->name, closures);
@@ -259,13 +262,10 @@ void Executor::Enqueue(grpc_closure* closure, grpc_error_handle error,
     // or already shutdown), then queue the closure on the exec context itself
     if (cur_thread_count == 0) {
 #ifndef NDEBUG
-      GRPC_TRACE_LOG(executor, INFO)
-          << "EXECUTOR (" << name_ << ") schedule " << closure << " (created "
-          << closure->file_created << ":" << closure->line_created
-          << ") inline";
+      EXECUTOR_TRACE("(%s) schedule %p (created %s:%d) inline", name_, closure,
+                     closure->file_created, closure->line_created);
 #else
-      GRPC_TRACE_LOG(executor, INFO)
-          << "EXECUTOR (" << name_ << ") schedule " << closure << " inline";
+      EXECUTOR_TRACE("(%s) schedule %p inline", name_, closure);
 #endif
       grpc_closure_list_append(ExecCtx::Get()->closure_list(), closure, error);
       return;
@@ -285,15 +285,14 @@ void Executor::Enqueue(grpc_closure* closure, grpc_error_handle error,
 
     for (;;) {
 #ifndef NDEBUG
-      GRPC_TRACE_LOG(executor, INFO)
-          << "EXECUTOR (" << name_ << ") try to schedule " << closure << " ("
-          << (is_short ? "short" : "long") << ") (created "
-          << closure->file_created << ":" << closure->line_created
-          << ") to thread " << ts->id;
+      EXECUTOR_TRACE(
+          "(%s) try to schedule %p (%s) (created %s:%d) to thread "
+          "%" PRIdPTR,
+          name_, closure, is_short ? "short" : "long", closure->file_created,
+          closure->line_created, ts->id);
 #else
-      GRPC_TRACE_LOG(executor, INFO)
-          << "EXECUTOR (" << name_ << ") try to schedule " << closure << " ("
-          << (is_short ? "short" : "long") << ") to thread " << ts->id;
+      EXECUTOR_TRACE("(%s) try to schedule %p (%s) to thread %" PRIdPTR, name_,
+                     closure, is_short ? "short" : "long", ts->id);
 #endif
 
       gpr_mu_lock(&ts->mu);
@@ -368,11 +367,12 @@ void Executor::Enqueue(grpc_closure* closure, grpc_error_handle error,
 // the grpc_init() and grpc_shutdown() code paths which are protected by a
 // global mutex. So it is okay to assume that these functions are thread-safe
 void Executor::InitAll() {
-  GRPC_TRACE_LOG(executor, INFO) << "Executor::InitAll() enter";
+  EXECUTOR_TRACE0("Executor::InitAll() enter");
 
   // Return if Executor::InitAll() is already called earlier
   if (executors[static_cast<size_t>(ExecutorType::DEFAULT)] != nullptr) {
-    CHECK(executors[static_cast<size_t>(ExecutorType::RESOLVER)] != nullptr);
+    GPR_ASSERT(executors[static_cast<size_t>(ExecutorType::RESOLVER)] !=
+               nullptr);
     return;
   }
 
@@ -384,7 +384,7 @@ void Executor::InitAll() {
   executors[static_cast<size_t>(ExecutorType::DEFAULT)]->Init();
   executors[static_cast<size_t>(ExecutorType::RESOLVER)]->Init();
 
-  GRPC_TRACE_LOG(executor, INFO) << "Executor::InitAll() done";
+  EXECUTOR_TRACE0("Executor::InitAll() done");
 }
 
 void Executor::Run(grpc_closure* closure, grpc_error_handle error,
@@ -394,11 +394,12 @@ void Executor::Run(grpc_closure* closure, grpc_error_handle error,
 }
 
 void Executor::ShutdownAll() {
-  GRPC_TRACE_LOG(executor, INFO) << "Executor::ShutdownAll() enter";
+  EXECUTOR_TRACE0("Executor::ShutdownAll() enter");
 
   // Return if Executor:SshutdownAll() is already called earlier
   if (executors[static_cast<size_t>(ExecutorType::DEFAULT)] == nullptr) {
-    CHECK(executors[static_cast<size_t>(ExecutorType::RESOLVER)] == nullptr);
+    GPR_ASSERT(executors[static_cast<size_t>(ExecutorType::RESOLVER)] ==
+               nullptr);
     return;
   }
 
@@ -422,11 +423,11 @@ void Executor::ShutdownAll() {
   executors[static_cast<size_t>(ExecutorType::DEFAULT)] = nullptr;
   executors[static_cast<size_t>(ExecutorType::RESOLVER)] = nullptr;
 
-  GRPC_TRACE_LOG(executor, INFO) << "Executor::ShutdownAll() done";
+  EXECUTOR_TRACE0("Executor::ShutdownAll() done");
 }
 
 bool Executor::IsThreaded(ExecutorType executor_type) {
-  CHECK(executor_type < ExecutorType::NUM_EXECUTORS);
+  GPR_ASSERT(executor_type < ExecutorType::NUM_EXECUTORS);
   return executors[static_cast<size_t>(executor_type)]->IsThreaded();
 }
 
@@ -435,8 +436,7 @@ bool Executor::IsThreadedDefault() {
 }
 
 void Executor::SetThreadingAll(bool enable) {
-  GRPC_TRACE_LOG(executor, INFO)
-      << "EXECUTOR Executor::SetThreadingAll(" << enable << ") called";
+  EXECUTOR_TRACE("Executor::SetThreadingAll(%d) called", enable);
   for (size_t i = 0; i < static_cast<size_t>(ExecutorType::NUM_EXECUTORS);
        i++) {
     executors[i]->SetThreading(enable);
@@ -444,8 +444,7 @@ void Executor::SetThreadingAll(bool enable) {
 }
 
 void Executor::SetThreadingDefault(bool enable) {
-  GRPC_TRACE_LOG(executor, INFO)
-      << "EXECUTOR Executor::SetThreadingDefault(" << enable << ") called";
+  EXECUTOR_TRACE("Executor::SetThreadingDefault(%d) called", enable);
   executors[static_cast<size_t>(ExecutorType::DEFAULT)]->SetThreading(enable);
 }
 

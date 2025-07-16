@@ -1,27 +1,24 @@
-//
-//
-// Copyright 2018 gRPC authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-//
+/*
+ *
+ * Copyright 2018 gRPC authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
-#ifndef GRPC_SRC_CORE_LIB_SECURITY_SECURITY_CONNECTOR_TLS_TLS_SECURITY_CONNECTOR_H
-#define GRPC_SRC_CORE_LIB_SECURITY_SECURITY_CONNECTOR_TLS_TLS_SECURITY_CONNECTOR_H
+#ifndef GRPC_CORE_LIB_SECURITY_SECURITY_CONNECTOR_TLS_TLS_SECURITY_CONNECTOR_H
+#define GRPC_CORE_LIB_SECURITY_SECURITY_CONNECTOR_TLS_TLS_SECURITY_CONNECTOR_H
 
-#include <grpc/credentials.h>
-#include <grpc/grpc.h>
-#include <grpc/grpc_security.h>
 #include <grpc/support/port_platform.h>
 
 #include <map>
@@ -31,8 +28,13 @@
 #include "absl/status/status.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
-#include "src/core/handshaker/handshaker.h"
+
+#include <grpc/grpc.h>
+#include <grpc/grpc_security.h>
+
 #include "src/core/lib/channel/channel_args.h"
+#include "src/core/lib/gprpp/ref_counted_ptr.h"
+#include "src/core/lib/gprpp/sync.h"
 #include "src/core/lib/iomgr/closure.h"
 #include "src/core/lib/iomgr/endpoint.h"
 #include "src/core/lib/iomgr/error.h"
@@ -41,11 +43,10 @@
 #include "src/core/lib/security/credentials/tls/grpc_tls_certificate_distributor.h"
 #include "src/core/lib/security/security_connector/security_connector.h"
 #include "src/core/lib/security/security_connector/ssl_utils.h"
+#include "src/core/lib/transport/handshaker.h"
 #include "src/core/tsi/ssl/key_logging/ssl_key_logging.h"
 #include "src/core/tsi/ssl_transport_security.h"
 #include "src/core/tsi/transport_security_interface.h"
-#include "src/core/util/ref_counted_ptr.h"
-#include "src/core/util/sync.h"
 
 using TlsSessionKeyLogger = tsi::TlsSessionKeyLoggerCache::TlsSessionKeyLogger;
 
@@ -204,12 +205,12 @@ class TlsServerSecurityConnector final : public grpc_server_security_connector {
     return server_handshaker_factory_;
   };
 
-  absl::optional<absl::string_view> RootCertsForTesting() {
+  const absl::optional<absl::string_view>& RootCertsForTesting() {
     MutexLock lock(&mu_);
     return pem_root_certs_;
   }
 
-  absl::optional<PemKeyCertPairList> KeyCertPairListForTesting() {
+  const absl::optional<PemKeyCertPairList>& KeyCertPairListForTesting() {
     MutexLock lock(&mu_);
     return pem_key_cert_pair_list_;
   }
@@ -282,4 +283,4 @@ class TlsServerSecurityConnector final : public grpc_server_security_connector {
 
 }  // namespace grpc_core
 
-#endif  // GRPC_SRC_CORE_LIB_SECURITY_SECURITY_CONNECTOR_TLS_TLS_SECURITY_CONNECTOR_H
+#endif  // GRPC_CORE_LIB_SECURITY_SECURITY_CONNECTOR_TLS_TLS_SECURITY_CONNECTOR_H

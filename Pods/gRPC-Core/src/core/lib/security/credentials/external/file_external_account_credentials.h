@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-#ifndef GRPC_SRC_CORE_LIB_SECURITY_CREDENTIALS_EXTERNAL_FILE_EXTERNAL_ACCOUNT_CREDENTIALS_H
-#define GRPC_SRC_CORE_LIB_SECURITY_CREDENTIALS_EXTERNAL_FILE_EXTERNAL_ACCOUNT_CREDENTIALS_H
+#ifndef GRPC_CORE_LIB_SECURITY_CREDENTIALS_EXTERNAL_FILE_EXTERNAL_ACCOUNT_CREDENTIALS_H
+#define GRPC_CORE_LIB_SECURITY_CREDENTIALS_EXTERNAL_FILE_EXTERNAL_ACCOUNT_CREDENTIALS_H
 
 #include <grpc/support/port_platform.h>
 
@@ -23,51 +23,26 @@
 #include <string>
 #include <vector>
 
-#include "absl/strings/string_view.h"
+#include "src/core/lib/gprpp/ref_counted_ptr.h"
 #include "src/core/lib/iomgr/error.h"
 #include "src/core/lib/security/credentials/external/external_account_credentials.h"
-#include "src/core/util/ref_counted_ptr.h"
 
 namespace grpc_core {
 
 class FileExternalAccountCredentials final : public ExternalAccountCredentials {
  public:
-  static absl::StatusOr<RefCountedPtr<FileExternalAccountCredentials>> Create(
+  static RefCountedPtr<FileExternalAccountCredentials> Create(
       Options options, std::vector<std::string> scopes,
-      std::shared_ptr<grpc_event_engine::experimental::EventEngine>
-          event_engine = nullptr);
-
-  FileExternalAccountCredentials(
-      Options options, std::vector<std::string> scopes,
-      std::shared_ptr<grpc_event_engine::experimental::EventEngine>
-          event_engine,
       grpc_error_handle* error);
 
-  std::string debug_string() override;
-
-  static UniqueTypeName Type();
-
-  UniqueTypeName type() const override { return Type(); }
+  FileExternalAccountCredentials(Options options,
+                                 std::vector<std::string> scopes,
+                                 grpc_error_handle* error);
 
  private:
-  class FileFetchBody final : public FetchBody {
-   public:
-    FileFetchBody(absl::AnyInvocable<void(absl::StatusOr<std::string>)> on_done,
-                  FileExternalAccountCredentials* creds);
-
-   private:
-    void Shutdown() override {}
-
-    void ReadFile();
-
-    FileExternalAccountCredentials* creds_;
-  };
-
-  OrphanablePtr<FetchBody> RetrieveSubjectToken(
-      Timestamp deadline,
-      absl::AnyInvocable<void(absl::StatusOr<std::string>)> on_done) override;
-
-  absl::string_view CredentialSourceType() override;
+  void RetrieveSubjectToken(
+      HTTPRequestContext* ctx, const Options& options,
+      std::function<void(std::string, grpc_error_handle)> cb) override;
 
   // Fields of credential source
   std::string file_;
@@ -77,4 +52,4 @@ class FileExternalAccountCredentials final : public ExternalAccountCredentials {
 
 }  // namespace grpc_core
 
-#endif  // GRPC_SRC_CORE_LIB_SECURITY_CREDENTIALS_EXTERNAL_FILE_EXTERNAL_ACCOUNT_CREDENTIALS_H
+#endif  // GRPC_CORE_LIB_SECURITY_CREDENTIALS_EXTERNAL_FILE_EXTERNAL_ACCOUNT_CREDENTIALS_H
