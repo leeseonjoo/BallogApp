@@ -59,15 +59,11 @@
 		};
 		235B0A582E1D68C000EF9DDD /* BallogTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = BallogTests;
 			sourceTree = "<group>";
 		};
 		235B0A622E1D68C000EF9DDD /* BallogUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = BallogUITests;
 			sourceTree = "<group>";
 		};
@@ -136,7 +132,6 @@
 				03C264BB94942DDAFEFE1295 /* Pods-Ballog.debug.xcconfig */,
 				EBEF989E4EE7F5B726487027 /* Pods-Ballog.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -284,9 +279,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Ballog/Pods-Ballog-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Ballog/Pods-Ballog-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
