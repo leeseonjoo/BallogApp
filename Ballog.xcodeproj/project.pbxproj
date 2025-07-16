@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2305C0972E26ABEC00F75E33 /* Ballog.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2305C0952E26ABEB00F75E33 /* Ballog.xcdatamodeld */; };
+		A47265944F85AC1BD30BDE47 /* Pods_Ballog.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CF8BADE2512D80B67E8E70A /* Pods_Ballog.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,10 +29,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		184609CF8FC7C4B4F48D2A31 /* Pods-Ballog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballog.release.xcconfig"; path = "Target Support Files/Pods-Ballog/Pods-Ballog.release.xcconfig"; sourceTree = "<group>"; };
 		2305C0962E26ABEC00F75E33 /* Ballog.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Ballog.xcdatamodel; sourceTree = "<group>"; };
 		235B0A452E1D68BF00EF9DDD /* Ballog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ballog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		235B0A552E1D68C000EF9DDD /* BallogTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BallogTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		235B0A5F2E1D68C000EF9DDD /* BallogUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BallogUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F3B16DE8ACEBA520BBD3C73 /* Pods-Ballog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballog.debug.xcconfig"; path = "Target Support Files/Pods-Ballog/Pods-Ballog.debug.xcconfig"; sourceTree = "<group>"; };
+		9CF8BADE2512D80B67E8E70A /* Pods_Ballog.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Ballog.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -55,11 +59,15 @@
 		};
 		235B0A582E1D68C000EF9DDD /* BallogTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = BallogTests;
 			sourceTree = "<group>";
 		};
 		235B0A622E1D68C000EF9DDD /* BallogUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = BallogUITests;
 			sourceTree = "<group>";
 		};
@@ -70,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A47265944F85AC1BD30BDE47 /* Pods_Ballog.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,6 +107,8 @@
 				235B0A582E1D68C000EF9DDD /* BallogTests */,
 				235B0A622E1D68C000EF9DDD /* BallogUITests */,
 				235B0A462E1D68BF00EF9DDD /* Products */,
+				5806A4A3ABE2C909A069F0AA /* Pods */,
+				E9660334523787CC4318A4E3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -111,6 +122,24 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5806A4A3ABE2C909A069F0AA /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				6F3B16DE8ACEBA520BBD3C73 /* Pods-Ballog.debug.xcconfig */,
+				184609CF8FC7C4B4F48D2A31 /* Pods-Ballog.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		E9660334523787CC4318A4E3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9CF8BADE2512D80B67E8E70A /* Pods_Ballog.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -118,9 +147,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 235B0A692E1D68C000EF9DDD /* Build configuration list for PBXNativeTarget "Ballog" */;
 			buildPhases = (
+				B8A36EC5AE6CD318A59BD211 /* [CP] Check Pods Manifest.lock */,
 				235B0A412E1D68BF00EF9DDD /* Sources */,
 				235B0A422E1D68BF00EF9DDD /* Frameworks */,
 				235B0A432E1D68BF00EF9DDD /* Resources */,
+				6864EE1CA6E61AAE99AC78FF /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -130,8 +161,6 @@
 				235B0A472E1D68BF00EF9DDD /* Ballog */,
 			);
 			name = Ballog;
-			packageProductDependencies = (
-			);
 			productName = Ballog;
 			productReference = 235B0A452E1D68BF00EF9DDD /* Ballog.app */;
 			productType = "com.apple.product-type.application";
@@ -153,8 +182,6 @@
 				235B0A582E1D68C000EF9DDD /* BallogTests */,
 			);
 			name = BallogTests;
-			packageProductDependencies = (
-			);
 			productName = BallogTests;
 			productReference = 235B0A552E1D68C000EF9DDD /* BallogTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -176,8 +203,6 @@
 				235B0A622E1D68C000EF9DDD /* BallogUITests */,
 			);
 			name = BallogUITests;
-			packageProductDependencies = (
-			);
 			productName = BallogUITests;
 			productReference = 235B0A5F2E1D68C000EF9DDD /* BallogUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -249,6 +274,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		6864EE1CA6E61AAE99AC78FF /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Ballog/Pods-Ballog-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Ballog/Pods-Ballog-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Ballog/Pods-Ballog-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B8A36EC5AE6CD318A59BD211 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Ballog-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		235B0A412E1D68BF00EF9DDD /* Sources */ = {
@@ -405,6 +472,7 @@
 		};
 		235B0A6A2E1D68C000EF9DDD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6F3B16DE8ACEBA520BBD3C73 /* Pods-Ballog.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon 1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -444,6 +512,7 @@
 		};
 		235B0A6B2E1D68C000EF9DDD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 184609CF8FC7C4B4F48D2A31 /* Pods-Ballog.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon 1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
