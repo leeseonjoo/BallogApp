@@ -1,5 +1,4 @@
-
-# Uncomment the next line to define a global platform for your project
+workspace 'Ballog.xcworkspace'
 project 'Ballog.xcodeproj'
 platform :ios, '15.0'
 
@@ -9,23 +8,33 @@ target 'Ballog' do
 end
 
 post_install do |installer|
+  # Ballog.xcodeproj
   installer.generated_projects.each do |project|
     project.targets.each do |target|
       target.build_configurations.each do |config|
-        if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 12.0
-          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
-        end
+        # 필수: iOS 12.0 이상 강제
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
       end
     end
   end
 
-  # abseil-umbrella.h 자동 패치
+  # Pods.xcodeproj - abseil 패치
   abseil_umbrella = File.join(__dir__, 'Pods', 'Target Support Files', 'abseil', 'abseil-umbrella.h')
   if File.exist?(abseil_umbrella)
     text = File.read(abseil_umbrella)
-    # "algorithm/algorithm.h" → <absl/algorithm/algorithm.h>
     text = text.gsub(/#include\s+"algorithm\/(.+)"/, '#include <absl/algorithm/\1>')
     File.write(abseil_umbrella, text)
   end
-end
 
+  # Pods.xcodeproj - OTHER_CFLAGS -G 제거
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      flags = config.build_settings['OTHER_CFLAGS']
+      if flags.is_a?(String)
+        config.build_settings['OTHER_CFLAGS'] = flags.gsub('-G', '')
+      elsif flags.is_a?(Array)
+        config.build_settings['OTHER_CFLAGS'] = flags.map { |f| f.gsub('-G', '') }
+      end
+    end
+  end
+end

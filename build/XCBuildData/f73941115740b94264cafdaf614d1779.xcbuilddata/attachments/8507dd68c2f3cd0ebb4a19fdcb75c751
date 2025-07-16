@@ -1,0 +1,5 @@
+ extern const unsigned char Pods_BallogVersionString[];
+ extern const double Pods_BallogVersionNumber;
+
+ const unsigned char Pods_BallogVersionString[] __attribute__ ((used)) = "@(#)PROGRAM:Pods_Ballog  PROJECT:Pods-1" "\n";
+ const double Pods_BallogVersionNumber __attribute__ ((used)) = (double)1.;

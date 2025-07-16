@@ -4,11 +4,6 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Ballog.xcscheme_^#shared#^_</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>29</integer>
-		</dict>
 		<key>BoringSSL-GRPC-openssl_grpc.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -142,10 +137,10 @@
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
-		<key>abseil.xcscheme_^#shared#^_</key>
+		<key>abseil.xcscheme</key>
 		<dict>
 			<key>isShown</key>
-			<true/>
+			<false/>
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
@@ -214,12 +209,6 @@
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
-	<dict>
-		<key>73CDC3D182DB953135F62609681B443D</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-	</dict>
+	<dict/>
 </dict>
 </plist>
