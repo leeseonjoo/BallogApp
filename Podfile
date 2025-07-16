@@ -5,6 +5,8 @@ platform :ios, '15.0'
 target 'Ballog' do
   use_frameworks!
   pod 'Firebase/Firestore'
+  # Needed for Codable support when using Firestore with Swift
+  pod 'FirebaseFirestoreSwift'
 end
 
 post_install do |installer|
