@@ -2,7 +2,7 @@
 
 BallogApp is a small SwiftUI experiment structured with the MVVM (Model–View–ViewModel) pattern.
 
-The app stores user sign-up information using **Core Data** via a lightweight stack defined in `Utilities/CoreDataStack.swift`.
+The app now stores user sign-up information using **Firebase Firestore** via helpers in `Utilities/FirestoreAccountService.swift`.
 
 ## Design Philosophy
 
@@ -16,7 +16,7 @@ The UI follows the core principles described in Apple’s Human Interface Guidel
 
 - `Ballog/App` - Application entry point
 - `Ballog/Models` - Model types
-- `Ballog/Utilities` - Helpers including the Core Data stack
+- `Ballog/Utilities` - Helper utilities including Firebase services
 - `Ballog/ViewModels` - ViewModel logic (currently empty)
 - `Ballog/Views` - SwiftUI views
 - `Ballog/Assets.xcassets` - Assets used by the app

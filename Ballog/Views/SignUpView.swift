@@ -1,12 +1,10 @@
 import SwiftUI
-import CoreData
 
 struct SignUpView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var username = ""
     @State private var password = ""
     @State private var email = ""
-    @Environment(\.managedObjectContext) private var context
 
     var body: some View {
         NavigationStack {
@@ -30,24 +28,17 @@ struct SignUpView: View {
     private func register() {
         guard !username.isEmpty, !password.isEmpty, !email.isEmpty else { return }
 
-        let request = AccountEntity.fetchRequest()
-        request.predicate = NSPredicate(format: "username == %@", username)
+        let account = Account(username: username,
+                              password: password,
+                              email: email,
+                              isAdmin: false)
 
-        let existing = (try? context.fetch(request)) ?? []
-        guard existing.isEmpty else { return }
-
-        let newAccount = AccountEntity(context: context)
-        newAccount.username = username
-        newAccount.password = password
-        newAccount.email = email
-        newAccount.isAdmin = false
-
-        try? context.save()
-        dismiss()
+        FirestoreAccountService.shared.createAccount(account) { error in
+            if error == nil { dismiss() }
+        }
     }
 }
 
 #Preview {
     SignUpView()
-        .environment(\.managedObjectContext, CoreDataStack.shared.container.viewContext)
 }

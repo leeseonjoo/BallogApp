@@ -1,5 +1,4 @@
 import SwiftUI
-import CoreData
 
 /// Hard-coded credentials for the administrator account.
 private enum Admin {
@@ -15,7 +14,6 @@ struct LoginView: View {
     @AppStorage("rememberID") private var rememberID: Bool = false
     @AppStorage("autoLogin") private var autoLogin: Bool = false
     @AppStorage("isAdminUser") private var isAdminUser: Bool = false
-    @Environment(\.managedObjectContext) private var context
 
     @State private var username: String = ""
     @State private var password: String = ""
@@ -60,11 +58,11 @@ struct LoginView: View {
                 isAdminUser = true
                 isLoggedIn = true
             } else {
-                let req = AccountEntity.fetchRequest()
-                req.predicate = NSPredicate(format: "username == %@", username)
-                if let account = try? context.fetch(req).first, account.password == password {
-                    isAdminUser = account.isAdmin
-                    isLoggedIn = true
+                FirestoreAccountService.shared.fetchAccount(username: username) { account in
+                    if let account, account.password == password {
+                        isAdminUser = account.isAdmin
+                        isLoggedIn = true
+                    }
                 }
             }
         }
@@ -85,29 +83,28 @@ struct LoginView: View {
             return
         }
 
-        let req = AccountEntity.fetchRequest()
-        req.predicate = NSPredicate(format: "username == %@", username)
-        guard let account = try? context.fetch(req).first else {
-            alertMessage = "아이디가 존재하지 않습니다 회원가입 하시겠습니까?"
-            showAlert = true
-            showSignup = true
-            return
-        }
+        FirestoreAccountService.shared.fetchAccount(username: username) { account in
+            guard let account else {
+                alertMessage = "아이디가 존재하지 않습니다 회원가입 하시겠습니까?"
+                showAlert = true
+                showSignup = true
+                return
+            }
 
-        guard account.password == password else {
-            alertMessage = "비밀번호가 틀렸습니다"
-            showAlert = true
-            return
-        }
+            guard account.password == password else {
+                alertMessage = "비밀번호가 틀렸습니다"
+                showAlert = true
+                return
+            }
 
-        if rememberID { savedUsername = username } else { savedUsername = "" }
-        if autoLogin { savedPassword = password } else { savedPassword = "" }
-        isAdminUser = account.isAdmin
-        isLoggedIn = true
+            if rememberID { savedUsername = username } else { savedUsername = "" }
+            if autoLogin { savedPassword = password } else { savedPassword = "" }
+            isAdminUser = account.isAdmin
+            isLoggedIn = true
+        }
     }
 }
 
 #Preview {
     LoginView()
-        .environment(\.managedObjectContext, CoreDataStack.shared.container.viewContext)
 }
