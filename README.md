@@ -4,6 +4,12 @@ BallogApp is a small SwiftUI experiment structured with the MVVM (Model–View�
 
 The app now stores user sign-up information using **Firebase Firestore** via helpers in `Utilities/FirestoreAccountService.swift`.
 
+## Setup
+
+Dependencies are managed with CocoaPods. Run `pod install` before opening the
+workspace. The app requires the `FirebaseFirestoreSwift` pod for Codable support
+when working with Firestore.
+
 ## Design Philosophy
 
 The UI follows the core principles described in Apple’s Human Interface Guidelines:
