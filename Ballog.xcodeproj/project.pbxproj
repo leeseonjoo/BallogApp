@@ -33,6 +33,8 @@
 		2351E78D2E29276900C4EA11 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 2351E78C2E29276900C4EA11 /* FirebaseStorage */; };
 		2351E78F2E29276900C4EA11 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 2351E78E2E29276900C4EA11 /* FirebaseStorageCombine-Community */; };
 		2351E7912E292BC400C4EA11 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2351E7902E292BC400C4EA11 /* FirebaseCore */; };
+		2351E8482E292E1C00C4EA11 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 2351E8472E292E1C00C4EA11 /* FirebaseAnalytics */; };
+		2351E84A2E292E1C00C4EA11 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2351E8492E292E1C00C4EA11 /* FirebaseAnalyticsCore */; };
 		23E564C12E291A8D00075B2C /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 23E564C02E291A8D00075B2C /* FirebaseAnalytics */; };
 		B388367C676989F4EC1C1789 /* Pods_Ballog.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DBD740EAFB43BC251BB61D5 /* Pods_Ballog.framework */; };
 /* End PBXBuildFile section */
@@ -104,6 +106,7 @@
 				2351E77D2E29276900C4EA11 /* FirebaseFunctions in Frameworks */,
 				B388367C676989F4EC1C1789 /* Pods_Ballog.framework in Frameworks */,
 				2351E7752E29276900C4EA11 /* FirebaseCrashlytics in Frameworks */,
+				2351E84A2E292E1C00C4EA11 /* FirebaseAnalyticsCore in Frameworks */,
 				2351E7792E29276900C4EA11 /* FirebaseFirestore in Frameworks */,
 				2351E7852E29276900C4EA11 /* FirebaseMLModelDownloader in Frameworks */,
 				2351E7652E29276900C4EA11 /* FirebaseAnalytics in Frameworks */,
@@ -124,6 +127,7 @@
 				2351E76D2E29276900C4EA11 /* FirebaseAppDistribution-Beta in Frameworks */,
 				2351E76B2E29276900C4EA11 /* FirebaseAppCheck in Frameworks */,
 				2314C6992E280E620002F3A3 /* (null) in Frameworks */,
+				2351E8482E292E1C00C4EA11 /* FirebaseAnalytics in Frameworks */,
 				2351E7812E29276900C4EA11 /* FirebaseInAppMessaging-Beta in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -854,6 +858,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 23E564BF2E291A8D00075B2C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCore;
+		};
+		2351E8472E292E1C00C4EA11 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 23E564BF2E291A8D00075B2C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		2351E8492E292E1C00C4EA11 /* FirebaseAnalyticsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 23E564BF2E291A8D00075B2C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsCore;
 		};
 		23E564C02E291A8D00075B2C /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
