@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2314C6972E280E620002F3A3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 2314C6962E280E620002F3A3 /* FirebaseFirestore */; };
-		2314C6992E280E620002F3A3 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2314C6982E280E620002F3A3 /* FirebaseFirestoreSwift */; };
+		2314C6972E280E620002F3A3 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		2314C6992E280E620002F3A3 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		B388367C676989F4EC1C1789 /* Pods_Ballog.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DBD740EAFB43BC251BB61D5 /* Pods_Ballog.framework */; };
 /* End PBXBuildFile section */
 
@@ -75,8 +75,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B388367C676989F4EC1C1789 /* Pods_Ballog.framework in Frameworks */,
-				2314C6972E280E620002F3A3 /* FirebaseFirestore in Frameworks */,
-				2314C6992E280E620002F3A3 /* FirebaseFirestoreSwift in Frameworks */,
+				2314C6972E280E620002F3A3 /* (null) in Frameworks */,
+				2314C6992E280E620002F3A3 /* (null) in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -235,8 +235,8 @@
 			);
 			mainGroup = 235B0A3C2E1D68BF00EF9DDD;
 			minimizedProjectReferenceProxies = 1;
-                       packageReferences = (
-                       );
+			packageReferences = (
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 235B0A462E1D68BF00EF9DDD /* Products */;
 			projectDirPath = "";
@@ -685,12 +685,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 235B0A3D2E1D68BF00EF9DDD /* Project object */;
 }
