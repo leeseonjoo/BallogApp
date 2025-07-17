@@ -75,7 +75,6 @@
 				Models/AccountEntity.swift,
 				Models/AttendanceStore.swift,
 				Models/CalendarNetworkService.swift,
-				Models/Item.swift,
 				Models/MatchMatching.swift,
 				Models/PersonalTrainingLog.swift,
 				Models/ProfileCard.swift,
