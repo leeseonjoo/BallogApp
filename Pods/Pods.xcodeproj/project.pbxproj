@@ -29468,7 +29468,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = EB281E91156719E16D02F1F2059E605C /* FirebaseCoreExtension.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGNING_ALLOWED = NO;
@@ -29482,6 +29485,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IBSC_MODULE = FirebaseCoreExtension;
 				INFOPLIST_FILE = "Target Support Files/FirebaseCoreExtension/ResourceBundle-FirebaseCoreExtension_Privacy-FirebaseCoreExtension-Info.plist";
@@ -29498,7 +29503,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 204BFEB10EBF8664E542DB67D9FC03E0 /* nanopb.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -29522,6 +29530,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/nanopb/nanopb-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -29550,7 +29560,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C7F69D59A1BF366A74B61E92D2B160F5 /* abseil.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -29574,6 +29587,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/abseil/abseil-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -29603,7 +29618,10 @@
 			baseConfigurationReference = DF3ED0B13C07A83C479C2F2813915274 /* Pods-Ballog.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -29626,6 +29644,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/Pods-Ballog/Pods-Ballog-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -29655,7 +29675,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1B09BDA9CCBAD1DF4F509B348C3A9EB5 /* GoogleUtilities.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -29678,6 +29701,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/GoogleUtilities/GoogleUtilities-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -29705,7 +29730,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0654B4E4446C4377100927BB00D3F7B7 /* FirebaseFirestore.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -29729,6 +29757,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/FirebaseFirestore/FirebaseFirestore-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -29757,7 +29787,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 58EBC8D8E0D9932E9A5A6DA447288422 /* PromisesObjC.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -29779,6 +29812,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/PromisesObjC/PromisesObjC-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -29806,7 +29841,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FE818059F84B8C53341D276D5781537E /* FirebaseCore.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -29830,6 +29868,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/FirebaseCore/FirebaseCore-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -29858,7 +29898,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6B8D68493906C4521B0B092836C610C0 /* leveldb-library.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGNING_ALLOWED = NO;
@@ -29868,14 +29911,23 @@
 					"GPB_USE_PROTOBUF_FRAMEWORK_IMPORTS=0",
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IBSC_MODULE = leveldb;
 				INFOPLIST_FILE = "Target Support Files/leveldb-library/ResourceBundle-leveldb_Privacy-leveldb-library-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+					"-Wno-everything",
+				);
 				PRODUCT_NAME = leveldb_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -29883,6 +29935,9 @@
 				WARNING_CFLAGS = (
 					"$(inherited)",
 					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+					"-Wno-error",
+					"-Wno-everything",
 				);
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -29892,7 +29947,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2E62B3AA86A3FD4349F5BB83E1DFB14A /* FirebaseSharedSwift.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -29916,6 +29974,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/FirebaseSharedSwift/FirebaseSharedSwift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -29944,9 +30004,12 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 22BC0F41DCEA64E27D4411CAD527EEBE /* FirebaseAnalytics.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -29960,6 +30023,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -29975,9 +30040,12 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 14C93DC4E78EF36F0C6B5ACD13FD2391 /* GoogleAppMeasurement.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -29991,6 +30059,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -30007,9 +30077,12 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CA74C76F9BED93AAF58EDFABF1B9FF79 /* Firebase.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -30023,6 +30096,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -30039,7 +30114,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D4924FC65336F4007AA3ACEB06E3063B /* FirebaseFirestoreSwift.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -30063,6 +30141,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/FirebaseFirestoreSwift/FirebaseFirestoreSwift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -30090,7 +30170,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7D097324AC38AFCD946B85E837B1F3C3 /* PromisesObjC.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGNING_ALLOWED = NO;
@@ -30104,6 +30187,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IBSC_MODULE = FBLPromises;
 				INFOPLIST_FILE = "Target Support Files/PromisesObjC/ResourceBundle-FBLPromises_Privacy-PromisesObjC-Info.plist";
@@ -30120,7 +30205,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2887511FBF44A2E985DECEC504BCA463 /* gRPC-C++.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGNING_ALLOWED = NO;
@@ -30134,6 +30222,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IBSC_MODULE = grpcpp;
 				INFOPLIST_FILE = "Target Support Files/gRPC-C++/ResourceBundle-gRPCCertificates-Cpp-gRPC-C++-Info.plist";
@@ -30150,7 +30240,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A4E6249D9DA10A1A418BDCD6FE436187 /* FirebaseFirestoreSwift.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -30174,6 +30267,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/FirebaseFirestoreSwift/FirebaseFirestoreSwift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -30203,7 +30298,10 @@
 			baseConfigurationReference = CBAE1E5DB32003DD79D2307316A7B8CE /* Pods-Ballog.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -30226,6 +30324,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/Pods-Ballog/Pods-Ballog-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -30254,7 +30354,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 508F54B674EF653A2AECC62C1634BE8B /* FirebaseInstallations.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -30278,6 +30381,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/FirebaseInstallations/FirebaseInstallations-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -30305,7 +30410,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E0CBF6D977D9C70F561675FF09FE1960 /* FirebaseCoreInternal.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGNING_ALLOWED = NO;
@@ -30319,6 +30427,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IBSC_MODULE = FirebaseCoreInternal;
 				INFOPLIST_FILE = "Target Support Files/FirebaseCoreInternal/ResourceBundle-FirebaseCoreInternal_Privacy-FirebaseCoreInternal-Info.plist";
@@ -30335,7 +30445,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9A3FD72B37B82E5D022798CEFFA40082 /* GoogleUtilities.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -30358,6 +30471,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/GoogleUtilities/GoogleUtilities-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -30386,9 +30501,12 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C447CB357C56D114748E479707D497B0 /* FirebaseAnalytics.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -30402,6 +30520,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -30418,9 +30538,12 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A08029C7607A31FBA9E1F5E13A263976 /* Firebase.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -30434,6 +30557,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -30449,7 +30574,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 09131AC5C5250E7D4CBE035EEBD15888 /* nanopb.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -30473,6 +30601,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/nanopb/nanopb-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -30500,7 +30630,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A174D32698BDD4DB971001C060663C9A /* BoringSSL-GRPC.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -30524,6 +30657,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/BoringSSL-GRPC/BoringSSL-GRPC-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -30551,7 +30686,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DB2A3044A0C9AEA613241B9D6E4A1170 /* FirebaseCoreExtension.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGNING_ALLOWED = NO;
@@ -30565,6 +30703,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IBSC_MODULE = FirebaseCoreExtension;
 				INFOPLIST_FILE = "Target Support Files/FirebaseCoreExtension/ResourceBundle-FirebaseCoreExtension_Privacy-FirebaseCoreExtension-Info.plist";
@@ -30581,7 +30721,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F7DDCDD2414BCEB0E7F037D7C3FE33AC /* FirebaseSharedSwift.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -30605,6 +30748,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/FirebaseSharedSwift/FirebaseSharedSwift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -30632,7 +30777,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 76165B3877EA411993D7B08E8BC41664 /* FirebaseCoreInternal.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -30657,6 +30805,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/FirebaseCoreInternal/FirebaseCoreInternal-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -30684,7 +30834,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 69DD3E26A0A2A7D8FFF11696BFA7C9D2 /* abseil.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -30708,6 +30861,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/abseil/abseil-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -30735,7 +30890,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 76165B3877EA411993D7B08E8BC41664 /* FirebaseCoreInternal.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGNING_ALLOWED = NO;
@@ -30749,6 +30907,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IBSC_MODULE = FirebaseCoreInternal;
 				INFOPLIST_FILE = "Target Support Files/FirebaseCoreInternal/ResourceBundle-FirebaseCoreInternal_Privacy-FirebaseCoreInternal-Info.plist";
@@ -30765,7 +30925,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 508F54B674EF653A2AECC62C1634BE8B /* FirebaseInstallations.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGNING_ALLOWED = NO;
@@ -30779,6 +30942,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IBSC_MODULE = FirebaseInstallations;
 				INFOPLIST_FILE = "Target Support Files/FirebaseInstallations/ResourceBundle-FirebaseInstallations_Privacy-FirebaseInstallations-Info.plist";
@@ -30795,7 +30960,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 58EBC8D8E0D9932E9A5A6DA447288422 /* PromisesObjC.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGNING_ALLOWED = NO;
@@ -30809,6 +30977,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IBSC_MODULE = FBLPromises;
 				INFOPLIST_FILE = "Target Support Files/PromisesObjC/ResourceBundle-FBLPromises_Privacy-PromisesObjC-Info.plist";
@@ -30825,7 +30995,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7D097324AC38AFCD946B85E837B1F3C3 /* PromisesObjC.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -30847,6 +31020,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/PromisesObjC/PromisesObjC-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -30875,7 +31050,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 12E8BC7D765FF478D1381D8E3E8D9FDC /* leveldb-library.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -30895,11 +31073,14 @@
 					"GPB_USE_PROTOBUF_FRAMEWORK_IMPORTS=0",
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GENERATE_INFOPLIST_FILE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/leveldb-library/leveldb-library-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -30910,6 +31091,12 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/leveldb-library/leveldb-library.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+					"-Wno-everything",
+				);
 				PRODUCT_MODULE_NAME = leveldb;
 				PRODUCT_NAME = leveldb;
 				SDKROOT = iphoneos;
@@ -30924,6 +31111,9 @@
 				WARNING_CFLAGS = (
 					"$(inherited)",
 					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+					"-Wno-error",
+					"-Wno-everything",
 				);
 			};
 			name = Release;
@@ -30932,7 +31122,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9A3FD72B37B82E5D022798CEFFA40082 /* GoogleUtilities.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGNING_ALLOWED = NO;
@@ -30946,6 +31139,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IBSC_MODULE = GoogleUtilities;
 				INFOPLIST_FILE = "Target Support Files/GoogleUtilities/ResourceBundle-GoogleUtilities_Privacy-GoogleUtilities-Info.plist";
@@ -31090,9 +31285,12 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AC9DF2410537E0DA9A4C2E2A6930F645 /* GoogleAppMeasurement.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -31106,6 +31304,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -31121,7 +31321,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 504ECCA0DB00531DA56EE0894FE2CA6A /* gRPC-C++.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -31145,6 +31348,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/gRPC-C++/gRPC-C++-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -31172,7 +31377,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1B09BDA9CCBAD1DF4F509B348C3A9EB5 /* GoogleUtilities.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGNING_ALLOWED = NO;
@@ -31186,6 +31394,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IBSC_MODULE = GoogleUtilities;
 				INFOPLIST_FILE = "Target Support Files/GoogleUtilities/ResourceBundle-GoogleUtilities_Privacy-GoogleUtilities-Info.plist";
@@ -31202,7 +31412,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 504ECCA0DB00531DA56EE0894FE2CA6A /* gRPC-C++.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGNING_ALLOWED = NO;
@@ -31216,6 +31429,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IBSC_MODULE = grpcpp;
 				INFOPLIST_FILE = "Target Support Files/gRPC-C++/ResourceBundle-gRPCCertificates-Cpp-gRPC-C++-Info.plist";
@@ -31232,7 +31447,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D2EA96F997631ACD7A5E0604801423E6 /* gRPC-Core.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -31256,6 +31474,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/gRPC-Core/gRPC-Core-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -31283,7 +31503,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4DE782E346BA0615946198872124F8FE /* FirebaseCore.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -31307,6 +31530,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/FirebaseCore/FirebaseCore-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -31334,7 +31559,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C4C2DBC7495071E4FF9BAFD10C582C90 /* FirebaseFirestore.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -31358,6 +31586,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/FirebaseFirestore/FirebaseFirestore-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -31385,7 +31615,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4CA07CACC8EC9DA6B86C8BB8822E032A /* FirebaseInstallations.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -31409,6 +31642,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/FirebaseInstallations/FirebaseInstallations-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -31437,7 +31672,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4CA07CACC8EC9DA6B86C8BB8822E032A /* FirebaseInstallations.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGNING_ALLOWED = NO;
@@ -31451,6 +31689,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IBSC_MODULE = FirebaseInstallations;
 				INFOPLIST_FILE = "Target Support Files/FirebaseInstallations/ResourceBundle-FirebaseInstallations_Privacy-FirebaseInstallations-Info.plist";
@@ -31467,7 +31707,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DB2A3044A0C9AEA613241B9D6E4A1170 /* FirebaseCoreExtension.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -31492,6 +31735,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/FirebaseCoreExtension/FirebaseCoreExtension-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -31519,7 +31764,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6B8D68493906C4521B0B092836C610C0 /* leveldb-library.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -31539,11 +31787,14 @@
 					"GPB_USE_PROTOBUF_FRAMEWORK_IMPORTS=0",
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GENERATE_INFOPLIST_FILE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/leveldb-library/leveldb-library-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -31554,6 +31805,12 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/leveldb-library/leveldb-library.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+					"-Wno-everything",
+				);
 				PRODUCT_MODULE_NAME = leveldb;
 				PRODUCT_NAME = leveldb;
 				SDKROOT = iphoneos;
@@ -31567,6 +31824,9 @@
 				WARNING_CFLAGS = (
 					"$(inherited)",
 					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+					"-Wno-error",
+					"-Wno-everything",
 				);
 			};
 			name = Debug;
@@ -31575,7 +31835,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 08A071DB1875C3788D0EBA2377EC827F /* gRPC-Core.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -31599,6 +31862,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/gRPC-Core/gRPC-Core-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -31627,7 +31892,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = EB281E91156719E16D02F1F2059E605C /* FirebaseCoreExtension.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -31652,6 +31920,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/FirebaseCoreExtension/FirebaseCoreExtension-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -31680,7 +31950,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0C50E3EFCAD56B46BA385F9CA0FBAB87 /* BoringSSL-GRPC.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -31704,6 +31977,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/BoringSSL-GRPC/BoringSSL-GRPC-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -31732,7 +32007,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 12E8BC7D765FF478D1381D8E3E8D9FDC /* leveldb-library.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGNING_ALLOWED = NO;
@@ -31742,14 +32020,23 @@
 					"GPB_USE_PROTOBUF_FRAMEWORK_IMPORTS=0",
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				IBSC_MODULE = leveldb;
 				INFOPLIST_FILE = "Target Support Files/leveldb-library/ResourceBundle-leveldb_Privacy-leveldb-library-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+					"-Wno-everything",
+				);
 				PRODUCT_NAME = leveldb_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -31757,6 +32044,9 @@
 				WARNING_CFLAGS = (
 					"$(inherited)",
 					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+					"-Wno-error",
+					"-Wno-everything",
 				);
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -31766,7 +32056,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2887511FBF44A2E985DECEC504BCA463 /* gRPC-C++.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -31790,6 +32083,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/gRPC-C++/gRPC-C++-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -31818,7 +32113,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E0CBF6D977D9C70F561675FF09FE1960 /* FirebaseCoreInternal.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
@@ -31843,6 +32141,8 @@
 					"$(inherited)",
 					"$(PODS_TARGET_SRCROOT)",
 					"$(PODS_ROOT)/leveldb-library/include",
+					"$(PODS_ROOT)/leveldb-library",
+					/usr/include,
 				);
 				INFOPLIST_FILE = "Target Support Files/FirebaseCoreInternal/FirebaseCoreInternal-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";

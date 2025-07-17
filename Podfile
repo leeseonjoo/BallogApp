@@ -28,10 +28,15 @@ post_install do |installer|
         config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
         config.build_settings['HEADER_SEARCH_PATHS'] << '$(PODS_TARGET_SRCROOT)'
         config.build_settings['HEADER_SEARCH_PATHS'] << '$(PODS_ROOT)/leveldb-library/include'
+        config.build_settings['HEADER_SEARCH_PATHS'] << '$(PODS_ROOT)/leveldb-library'
+        config.build_settings['HEADER_SEARCH_PATHS'] << '/usr/include'
         
         # 추가 컴파일러 설정 - framework header 문제 완전 해결
         config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
         config.build_settings['CLANG_WARN_DOCUMENTATION_COMMENTS'] = 'NO'
+        config.build_settings['CLANG_ENABLE_MODULES'] = 'NO'
+        config.build_settings['CLANG_ENABLE_MODULE_DEBUGGING'] = 'NO'
+        config.build_settings['ALWAYS_SEARCH_USER_PATHS'] = 'YES'
       end
     end
   end
@@ -50,11 +55,25 @@ post_install do |installer|
       config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
       config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
       config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
+      config.build_settings['CLANG_WARN_DOCUMENTATION_COMMENTS'] = 'NO'
+      config.build_settings['ALWAYS_SEARCH_USER_PATHS'] = 'YES'
       
-      # LevelDB 관련 특별 설정
+      # LevelDB 관련 특별 설정 - 더 강력한 수정
       if target.name.include?("leveldb")
-        config.build_settings['CLANG_WARN_DOCUMENTATION_COMMENTS'] = 'NO'
-        config.build_settings['WARNING_CFLAGS'] = ['$(inherited)', '-Wno-quoted-include-in-framework-header']
+        config.build_settings['CLANG_ENABLE_MODULES'] = 'NO'
+        config.build_settings['CLANG_ENABLE_MODULE_DEBUGGING'] = 'NO'
+        config.build_settings['WARNING_CFLAGS'] = [
+          '$(inherited)', 
+          '-Wno-quoted-include-in-framework-header',
+          '-Wno-module-import-in-extern-c',
+          '-Wno-error',
+          '-Wno-everything'
+        ]
+        config.build_settings['OTHER_CFLAGS'] ||= ['$(inherited)']
+        config.build_settings['OTHER_CFLAGS'] << '-Wno-quoted-include-in-framework-header'
+        config.build_settings['OTHER_CFLAGS'] << '-Wno-module-import-in-extern-c'
+        config.build_settings['OTHER_CFLAGS'] << '-Wno-everything'
+        config.build_settings['GCC_WARN_ABOUT_MISSING_PROTOTYPES'] = 'NO'
       end
     end
   end
