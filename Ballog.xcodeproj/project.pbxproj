@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2314C6972E280E620002F3A3 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
-		2314C6992E280E620002F3A3 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
