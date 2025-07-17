@@ -51,29 +51,44 @@ post_install do |installer|
         config.build_settings['OTHER_CFLAGS'] = flags.map { |f| f.gsub('-G', '') }
       end
       
-      # 모든 pods에 framework header 경고 비활성화 적용
+      # 모든 pods에 framework header 경고 비활성화 적용 - 강화 버전
       config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
       config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
       config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
+      config.build_settings['SWIFT_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
       config.build_settings['CLANG_WARN_DOCUMENTATION_COMMENTS'] = 'NO'
       config.build_settings['ALWAYS_SEARCH_USER_PATHS'] = 'YES'
       
-      # LevelDB 관련 특별 설정 - 더 강력한 수정
-      if target.name.include?("leveldb")
+      # 글로벌 경고 억제 플래그 추가
+      config.build_settings['OTHER_CFLAGS'] ||= ['$(inherited)']
+      config.build_settings['OTHER_CFLAGS'] << '-Wno-quoted-include-in-framework-header'
+      config.build_settings['OTHER_CFLAGS'] << '-Wno-module-import-in-extern-c'
+      
+      # LevelDB 관련 특별 설정 - 최강 버전으로 완전 해결
+      if target.name.include?("leveldb") || target.name == "leveldb-library"
+        # 모든 경고 및 오류 완전 비활성화
         config.build_settings['CLANG_ENABLE_MODULES'] = 'NO'
         config.build_settings['CLANG_ENABLE_MODULE_DEBUGGING'] = 'NO'
-        config.build_settings['WARNING_CFLAGS'] = [
-          '$(inherited)', 
-          '-Wno-quoted-include-in-framework-header',
-          '-Wno-module-import-in-extern-c',
-          '-Wno-error',
-          '-Wno-everything'
-        ]
-        config.build_settings['OTHER_CFLAGS'] ||= ['$(inherited)']
-        config.build_settings['OTHER_CFLAGS'] << '-Wno-quoted-include-in-framework-header'
-        config.build_settings['OTHER_CFLAGS'] << '-Wno-module-import-in-extern-c'
-        config.build_settings['OTHER_CFLAGS'] << '-Wno-everything'
+        config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
+        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+        config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
+        config.build_settings['SWIFT_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
+        
+        # 컴파일러 플래그로 모든 경고 억제
+        config.build_settings['WARNING_CFLAGS'] = ['-w', '-Wno-everything']
+        config.build_settings['OTHER_CFLAGS'] = ['-w', '-Wno-everything', '-Wno-quoted-include-in-framework-header']
+        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = ['-w', '-Wno-everything', '-Wno-quoted-include-in-framework-header']
+        
+        # 헤더 검색 경로 추가
+        config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
+        config.build_settings['HEADER_SEARCH_PATHS'] << '$(PODS_TARGET_SRCROOT)/include'
+        config.build_settings['HEADER_SEARCH_PATHS'] << '$(PODS_TARGET_SRCROOT)'
+        config.build_settings['ALWAYS_SEARCH_USER_PATHS'] = 'YES'
+        
+        # 추가 안전 설정
         config.build_settings['GCC_WARN_ABOUT_MISSING_PROTOTYPES'] = 'NO'
+        config.build_settings['CLANG_WARN_DOCUMENTATION_COMMENTS'] = 'NO'
+        config.build_settings['CLANG_WARN_STRICT_PROTOTYPES'] = 'NO'
       end
     end
   end

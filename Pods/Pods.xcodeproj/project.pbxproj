@@ -29491,9 +29491,15 @@
 				IBSC_MODULE = FirebaseCoreExtension;
 				INFOPLIST_FILE = "Target Support Files/FirebaseCoreExtension/ResourceBundle-FirebaseCoreExtension_Privacy-FirebaseCoreExtension-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_NAME = FirebaseCoreExtension_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -29542,12 +29548,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/nanopb/nanopb.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = nanopb;
 				PRODUCT_NAME = nanopb;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -29599,12 +29611,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/abseil/abseil.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = absl;
 				PRODUCT_NAME = absl;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -29657,6 +29675,11 @@
 				);
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-Ballog/Pods-Ballog.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PODS_ROOT = "$(SRCROOT)";
@@ -29664,6 +29687,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -29713,12 +29737,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/GoogleUtilities/GoogleUtilities.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = GoogleUtilities;
 				PRODUCT_NAME = GoogleUtilities;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -29769,12 +29799,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/FirebaseFirestore/FirebaseFirestore.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FirebaseFirestore;
 				PRODUCT_NAME = FirebaseFirestore;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -29824,12 +29860,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/PromisesObjC/PromisesObjC.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FBLPromises;
 				PRODUCT_NAME = FBLPromises;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -29880,12 +29922,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/FirebaseCore/FirebaseCore.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FirebaseCore;
 				PRODUCT_NAME = FirebaseCore;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -29904,6 +29952,7 @@
 				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
+				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CODE_SIGNING_ALLOWED = NO;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/leveldb-library";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -29918,25 +29967,29 @@
 					"$(PODS_ROOT)/leveldb-library/include",
 					"$(PODS_ROOT)/leveldb-library",
 					/usr/include,
+					"$(PODS_TARGET_SRCROOT)/include",
+					"$(PODS_TARGET_SRCROOT)",
 				);
 				IBSC_MODULE = leveldb;
 				INFOPLIST_FILE = "Target Support Files/leveldb-library/ResourceBundle-leveldb_Privacy-leveldb-library-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-Wno-quoted-include-in-framework-header",
-					"-Wno-module-import-in-extern-c",
+					"-w",
 					"-Wno-everything",
+					"-Wno-quoted-include-in-framework-header",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-w",
+					"-Wno-everything",
+					"-Wno-quoted-include-in-framework-header",
 				);
 				PRODUCT_NAME = leveldb_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = (
-					"$(inherited)",
-					"-Wno-quoted-include-in-framework-header",
-					"-Wno-module-import-in-extern-c",
-					"-Wno-error",
+					"-w",
 					"-Wno-everything",
 				);
 				WRAPPER_EXTENSION = bundle;
@@ -29986,12 +30039,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/FirebaseSharedSwift/FirebaseSharedSwift.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FirebaseSharedSwift;
 				PRODUCT_NAME = FirebaseSharedSwift;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -30031,7 +30090,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				SDKROOT = iphoneos;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -30067,7 +30132,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				SDKROOT = iphoneos;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -30104,7 +30175,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				SDKROOT = iphoneos;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -30153,12 +30230,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/FirebaseFirestoreSwift/FirebaseFirestoreSwift.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FirebaseFirestoreSwift;
 				PRODUCT_NAME = FirebaseFirestoreSwift;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -30193,9 +30276,15 @@
 				IBSC_MODULE = FBLPromises;
 				INFOPLIST_FILE = "Target Support Files/PromisesObjC/ResourceBundle-FBLPromises_Privacy-PromisesObjC-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_NAME = FBLPromises_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -30228,9 +30317,15 @@
 				IBSC_MODULE = grpcpp;
 				INFOPLIST_FILE = "Target Support Files/gRPC-C++/ResourceBundle-gRPCCertificates-Cpp-gRPC-C++-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_NAME = "gRPCCertificates-Cpp";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -30279,12 +30374,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/FirebaseFirestoreSwift/FirebaseFirestoreSwift.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FirebaseFirestoreSwift;
 				PRODUCT_NAME = FirebaseFirestoreSwift;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -30337,6 +30438,11 @@
 				);
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-Ballog/Pods-Ballog.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PODS_ROOT = "$(SRCROOT)";
@@ -30344,6 +30450,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -30393,12 +30500,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/FirebaseInstallations/FirebaseInstallations.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FirebaseInstallations;
 				PRODUCT_NAME = FirebaseInstallations;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -30433,9 +30546,15 @@
 				IBSC_MODULE = FirebaseCoreInternal;
 				INFOPLIST_FILE = "Target Support Files/FirebaseCoreInternal/ResourceBundle-FirebaseCoreInternal_Privacy-FirebaseCoreInternal-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_NAME = FirebaseCoreInternal_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -30483,12 +30602,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/GoogleUtilities/GoogleUtilities.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = GoogleUtilities;
 				PRODUCT_NAME = GoogleUtilities;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -30528,7 +30653,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				SDKROOT = iphoneos;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -30565,7 +30696,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				SDKROOT = iphoneos;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -30613,12 +30750,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/nanopb/nanopb.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = nanopb;
 				PRODUCT_NAME = nanopb;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -30669,12 +30812,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/BoringSSL-GRPC/BoringSSL-GRPC.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = openssl_grpc;
 				PRODUCT_NAME = openssl_grpc;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -30709,9 +30858,15 @@
 				IBSC_MODULE = FirebaseCoreExtension;
 				INFOPLIST_FILE = "Target Support Files/FirebaseCoreExtension/ResourceBundle-FirebaseCoreExtension_Privacy-FirebaseCoreExtension-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_NAME = FirebaseCoreExtension_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -30760,12 +30915,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/FirebaseSharedSwift/FirebaseSharedSwift.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FirebaseSharedSwift;
 				PRODUCT_NAME = FirebaseSharedSwift;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -30817,12 +30978,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/FirebaseCoreInternal/FirebaseCoreInternal.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FirebaseCoreInternal;
 				PRODUCT_NAME = FirebaseCoreInternal;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -30873,12 +31040,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/abseil/abseil.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = absl;
 				PRODUCT_NAME = absl;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -30913,9 +31086,15 @@
 				IBSC_MODULE = FirebaseCoreInternal;
 				INFOPLIST_FILE = "Target Support Files/FirebaseCoreInternal/ResourceBundle-FirebaseCoreInternal_Privacy-FirebaseCoreInternal-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_NAME = FirebaseCoreInternal_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -30948,9 +31127,15 @@
 				IBSC_MODULE = FirebaseInstallations;
 				INFOPLIST_FILE = "Target Support Files/FirebaseInstallations/ResourceBundle-FirebaseInstallations_Privacy-FirebaseInstallations-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_NAME = FirebaseInstallations_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -30983,9 +31168,15 @@
 				IBSC_MODULE = FBLPromises;
 				INFOPLIST_FILE = "Target Support Files/PromisesObjC/ResourceBundle-FBLPromises_Privacy-PromisesObjC-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_NAME = FBLPromises_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -31032,12 +31223,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/PromisesObjC/PromisesObjC.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FBLPromises;
 				PRODUCT_NAME = FBLPromises;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -31057,6 +31254,7 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
+				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -31081,6 +31279,8 @@
 					"$(PODS_ROOT)/leveldb-library/include",
 					"$(PODS_ROOT)/leveldb-library",
 					/usr/include,
+					"$(PODS_TARGET_SRCROOT)/include",
+					"$(PODS_TARGET_SRCROOT)",
 				);
 				INFOPLIST_FILE = "Target Support Files/leveldb-library/leveldb-library-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -31092,10 +31292,14 @@
 				);
 				MODULEMAP_FILE = "Target Support Files/leveldb-library/leveldb-library.modulemap";
 				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-Wno-quoted-include-in-framework-header",
-					"-Wno-module-import-in-extern-c",
+					"-w",
 					"-Wno-everything",
+					"-Wno-quoted-include-in-framework-header",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-w",
+					"-Wno-everything",
+					"-Wno-quoted-include-in-framework-header",
 				);
 				PRODUCT_MODULE_NAME = leveldb;
 				PRODUCT_NAME = leveldb;
@@ -31103,16 +31307,14 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 				WARNING_CFLAGS = (
-					"$(inherited)",
-					"-Wno-quoted-include-in-framework-header",
-					"-Wno-module-import-in-extern-c",
-					"-Wno-error",
+					"-w",
 					"-Wno-everything",
 				);
 			};
@@ -31145,9 +31347,15 @@
 				IBSC_MODULE = GoogleUtilities;
 				INFOPLIST_FILE = "Target Support Files/GoogleUtilities/ResourceBundle-GoogleUtilities_Privacy-GoogleUtilities-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_NAME = GoogleUtilities_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -31312,7 +31520,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				SDKROOT = iphoneos;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -31360,12 +31574,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/gRPC-C++/gRPC-C++.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = grpcpp;
 				PRODUCT_NAME = grpcpp;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -31400,9 +31620,15 @@
 				IBSC_MODULE = GoogleUtilities;
 				INFOPLIST_FILE = "Target Support Files/GoogleUtilities/ResourceBundle-GoogleUtilities_Privacy-GoogleUtilities-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_NAME = GoogleUtilities_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -31435,9 +31661,15 @@
 				IBSC_MODULE = grpcpp;
 				INFOPLIST_FILE = "Target Support Files/gRPC-C++/ResourceBundle-gRPCCertificates-Cpp-gRPC-C++-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_NAME = "gRPCCertificates-Cpp";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -31486,12 +31718,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/gRPC-Core/gRPC-Core.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = grpc;
 				PRODUCT_NAME = grpc;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -31542,12 +31780,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/FirebaseCore/FirebaseCore.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FirebaseCore;
 				PRODUCT_NAME = FirebaseCore;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -31598,12 +31842,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/FirebaseFirestore/FirebaseFirestore.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FirebaseFirestore;
 				PRODUCT_NAME = FirebaseFirestore;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -31654,12 +31904,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/FirebaseInstallations/FirebaseInstallations.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FirebaseInstallations;
 				PRODUCT_NAME = FirebaseInstallations;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -31695,9 +31951,15 @@
 				IBSC_MODULE = FirebaseInstallations;
 				INFOPLIST_FILE = "Target Support Files/FirebaseInstallations/ResourceBundle-FirebaseInstallations_Privacy-FirebaseInstallations-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_NAME = FirebaseInstallations_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -31747,12 +32009,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/FirebaseCoreExtension/FirebaseCoreExtension.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FirebaseCoreExtension;
 				PRODUCT_NAME = FirebaseCoreExtension;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -31771,6 +32039,7 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
+				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -31795,6 +32064,8 @@
 					"$(PODS_ROOT)/leveldb-library/include",
 					"$(PODS_ROOT)/leveldb-library",
 					/usr/include,
+					"$(PODS_TARGET_SRCROOT)/include",
+					"$(PODS_TARGET_SRCROOT)",
 				);
 				INFOPLIST_FILE = "Target Support Files/leveldb-library/leveldb-library-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -31806,10 +32077,14 @@
 				);
 				MODULEMAP_FILE = "Target Support Files/leveldb-library/leveldb-library.modulemap";
 				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-Wno-quoted-include-in-framework-header",
-					"-Wno-module-import-in-extern-c",
+					"-w",
 					"-Wno-everything",
+					"-Wno-quoted-include-in-framework-header",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-w",
+					"-Wno-everything",
+					"-Wno-quoted-include-in-framework-header",
 				);
 				PRODUCT_MODULE_NAME = leveldb;
 				PRODUCT_NAME = leveldb;
@@ -31817,15 +32092,13 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 				WARNING_CFLAGS = (
-					"$(inherited)",
-					"-Wno-quoted-include-in-framework-header",
-					"-Wno-module-import-in-extern-c",
-					"-Wno-error",
+					"-w",
 					"-Wno-everything",
 				);
 			};
@@ -31874,12 +32147,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/gRPC-Core/gRPC-Core.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = grpc;
 				PRODUCT_NAME = grpc;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -31932,12 +32211,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/FirebaseCoreExtension/FirebaseCoreExtension.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FirebaseCoreExtension;
 				PRODUCT_NAME = FirebaseCoreExtension;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -31989,12 +32274,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/BoringSSL-GRPC/BoringSSL-GRPC.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = openssl_grpc;
 				PRODUCT_NAME = openssl_grpc;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -32013,6 +32304,7 @@
 				CLANG_ENABLE_MODULE_DEBUGGING = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
+				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CODE_SIGNING_ALLOWED = NO;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/leveldb-library";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -32027,25 +32319,29 @@
 					"$(PODS_ROOT)/leveldb-library/include",
 					"$(PODS_ROOT)/leveldb-library",
 					/usr/include,
+					"$(PODS_TARGET_SRCROOT)/include",
+					"$(PODS_TARGET_SRCROOT)",
 				);
 				IBSC_MODULE = leveldb;
 				INFOPLIST_FILE = "Target Support Files/leveldb-library/ResourceBundle-leveldb_Privacy-leveldb-library-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-Wno-quoted-include-in-framework-header",
-					"-Wno-module-import-in-extern-c",
+					"-w",
 					"-Wno-everything",
+					"-Wno-quoted-include-in-framework-header",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-w",
+					"-Wno-everything",
+					"-Wno-quoted-include-in-framework-header",
 				);
 				PRODUCT_NAME = leveldb_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = (
-					"$(inherited)",
-					"-Wno-quoted-include-in-framework-header",
-					"-Wno-module-import-in-extern-c",
-					"-Wno-error",
+					"-w",
 					"-Wno-everything",
 				);
 				WRAPPER_EXTENSION = bundle;
@@ -32095,12 +32391,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/gRPC-C++/gRPC-C++.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = grpcpp;
 				PRODUCT_NAME = grpcpp;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -32153,12 +32455,18 @@
 					"@loader_path/Frameworks",
 				);
 				MODULEMAP_FILE = "Target Support Files/FirebaseCoreInternal/FirebaseCoreInternal.modulemap";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-module-import-in-extern-c",
+				);
 				PRODUCT_MODULE_NAME = FirebaseCoreInternal;
 				PRODUCT_NAME = FirebaseCoreInternal;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
