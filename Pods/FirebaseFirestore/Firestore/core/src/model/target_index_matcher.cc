@@ -16,9 +16,7 @@
 
 #include "Firestore/core/src/model/target_index_matcher.h"
 
-#include <set>
 #include <unordered_set>
-#include <utility>
 
 #include "Firestore/core/src/util/hard_assert.h"
 
@@ -51,7 +49,7 @@ TargetIndexMatcher::TargetIndexMatcher(const core::Target& target) {
   }
 }
 
-bool TargetIndexMatcher::ServedByIndex(const model::FieldIndex& index) const {
+bool TargetIndexMatcher::ServedByIndex(const model::FieldIndex& index) {
   HARD_ASSERT(index.collection_group() == collection_id_,
               "Collection IDs do not match");
 
@@ -118,65 +116,7 @@ bool TargetIndexMatcher::ServedByIndex(const model::FieldIndex& index) const {
   return true;
 }
 
-model::FieldIndex TargetIndexMatcher::BuildTargetIndex() const {
-  // We want to make sure only one segment created for one field. For example,
-  // in case like a == 3 and a > 2, Index: {a ASCENDING} will only be created
-  // once.
-  // Since `FieldPath` doesn't have hash function, std::set is used instead of
-  // std::unordered_set
-  std::set<FieldPath> unique_fields;
-  std::vector<Segment> segments;
-
-  for (const auto& filter : equality_filters_) {
-    if (filter.field().IsKeyFieldPath()) {
-      continue;
-    }
-
-    bool is_array_operator =
-        filter.op() == FieldFilter::Operator::ArrayContains ||
-        filter.op() == FieldFilter::Operator::ArrayContainsAny;
-    if (is_array_operator) {
-      segments.push_back(Segment(filter.field(), Segment::Kind::kContains));
-    } else {
-      if (unique_fields.find(filter.field()) != unique_fields.end()) {
-        continue;
-      }
-      unique_fields.insert(filter.field());
-      segments.push_back(Segment(filter.field(), Segment::Kind::kAscending));
-    }
-  }
-
-  // Note: We do not explicitly check `inequality_filter_` but rather rely on
-  // the target defining an appropriate `order_bys_` to ensure that the required
-  // index segment is added. The query engine would reject a query with an
-  // inequality filter that lacks the required order-by clause.
-  for (const auto& order_by : order_bys_) {
-    // Stop adding more segments if we see a order-by on key. Typically this is
-    // the default implicit order-by which is covered in the index_entry table
-    // as a separate column. If it is not the default order-by, the generated
-    // index will be missing some segments optimized for order-bys, which is
-    // probably fine.
-    if (order_by.field().IsKeyFieldPath()) {
-      continue;
-    }
-
-    if (unique_fields.find(order_by.field()) != unique_fields.end()) {
-      continue;
-    }
-    unique_fields.insert(order_by.field());
-
-    segments.push_back(Segment(
-        order_by.field(), order_by.direction() == core::Direction::Ascending
-                              ? Segment::Kind::kAscending
-                              : Segment::Kind::kDescending));
-  }
-
-  return FieldIndex(FieldIndex::UnknownId(), collection_id_,
-                    std::move(segments), FieldIndex::InitialState());
-}
-
-bool TargetIndexMatcher::HasMatchingEqualityFilter(
-    const Segment& segment) const {
+bool TargetIndexMatcher::HasMatchingEqualityFilter(const Segment& segment) {
   for (const auto& filter : equality_filters_) {
     if (MatchesFilter(filter, segment)) {
       return true;
@@ -186,8 +126,7 @@ bool TargetIndexMatcher::HasMatchingEqualityFilter(
 }
 
 bool TargetIndexMatcher::MatchesFilter(
-    const absl::optional<core::FieldFilter>& filter,
-    const Segment& segment) const {
+    const absl::optional<core::FieldFilter>& filter, const Segment& segment) {
   if (!filter.has_value()) {
     return false;
   }
@@ -195,7 +134,7 @@ bool TargetIndexMatcher::MatchesFilter(
 }
 
 bool TargetIndexMatcher::MatchesFilter(const FieldFilter& filter,
-                                       const Segment& segment) const {
+                                       const Segment& segment) {
   if (filter.field() != segment.field_path()) {
     return false;
   }
@@ -206,7 +145,7 @@ bool TargetIndexMatcher::MatchesFilter(const FieldFilter& filter,
 }
 
 bool TargetIndexMatcher::MatchesOrderBy(const OrderBy& order_by,
-                                        const Segment& segment) const {
+                                        const Segment& segment) {
   if (order_by.field() != segment.field_path()) {
     return false;
   }

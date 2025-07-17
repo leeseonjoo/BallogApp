@@ -187,10 +187,6 @@ class FirestoreClient : public std::enable_shared_from_this<FirestoreClient> {
 
   void ConfigureFieldIndexes(std::vector<model::FieldIndex> parsed_indexes);
 
-  void SetIndexAutoCreationEnabled(bool is_enabled) const;
-
-  void DeleteAllFieldIndexes();
-
   void LoadBundle(std::unique_ptr<util::ByteStream> bundle_data,
                   std::shared_ptr<api::LoadBundleTask> result_task);
 
@@ -215,7 +211,7 @@ class FirestoreClient : public std::enable_shared_from_this<FirestoreClient> {
 
   void Initialize(const credentials::User& user, const api::Settings& settings);
 
-  void VerifyNotTerminated() const;
+  void VerifyNotTerminated();
 
   void TerminateInternal();
 

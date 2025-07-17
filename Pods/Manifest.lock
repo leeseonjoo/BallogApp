@@ -634,16 +634,16 @@ PODS:
   - BoringSSL-GRPC/Implementation (0.0.24):
     - BoringSSL-GRPC/Interface (= 0.0.24)
   - BoringSSL-GRPC/Interface (0.0.24)
-  - Firebase/Core (10.15.0):
+  - Firebase/Core (10.12.0):
     - Firebase/CoreOnly
-    - FirebaseAnalytics (~> 10.15.0)
-  - Firebase/CoreOnly (10.15.0):
-    - FirebaseCore (= 10.15.0)
-  - Firebase/Firestore (10.15.0):
+    - FirebaseAnalytics (~> 10.12.0)
+  - Firebase/CoreOnly (10.12.0):
+    - FirebaseCore (= 10.12.0)
+  - Firebase/Firestore (10.12.0):
     - Firebase/CoreOnly
-    - FirebaseFirestore (~> 10.15.0)
-  - FirebaseAnalytics (10.15.0):
-    - FirebaseAnalytics/AdIdSupport (= 10.15.0)
+    - FirebaseFirestore (~> 10.12.0)
+  - FirebaseAnalytics (10.12.0):
+    - FirebaseAnalytics/AdIdSupport (= 10.12.0)
     - FirebaseCore (~> 10.0)
     - FirebaseInstallations (~> 10.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
@@ -651,16 +651,16 @@ PODS:
     - GoogleUtilities/Network (~> 7.11)
     - "GoogleUtilities/NSData+zlib (~> 7.11)"
     - nanopb (< 2.30910.0, >= 2.30908.0)
-  - FirebaseAnalytics/AdIdSupport (10.15.0):
+  - FirebaseAnalytics/AdIdSupport (10.12.0):
     - FirebaseCore (~> 10.0)
     - FirebaseInstallations (~> 10.0)
-    - GoogleAppMeasurement (= 10.15.0)
+    - GoogleAppMeasurement (= 10.12.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
     - GoogleUtilities/MethodSwizzler (~> 7.11)
     - GoogleUtilities/Network (~> 7.11)
     - "GoogleUtilities/NSData+zlib (~> 7.11)"
     - nanopb (< 2.30910.0, >= 2.30908.0)
-  - FirebaseCore (10.15.0):
+  - FirebaseCore (10.12.0):
     - FirebaseCoreInternal (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/Logger (~> 7.8)
@@ -668,7 +668,7 @@ PODS:
     - FirebaseCore (~> 10.0)
   - FirebaseCoreInternal (10.29.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
-  - FirebaseFirestore (10.15.0):
+  - FirebaseFirestore (10.12.0):
     - abseil/algorithm (~> 1.20220623.0)
     - abseil/base (~> 1.20220623.0)
     - abseil/container/flat_hash_map (~> 1.20220623.0)
@@ -681,7 +681,7 @@ PODS:
     - "gRPC-C++ (~> 1.50.1)"
     - leveldb-library (~> 1.22)
     - nanopb (< 2.30910.0, >= 2.30908.0)
-  - FirebaseFirestoreSwift (10.15.0):
+  - FirebaseFirestoreSwift (10.12.0):
     - FirebaseCore (~> 10.0)
     - FirebaseCoreExtension (~> 10.0)
     - FirebaseFirestore (~> 10.0)
@@ -692,21 +692,21 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 7.8)
     - PromisesObjC (~> 2.1)
   - FirebaseSharedSwift (10.29.0)
-  - GoogleAppMeasurement (10.15.0):
-    - GoogleAppMeasurement/AdIdSupport (= 10.15.0)
+  - GoogleAppMeasurement (10.12.0):
+    - GoogleAppMeasurement/AdIdSupport (= 10.12.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
     - GoogleUtilities/MethodSwizzler (~> 7.11)
     - GoogleUtilities/Network (~> 7.11)
     - "GoogleUtilities/NSData+zlib (~> 7.11)"
     - nanopb (< 2.30910.0, >= 2.30908.0)
-  - GoogleAppMeasurement/AdIdSupport (10.15.0):
-    - GoogleAppMeasurement/WithoutAdIdSupport (= 10.15.0)
+  - GoogleAppMeasurement/AdIdSupport (10.12.0):
+    - GoogleAppMeasurement/WithoutAdIdSupport (= 10.12.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
     - GoogleUtilities/MethodSwizzler (~> 7.11)
     - GoogleUtilities/Network (~> 7.11)
     - "GoogleUtilities/NSData+zlib (~> 7.11)"
     - nanopb (< 2.30910.0, >= 2.30908.0)
-  - GoogleAppMeasurement/WithoutAdIdSupport (10.15.0):
+  - GoogleAppMeasurement/WithoutAdIdSupport (10.12.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
     - GoogleUtilities/MethodSwizzler (~> 7.11)
     - GoogleUtilities/Network (~> 7.11)
@@ -810,9 +810,9 @@ PODS:
   - PromisesObjC (2.4.0)
 
 DEPENDENCIES:
-  - Firebase/Core
-  - Firebase/Firestore (~> 10.15.0)
-  - FirebaseFirestoreSwift (~> 10.15.0)
+  - Firebase/Core (~> 10.12.0)
+  - Firebase/Firestore (~> 10.12.0)
+  - FirebaseFirestoreSwift (~> 10.12.0)
 
 SPEC REPOS:
   trunk:
@@ -838,16 +838,16 @@ SPEC REPOS:
 SPEC CHECKSUMS:
   abseil: 926fb7a82dc6d2b8e1f2ed7f3a718bce691d1e46
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
-  Firebase: 66043bd4579e5b73811f96829c694c7af8d67435
-  FirebaseAnalytics: 47cef43728f81a839cf1306576bdd77ffa2eac7e
-  FirebaseCore: 2cec518b43635f96afe7ac3a9c513e47558abd2e
+  Firebase: 07150e75d142fb9399f6777fa56a187b17f833a0
+  FirebaseAnalytics: 0270389efbe3022b54ec4588862dabec3477ee98
+  FirebaseCore: f86a1394906b97ac445ae49c92552a9425831bed
   FirebaseCoreExtension: 705ca5b14bf71d2564a0ddc677df1fc86ffa600f
   FirebaseCoreInternal: df84dd300b561c27d5571684f389bf60b0a5c934
-  FirebaseFirestore: b4c0eaaf24efda5732ec21d9e6c788d083118ca6
-  FirebaseFirestoreSwift: 1173563c7c20e50b415109fdc215ee5cd9f03d8e
+  FirebaseFirestore: f94c9541515fa4a49af52269bbc50349009424b4
+  FirebaseFirestoreSwift: 7a81b69579c3fddaf082a8be08d362a1d9c9cf49
   FirebaseInstallations: 913cf60d0400ebd5d6b63a28b290372ab44590dd
   FirebaseSharedSwift: 20530f495084b8d840f78a100d8c5ee613375f6e
-  GoogleAppMeasurement: 722db6550d1e6d552b08398b69a975ac61039338
+  GoogleAppMeasurement: 2d800fab85e7848b1e66a6f8ce5bca06c5aad892
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   "gRPC-C++": 0968bace703459fd3e5dcb0b2bed4c573dbff046
   gRPC-Core: 17108291d84332196d3c8466b48f016fc17d816d
@@ -855,6 +855,6 @@ SPEC CHECKSUMS:
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
 
-PODFILE CHECKSUM: cfdf1f5aec3c9b4125bbb7866bbde911a17282e2
+PODFILE CHECKSUM: 0ca6fe1fdf2d0629da63d669929be4d13fdf9963
 
 COCOAPODS: 1.16.2

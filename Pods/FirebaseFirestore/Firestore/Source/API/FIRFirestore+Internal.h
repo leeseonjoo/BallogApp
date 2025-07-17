@@ -25,7 +25,6 @@
 
 @class FIRApp;
 @class FSTUserDataReader;
-@class FIRPersistentCacheIndexManager;
 
 namespace firebase {
 namespace firestore {

@@ -113,8 +113,6 @@ class MemoryPersistence : public Persistence {
 
   void set_reference_delegate(std::unique_ptr<ReferenceDelegate> delegate);
 
-  void DeleteAllFieldIndexes() override;
-
   MutationQueues mutation_queues_;
 
   /**
