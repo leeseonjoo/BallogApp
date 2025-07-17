@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		231343772E293AC9002F4FC4 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 231343762E293AC9002F4FC4 /* FirebaseAnalytics */; };
+		2313437A2E293B2A002F4FC4 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 231343792E293B2A002F4FC4 /* FirebaseAnalytics */; };
 		2314C6972E280E620002F3A3 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		2314C6992E280E620002F3A3 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		2351E7632E29276900C4EA11 /* FirebaseAI in Frameworks */ = {isa = PBXBuildFile; productRef = 2351E7622E29276900C4EA11 /* FirebaseAI */; };
@@ -67,7 +69,86 @@
 		2386E5732E25309700183DBB /* Exceptions for "Ballog" folder in "Ballog" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"Extensions/Color+Theme.swift",
 				Info.plist,
+				Models/Account.swift,
+				Models/AccountEntity.swift,
+				Models/AttendanceStore.swift,
+				Models/CalendarNetworkService.swift,
+				Models/Item.swift,
+				Models/MatchMatching.swift,
+				Models/PersonalTrainingLog.swift,
+				Models/ProfileCard.swift,
+				Models/SkillProgressModel.swift,
+				Models/Team.swift,
+				Models/TeamEvent.swift,
+				Models/TeamEventStore.swift,
+				Models/TeamGoal.swift,
+				Models/TeamJoinRequest.swift,
+				Models/TeamStore.swift,
+				Models/TeamTactic.swift,
+				Models/TeamTacticStore.swift,
+				Models/TeamTrainingLog.swift,
+				Models/TeamTrainingLogStore.swift,
+				Models/WeatherService.swift,
+				Utilities/AdminCredentials.swift,
+				Utilities/CoreDataStack.swift,
+				Utilities/DesignConstants.swift,
+				Utilities/FirestoreAccountService.swift,
+				Utilities/HealthKitManager.swift,
+				Views/BallogTopBar.swift,
+				Views/ContentView.swift,
+				Views/EnhancedCalendarView.swift,
+				Views/FeedView.swift,
+				Views/InteractiveCalendarView.swift,
+				Views/LoginView.swift,
+				Views/MainHomeView.swift,
+				Views/MatchManagementView.swift,
+				Views/MatchMatchingViews.swift,
+				Views/NotificationView.swift,
+				Views/PersonalGoalListView.swift,
+				Views/PersonalGoalSettingView.swift,
+				Views/PersonalPageView.swift,
+				Views/PersonalSectionView.swift,
+				Views/PersonalTrainingLogDetailView.swift,
+				Views/PersonalTrainingLogListView.swift,
+				Views/PersonalTrainingLogView.swift,
+				Views/PersonalTrainingView.swift,
+				Views/PixelTreeView.swift,
+				Views/PixelView.swift,
+				Views/ProfileCardCreationView.swift,
+				Views/ProfileCardView.swift,
+				Views/ProfileView.swift,
+				Views/RoleSelectionView.swift,
+				Views/SettingsView.swift,
+				Views/SignUpView.swift,
+				Views/SimpleCalendarView.swift,
+				Views/TabBarView.swift,
+				Views/TacticsBoardView.swift,
+				Views/TeamActionSelectionView.swift,
+				Views/TeamCalendarView.swift,
+				Views/TeamCharacterBoardView.swift,
+				Views/TeamCreationView.swift,
+				Views/TeamEventCreationView.swift,
+				Views/TeamGoalDetailView.swift,
+				Views/TeamGoalManagementView.swift,
+				Views/TeamGoalSettingView.swift,
+				Views/TeamJoinRequestDetailView.swift,
+				Views/TeamJoinRequestManagementView.swift,
+				Views/TeamJoinRequestView.swift,
+				Views/TeamJoinView.swift,
+				Views/TeamLinkShareView.swift,
+				Views/TeamListView.swift,
+				Views/TeamManagementView.swift,
+				Views/TeamMotivationView.swift,
+				Views/TeamPageView.swift,
+				Views/TeamPreviewView.swift,
+				Views/TeamRankingView.swift,
+				Views/TeamSectionView.swift,
+				Views/TeamTacticsView.swift,
+				Views/TeamTrainingLogView.swift,
+				Views/TrainingLogViews.swift,
+				Views/TrainingStatisticsView.swift,
 			);
 			target = 235B0A442E1D68BF00EF9DDD /* Ballog */;
 		};
@@ -110,6 +191,7 @@
 				2351E7792E29276900C4EA11 /* FirebaseFirestore in Frameworks */,
 				2351E7852E29276900C4EA11 /* FirebaseMLModelDownloader in Frameworks */,
 				2351E7652E29276900C4EA11 /* FirebaseAnalytics in Frameworks */,
+				231343772E293AC9002F4FC4 /* FirebaseAnalytics in Frameworks */,
 				2314C6972E280E620002F3A3 /* (null) in Frameworks */,
 				23E564C12E291A8D00075B2C /* FirebaseAnalytics in Frameworks */,
 				2351E7672E29276900C4EA11 /* FirebaseAnalyticsCore in Frameworks */,
@@ -124,6 +206,7 @@
 				2351E78B2E29276900C4EA11 /* FirebaseRemoteConfig in Frameworks */,
 				2351E76F2E29276900C4EA11 /* FirebaseAuth in Frameworks */,
 				2351E78D2E29276900C4EA11 /* FirebaseStorage in Frameworks */,
+				2313437A2E293B2A002F4FC4 /* FirebaseAnalytics in Frameworks */,
 				2351E76D2E29276900C4EA11 /* FirebaseAppDistribution-Beta in Frameworks */,
 				2351E76B2E29276900C4EA11 /* FirebaseAppCheck in Frameworks */,
 				2314C6992E280E620002F3A3 /* (null) in Frameworks */,
@@ -185,11 +268,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 235B0A692E1D68C000EF9DDD /* Build configuration list for PBXNativeTarget "Ballog" */;
 			buildPhases = (
-				A26A8BBA5A8E23CA0F65042C /* [CP] Check Pods Manifest.lock */,
-				235B0A412E1D68BF00EF9DDD /* Sources */,
 				235B0A422E1D68BF00EF9DDD /* Frameworks */,
 				235B0A432E1D68BF00EF9DDD /* Resources */,
-				2A486E08ADDC5DEC84C15929 /* [CP] Embed Pods Frameworks */,
+				231343742E2939AE002F4FC4 /* Sources */,
 			);
 			buildRules = (
 			);
@@ -278,7 +359,7 @@
 			mainGroup = 235B0A3C2E1D68BF00EF9DDD;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				23E564BF2E291A8D00075B2C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				231343782E293B2A002F4FC4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 235B0A462E1D68BF00EF9DDD /* Products */;
@@ -316,54 +397,8 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		2A486E08ADDC5DEC84C15929 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Ballog/Pods-Ballog-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Ballog/Pods-Ballog-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Ballog/Pods-Ballog-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A26A8BBA5A8E23CA0F65042C /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Ballog-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
-		235B0A412E1D68BF00EF9DDD /* Sources */ = {
+		231343742E2939AE002F4FC4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -728,6 +763,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		231343782E293B2A002F4FC4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.0.0;
+			};
+		};
 		23E564BF2E291A8D00075B2C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -739,6 +782,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		231343762E293AC9002F4FC4 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 23E564BF2E291A8D00075B2C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		231343792E293B2A002F4FC4 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 231343782E293B2A002F4FC4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
 		2351E7622E29276900C4EA11 /* FirebaseAI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 23E564BF2E291A8D00075B2C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
