@@ -349,12 +349,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1MODELS01 /* Account.swift in Sources */,
+				A1MODELS02 /* AccountEntity.swift in Sources */,
 				A1MODELS03 /* AttendanceStore.swift in Sources */,
+				A1MODELS04 /* CalendarNetworkService.swift in Sources */,
 				A1MODELS05 /* Item.swift in Sources */,
+				A1MODELS06 /* MatchMatching.swift in Sources */,
+				A1MODELS07 /* PersonalTrainingLog.swift in Sources */,
+				A1MODELS08 /* ProfileCard.swift in Sources */,
+				A1MODELS09 /* SkillProgressModel.swift in Sources */,
+				A1MODELS10 /* Team.swift in Sources */,
+				A1MODELS11 /* TeamEvent.swift in Sources */,
+				A1MODELS12 /* TeamEventStore.swift in Sources */,
+				A1MODELS13 /* TeamGoal.swift in Sources */,
+				A1MODELS14 /* TeamJoinRequest.swift in Sources */,
 				A1MODELS15 /* TeamStore.swift in Sources */,
-				A1VIEWS01 /* ContentView.swift in Sources */,
-				A1VIEWS02 /* LoginView.swift in Sources */,
-				A1VIEWS03 /* ProfileCardCreationView.swift in Sources */,
+				A1MODELS16 /* TeamTactic.swift in Sources */,
+				A1MODELS17 /* TeamTacticStore.swift in Sources */,
+				A1MODELS18 /* TeamTrainingLog.swift in Sources */,
+				A1MODELS19 /* TeamTrainingLogStore.swift in Sources */,
+				A1MODELS20 /* WeatherService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
