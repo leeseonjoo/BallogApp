@@ -7,9 +7,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var selectedTopTab = 0 // 0: 개인, 1: 팀
-    @StateObject private var teamStore = TeamStore()
-    @State private var selectedTeam: Team? = nil
+    // 개인 세션만 사용하므로 팀 관련 상태 제거
+    @State private var selectedTopTab = 0
     @State private var showProfile = false
     @State private var showNotifications = false
     @State private var showSettings = false
@@ -26,10 +25,9 @@ struct ContentView: View {
                     .frame(minWidth: 80, alignment: .leading)
                     .padding(.leading, DesignConstants.horizontalPadding)
                 Spacer()
-                // 중앙: 개인/팀 탭
+                // 중앙: 개인 탭만 남김
                 HStack(spacing: 16) {
-                    TopTabButton(title: "개인", isSelected: selectedTopTab == 0) { selectedTopTab = 0 }
-                    TopTabButton(title: "팀", isSelected: selectedTopTab == 1) { selectedTopTab = 1 }
+                    TopTabButton(title: "개인", isSelected: true) { selectedTopTab = 0 }
                 }
                 .frame(maxWidth: 220)
                 Spacer()
@@ -78,14 +76,8 @@ struct ContentView: View {
             )
 
             // 본문
-            if selectedTopTab == 0 {
-                PersonalPageView()
-            } else {
-                TeamPageView(selectedTeam: $selectedTeam)
-                    .environmentObject(teamStore)
-            }
+            PersonalPageView()
         }
-        .environmentObject(teamStore)
     }
 }
 
