@@ -3,13 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2314C6972E280E620002F3A3 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
-		2314C6992E280E620002F3A3 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
-		3D0CE68584024E687BB5347B /* Pods_Ballog.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA31E31D6BFC097CC3E988AA /* Pods_Ballog.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -18,69 +15,28 @@
 			containerPortal = 235B0A3D2E1D68BF00EF9DDD /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 235B0A442E1D68BF00EF9DDD;
-			remoteInfo = Ballog;
+			remoteInfo = BallogApp;
 		};
 		235B0A602E1D68C000EF9DDD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 235B0A3D2E1D68BF00EF9DDD /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 235B0A442E1D68BF00EF9DDD;
-			remoteInfo = Ballog;
+			remoteInfo = BallogApp;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0656276EA226E44113C5F4BE /* Pods-Ballog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballog.debug.xcconfig"; path = "Target Support Files/Pods-Ballog/Pods-Ballog.debug.xcconfig"; sourceTree = "<group>"; };
-		235B0A452E1D68BF00EF9DDD /* Ballog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ballog.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		235B0A552E1D68C000EF9DDD /* BallogTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BallogTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		235B0A5F2E1D68C000EF9DDD /* BallogUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BallogUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		3C937C0A1869276B7A9F30A8 /* Pods-Ballog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballog.release.xcconfig"; path = "Target Support Files/Pods-Ballog/Pods-Ballog.release.xcconfig"; sourceTree = "<group>"; };
-		AA31E31D6BFC097CC3E988AA /* Pods_Ballog.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Ballog.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		235B0A452E1D68BF00EF9DDD /* BallogApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BallogApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		235B0A552E1D68C000EF9DDD /* BallogAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BallogAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		235B0A5F2E1D68C000EF9DDD /* BallogAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BallogAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		2386E5732E25309700183DBB /* Exceptions for "Ballog" folder in "Ballog" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 235B0A442E1D68BF00EF9DDD /* Ballog */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		235B0A472E1D68BF00EF9DDD /* Ballog */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				2386E5732E25309700183DBB /* Exceptions for "Ballog" folder in "Ballog" target */,
-			);
-			path = Ballog;
-			sourceTree = "<group>";
-		};
-		235B0A582E1D68C000EF9DDD /* BallogTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			path = BallogTests;
-			sourceTree = "<group>";
-		};
-		235B0A622E1D68C000EF9DDD /* BallogUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			path = BallogUITests;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		235B0A422E1D68BF00EF9DDD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2314C6972E280E620002F3A3 /* BuildFile in Frameworks */,
-				2314C6992E280E620002F3A3 /* BuildFile in Frameworks */,
-				3D0CE68584024E687BB5347B /* Pods_Ballog.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,14 +57,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0A2AE0FE52854108894B15B3 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				AA31E31D6BFC097CC3E988AA /* Pods_Ballog.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		235B0A3C2E1D68BF00EF9DDD = {
 			isa = PBXGroup;
 			children = (
@@ -116,58 +64,68 @@
 				235B0A582E1D68C000EF9DDD /* BallogTests */,
 				235B0A622E1D68C000EF9DDD /* BallogUITests */,
 				235B0A462E1D68BF00EF9DDD /* Products */,
-				B45638C7EA769510E3491CD9 /* Pods */,
-				0A2AE0FE52854108894B15B3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
 		235B0A462E1D68BF00EF9DDD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				235B0A452E1D68BF00EF9DDD /* Ballog.app */,
-				235B0A552E1D68C000EF9DDD /* BallogTests.xctest */,
-				235B0A5F2E1D68C000EF9DDD /* BallogUITests.xctest */,
+				235B0A452E1D68BF00EF9DDD /* BallogApp.app */,
+				235B0A552E1D68C000EF9DDD /* BallogAppTests.xctest */,
+				235B0A5F2E1D68C000EF9DDD /* BallogAppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B45638C7EA769510E3491CD9 /* Pods */ = {
+		235B0A472E1D68BF00EF9DDD /* Ballog */ = {
 			isa = PBXGroup;
 			children = (
-				0656276EA226E44113C5F4BE /* Pods-Ballog.debug.xcconfig */,
-				3C937C0A1869276B7A9F30A8 /* Pods-Ballog.release.xcconfig */,
 			);
-			path = Pods;
+			path = Ballog;
+			sourceTree = "<group>";
+		};
+		235B0A582E1D68C000EF9DDD /* BallogTests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = BallogTests;
+			sourceTree = "<group>";
+		};
+		235B0A622E1D68C000EF9DDD /* BallogUITests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = BallogUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		235B0A442E1D68BF00EF9DDD /* Ballog */ = {
+		235B0A442E1D68BF00EF9DDD /* BallogApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 235B0A692E1D68C000EF9DDD /* Build configuration list for PBXNativeTarget "Ballog" */;
+			buildConfigurationList = 235B0A692E1D68C000EF9DDD /* Build configuration list for PBXNativeTarget "BallogApp" */;
 			buildPhases = (
-				D0B218CAB9150F410C020F08 /* [CP] Check Pods Manifest.lock */,
 				235B0A412E1D68BF00EF9DDD /* Sources */,
 				235B0A422E1D68BF00EF9DDD /* Frameworks */,
 				235B0A432E1D68BF00EF9DDD /* Resources */,
-				6C3C992A19E73E2D24F9886A /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				235B0A472E1D68BF00EF9DDD /* Ballog */,
+			name = BallogApp;
+			packageProductDependencies = (
+				2314C6972E280E620002F3A5 /* FirebaseCore */,
+				2314C6972E280E620002F3A6 /* FirebaseFirestore */,
+				2314C6972E280E620002F3A7 /* FirebaseFirestoreSwift */,
 			);
-			name = Ballog;
-			productName = Ballog;
-			productReference = 235B0A452E1D68BF00EF9DDD /* Ballog.app */;
+			productName = BallogApp;
+			productReference = 235B0A452E1D68BF00EF9DDD /* BallogApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		235B0A542E1D68C000EF9DDD /* BallogTests */ = {
+		235B0A542E1D68C000EF9DDD /* BallogAppTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 235B0A6C2E1D68C000EF9DDD /* Build configuration list for PBXNativeTarget "BallogTests" */;
+			buildConfigurationList = 235B0A6C2E1D68C000EF9DDD /* Build configuration list for PBXNativeTarget "BallogAppTests" */;
 			buildPhases = (
 				235B0A512E1D68C000EF9DDD /* Sources */,
 				235B0A522E1D68C000EF9DDD /* Frameworks */,
@@ -178,17 +136,16 @@
 			dependencies = (
 				235B0A572E1D68C000EF9DDD /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				235B0A582E1D68C000EF9DDD /* BallogTests */,
+			name = BallogAppTests;
+			packageProductDependencies = (
 			);
-			name = BallogTests;
-			productName = BallogTests;
-			productReference = 235B0A552E1D68C000EF9DDD /* BallogTests.xctest */;
+			productName = BallogAppTests;
+			productReference = 235B0A552E1D68C000EF9DDD /* BallogAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		235B0A5E2E1D68C000EF9DDD /* BallogUITests */ = {
+		235B0A5E2E1D68C000EF9DDD /* BallogAppUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 235B0A6F2E1D68C000EF9DDD /* Build configuration list for PBXNativeTarget "BallogUITests" */;
+			buildConfigurationList = 235B0A6F2E1D68C000EF9DDD /* Build configuration list for PBXNativeTarget "BallogAppUITests" */;
 			buildPhases = (
 				235B0A5B2E1D68C000EF9DDD /* Sources */,
 				235B0A5C2E1D68C000EF9DDD /* Frameworks */,
@@ -199,12 +156,11 @@
 			dependencies = (
 				235B0A612E1D68C000EF9DDD /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				235B0A622E1D68C000EF9DDD /* BallogUITests */,
+			name = BallogAppUITests;
+			packageProductDependencies = (
 			);
-			name = BallogUITests;
-			productName = BallogUITests;
-			productReference = 235B0A5F2E1D68C000EF9DDD /* BallogUITests.xctest */;
+			productName = BallogAppUITests;
+			productReference = 235B0A5F2E1D68C000EF9DDD /* BallogAppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -214,23 +170,24 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1640;
-				LastUpgradeCheck = 1640;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					235B0A442E1D68BF00EF9DDD = {
-						CreatedOnToolsVersion = 16.4;
+						CreatedOnToolsVersion = 16.0;
 					};
 					235B0A542E1D68C000EF9DDD = {
-						CreatedOnToolsVersion = 16.4;
+						CreatedOnToolsVersion = 16.0;
 						TestTargetID = 235B0A442E1D68BF00EF9DDD;
 					};
 					235B0A5E2E1D68C000EF9DDD = {
-						CreatedOnToolsVersion = 16.4;
+						CreatedOnToolsVersion = 16.0;
 						TestTargetID = 235B0A442E1D68BF00EF9DDD;
 					};
 				};
 			};
-			buildConfigurationList = 235B0A402E1D68BF00EF9DDD /* Build configuration list for PBXProject "Ballog" */;
+			buildConfigurationList = 235B0A402E1D68BF00EF9DDD /* Build configuration list for PBXProject "BallogApp" */;
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -238,15 +195,16 @@
 				Base,
 			);
 			mainGroup = 235B0A3C2E1D68BF00EF9DDD;
-			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
+			packageReferences = (
+				2314C6972E280E620002F3A4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = 235B0A462E1D68BF00EF9DDD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				235B0A442E1D68BF00EF9DDD /* Ballog */,
-				235B0A542E1D68C000EF9DDD /* BallogTests */,
-				235B0A5E2E1D68C000EF9DDD /* BallogUITests */,
+				235B0A442E1D68BF00EF9DDD /* BallogApp */,
+				235B0A542E1D68C000EF9DDD /* BallogAppTests */,
+				235B0A5E2E1D68C000EF9DDD /* BallogAppUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -275,48 +233,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		6C3C992A19E73E2D24F9886A /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Ballog/Pods-Ballog-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Ballog/Pods-Ballog-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Ballog/Pods-Ballog-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D0B218CAB9150F410C020F08 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Ballog-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		235B0A412E1D68BF00EF9DDD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -344,12 +260,12 @@
 /* Begin PBXTargetDependency section */
 		235B0A572E1D68C000EF9DDD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 235B0A442E1D68BF00EF9DDD /* Ballog */;
+			target = 235B0A442E1D68BF00EF9DDD /* BallogApp */;
 			targetProxy = 235B0A562E1D68C000EF9DDD /* PBXContainerItemProxy */;
 		};
 		235B0A612E1D68C000EF9DDD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 235B0A442E1D68BF00EF9DDD /* Ballog */;
+			target = 235B0A442E1D68BF00EF9DDD /* BallogApp */;
 			targetProxy = 235B0A602E1D68C000EF9DDD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -389,7 +305,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -408,10 +323,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -451,7 +368,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -464,98 +380,73 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
 		235B0A6A2E1D68C000EF9DDD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0656276EA226E44113C5F4BE /* Pods-Ballog.debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon 1";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Ballog/Ballog.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 746C3GC899;
+				DEVELOPMENT_ASSET_PATHS = "\"Ballog/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Ballog/Info.plist;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ballog.Ballog;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ballog.BallogApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				REGISTER_APP_GROUPS = YES;
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				XROS_DEPLOYMENT_TARGET = 2.5;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
 		235B0A6B2E1D68C000EF9DDD /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3C937C0A1869276B7A9F30A8 /* Pods-Ballog.release.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon 1";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Ballog/Ballog.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 746C3GC899;
+				DEVELOPMENT_ASSET_PATHS = "\"Ballog/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Ballog/Info.plist;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ballog.Ballog;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ballog.BallogApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				REGISTER_APP_GROUPS = YES;
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				XROS_DEPLOYMENT_TARGET = 2.5;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -565,20 +456,15 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ballog.BallogTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ballog.BallogAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ballog.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Ballog";
-				XROS_DEPLOYMENT_TARGET = 2.5;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BallogApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BallogApp";
 			};
 			name = Debug;
 		};
@@ -588,20 +474,15 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ballog.BallogTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ballog.BallogAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ballog.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Ballog";
-				XROS_DEPLOYMENT_TARGET = 2.5;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BallogApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BallogApp";
 			};
 			name = Release;
 		};
@@ -610,20 +491,15 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ballog.BallogUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ballog.BallogAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_TARGET_NAME = Ballog;
-				XROS_DEPLOYMENT_TARGET = 2.5;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BallogApp;
 			};
 			name = Debug;
 		};
@@ -632,27 +508,22 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ballog.BallogUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ballog.BallogAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_TARGET_NAME = Ballog;
-				XROS_DEPLOYMENT_TARGET = 2.5;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BallogApp;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		235B0A402E1D68BF00EF9DDD /* Build configuration list for PBXProject "Ballog" */ = {
+		235B0A402E1D68BF00EF9DDD /* Build configuration list for PBXProject "BallogApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				235B0A672E1D68C000EF9DDD /* Debug */,
@@ -661,7 +532,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		235B0A692E1D68C000EF9DDD /* Build configuration list for PBXNativeTarget "Ballog" */ = {
+		235B0A692E1D68C000EF9DDD /* Build configuration list for PBXNativeTarget "BallogApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				235B0A6A2E1D68C000EF9DDD /* Debug */,
@@ -670,7 +541,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		235B0A6C2E1D68C000EF9DDD /* Build configuration list for PBXNativeTarget "BallogTests" */ = {
+		235B0A6C2E1D68C000EF9DDD /* Build configuration list for PBXNativeTarget "BallogAppTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				235B0A6D2E1D68C000EF9DDD /* Debug */,
@@ -679,7 +550,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		235B0A6F2E1D68C000EF9DDD /* Build configuration list for PBXNativeTarget "BallogUITests" */ = {
+		235B0A6F2E1D68C000EF9DDD /* Build configuration list for PBXNativeTarget "BallogAppUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				235B0A702E1D68C000EF9DDD /* Debug */,
@@ -689,6 +560,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2314C6972E280E620002F3A4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.12.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2314C6972E280E620002F3A5 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2314C6972E280E620002F3A4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		2314C6972E280E620002F3A6 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2314C6972E280E620002F3A4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		2314C6972E280E620002F3A7 /* FirebaseFirestoreSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2314C6972E280E620002F3A4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestoreSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 235B0A3D2E1D68BF00EF9DDD /* Project object */;
 }
