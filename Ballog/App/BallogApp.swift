@@ -8,7 +8,6 @@
 import SwiftUI
 import FirebaseCore
 import FirebaseFirestore
-import SwiftData
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
@@ -27,18 +26,6 @@ struct BallogApp: App {
         FirebaseApp.configure()
     }
 
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
 
     @StateObject private var attendanceStore = AttendanceStore()
     @StateObject private var logStore = TeamTrainingLogStore()
@@ -128,7 +115,6 @@ struct BallogApp: App {
                 HealthKitManager.shared.requestAuthorization { _ in }
             }
         }
-        .modelContainer(sharedModelContainer)
     }
 
     private func handleAutoLogin() {
