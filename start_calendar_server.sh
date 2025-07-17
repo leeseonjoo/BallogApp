@@ -17,4 +17,5 @@ pip install -r requirements.txt
 
 # 서버 실행
 echo "서버를 시작합니다..."
-python calendar_server.py 
+python calendar_server.py
+
