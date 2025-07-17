@@ -29,13 +29,10 @@ struct BallogTopBar: View {
             .frame(minWidth: 80, alignment: .leading)
             .padding(.leading, DesignConstants.horizontalPadding)
             Spacer()
-            // 중앙: 풋살기록장/팀 매칭룸 탭
+            // 중앙: 개인 세션만 존재
             HStack(spacing: 16) {
-                TopTabButton(title: "풋살기록장", isSelected: selectedTab == 0) {
+                TopTabButton(title: "풋살기록장", isSelected: true) {
                     selectedTab = 0
-                }
-                TopTabButton(title: "팀 매칭룸", isSelected: selectedTab == 1) {
-                    selectedTab = 1
                 }
             }
             .frame(maxWidth: 220)
