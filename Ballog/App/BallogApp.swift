@@ -6,11 +6,17 @@
 //
 
 import SwiftUI
+import FirebaseCore
 import FirebaseFirestore
 import SwiftData
 
 @main
 struct BallogApp: App {
+    // Firebase 초기화
+    init() {
+        FirebaseApp.configure()
+    }
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
