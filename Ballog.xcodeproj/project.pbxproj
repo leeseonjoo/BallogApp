@@ -36,6 +36,31 @@
 		235B0A552E1D68C000EF9DDD /* BallogTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BallogTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		235B0A5F2E1D68C000EF9DDD /* BallogUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BallogUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBEF989E4EE7F5B726487027 /* Pods-Ballog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballog.release.xcconfig"; path = "Target Support Files/Pods-Ballog/Pods-Ballog.release.xcconfig"; sourceTree = "<group>"; };
+	/* Ballog/Models */
+	A1MODELS01 /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/Account.swift"; sourceTree = "<group>"; };
+	A1MODELS02 /* AccountEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/AccountEntity.swift"; sourceTree = "<group>"; };
+	A1MODELS03 /* AttendanceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/AttendanceStore.swift"; sourceTree = "<group>"; };
+	A1MODELS04 /* CalendarNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/CalendarNetworkService.swift"; sourceTree = "<group>"; };
+	A1MODELS05 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/Item.swift"; sourceTree = "<group>"; };
+	A1MODELS06 /* MatchMatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/MatchMatching.swift"; sourceTree = "<group>"; };
+	A1MODELS07 /* PersonalTrainingLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/PersonalTrainingLog.swift"; sourceTree = "<group>"; };
+	A1MODELS08 /* ProfileCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/ProfileCard.swift"; sourceTree = "<group>"; };
+	A1MODELS09 /* SkillProgressModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/SkillProgressModel.swift"; sourceTree = "<group>"; };
+	A1MODELS10 /* Team.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/Team.swift"; sourceTree = "<group>"; };
+	A1MODELS11 /* TeamEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/TeamEvent.swift"; sourceTree = "<group>"; };
+	A1MODELS12 /* TeamEventStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/TeamEventStore.swift"; sourceTree = "<group>"; };
+	A1MODELS13 /* TeamGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/TeamGoal.swift"; sourceTree = "<group>"; };
+	A1MODELS14 /* TeamJoinRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/TeamJoinRequest.swift"; sourceTree = "<group>"; };
+	A1MODELS15 /* TeamStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/TeamStore.swift"; sourceTree = "<group>"; };
+	A1MODELS16 /* TeamTactic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/TeamTactic.swift"; sourceTree = "<group>"; };
+	A1MODELS17 /* TeamTacticStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/TeamTacticStore.swift"; sourceTree = "<group>"; };
+	A1MODELS18 /* TeamTrainingLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/TeamTrainingLog.swift"; sourceTree = "<group>"; };
+	A1MODELS19 /* TeamTrainingLogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/TeamTrainingLogStore.swift"; sourceTree = "<group>"; };
+	A1MODELS20 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Models/WeatherService.swift"; sourceTree = "<group>"; };
+	/* Ballog/Views */
+	A1VIEWS01 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Views/ContentView.swift"; sourceTree = "<group>"; };
+	A1VIEWS02 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Views/LoginView.swift"; sourceTree = "<group>"; };
+	A1VIEWS03 /* ProfileCardCreationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ballog/Views/ProfileCardCreationView.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -324,6 +349,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1MODELS03 /* AttendanceStore.swift in Sources */,
+				A1MODELS05 /* Item.swift in Sources */,
+				A1MODELS15 /* TeamStore.swift in Sources */,
+				A1VIEWS01 /* ContentView.swift in Sources */,
+				A1VIEWS02 /* LoginView.swift in Sources */,
+				A1VIEWS03 /* ProfileCardCreationView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
