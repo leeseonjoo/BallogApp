@@ -212,4 +212,5 @@ def add_event():
 if __name__ == '__main__':
     print("Ballog Calendar Server 시작...")
     print("서버 주소: http://localhost:5000")
-    app.run(debug=True, host='0.0.0.0', port=5000) 
+    app.run(debug=True, host='0.0.0.0', port=5000)
+
